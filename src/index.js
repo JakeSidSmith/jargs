@@ -7,8 +7,9 @@
   module.exports = {
     collect: require('./collect'),
     Command: require('./command'),
-    Arg: require('./arg'),
     KWArg: require('./kwarg'),
+    Flag: require('./flag'),
+    Arg: require('./arg')
   };
 
 })();

@@ -24,6 +24,7 @@ Allow kwarg booleans without values to be true e.g. --thing false (false becomes
   var jargs = require('../src/index');
   var Command = jargs.Command;
   var KWArg = jargs.KWArg;
+  var Flag = jargs.Flag;
   var Arg = jargs.Arg;
 
   var args = jargs.collect([
@@ -43,11 +44,11 @@ Allow kwarg booleans without values to be true e.g. --thing false (false becomes
         {alias: 'c', type: 'string', default: 'config.json'}
       )
     ),
-    KWArg(
+    Flag(
       'help',
       {alias: 'h', type: 'boolean', description: 'Displays help & usage info'}
     ),
-    KWArg(
+    Flag(
       'version',
       {alias: 'v', type: 'boolean', description: 'Displays version number'}
     )
