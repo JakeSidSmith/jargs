@@ -15,6 +15,8 @@ Nest commands & arguments
 Adjust kwarg scope (global / children)
 Allow kwarg booleans without values to be true e.g. --thing false (false becomes the next arg)
 
+Return args descriptor with usefull functions like getIn
+
 */
 
 'use strict';
