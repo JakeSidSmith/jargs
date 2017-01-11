@@ -12,6 +12,7 @@ Limit arguments options
 Set option type (e.g. string, number)
 Set number of options (exact, min, & max)
 Nest commands & arguments
+Adjust kwarg scope (global / children)
 
 */
 
