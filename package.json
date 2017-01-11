@@ -4,7 +4,7 @@
   "description": "Simple node argv parser with explicit JSON config",
   "main": "src/index.js",
   "scripts": {
-    "test": "eslint -c node_modules/eslintrc/.eslintrc-es5 src/"
+    "test": "eslint -c .eslintrc src/ examples/"
   },
   "repository": {
     "type": "git",
