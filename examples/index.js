@@ -13,6 +13,7 @@ Set option type (e.g. string, number)
 Set number of options (exact, min, & max)
 Nest commands & arguments
 Adjust kwarg scope (global / children)
+Allow kwarg booleans without values to be true e.g. --thing false (false becomes the next arg)
 
 */
 
