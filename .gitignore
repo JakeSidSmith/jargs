@@ -1,0 +1,7 @@
+node_modules/**
+coverage/**
+build/**
+examples/build/**
+
+.DS_Store
+npm-debug.log*

@@ -1,0 +1,30 @@
+{
+  "name": "jargs",
+  "version": "0.0.0",
+  "description": "Simple node argv parser with explicit JSON config",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "eslint -c node_modules/eslintrc/.eslintrc-es5 src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakesidsmith/jargs.git"
+  },
+  "keywords": [
+    "jargs",
+    "argv",
+    "args",
+    "arguments",
+    "node",
+    "parser"
+  ],
+  "author": "Jake 'Sid' Smith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jakesidsmith/jargs/issues"
+  },
+  "homepage": "https://github.com/jakesidsmith/jargs#readme",
+  "devDependencies": {
+    "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v0.0.2"
+  }
+}
