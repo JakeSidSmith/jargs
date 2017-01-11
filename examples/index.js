@@ -25,39 +25,30 @@ Nest commands & arguments
   var Arg = jargs.Arg;
 
   var args = jargs.collect([
-    Command({
-      name: 'init',
-      children: [
-        Arg({
-          name: 'path',
-          required: true,
-          type: 'string'
-        })
-      ]
-    }),
-    Command({
-      name: 'build',
-      children: [
-        KWArg({
-          name: 'config',
-          alias: 'c',
-          type: 'string',
-          default: 'config.json'
-        })
-      ]
-    }),
-    KWArg({
-      name: 'help',
-      alias: 'h',
-      type: 'boolean',
-      description: 'Displays help & usage info'
-    }),
-    KWArg({
-      name: 'version',
-      alias: 'v',
-      type: 'boolean',
-      description: 'Displays version number'
-    })
+    Command(
+      'init',
+      null,
+      Arg(
+        'path',
+        {required: true, type: 'string'}
+      )
+    ),
+    Command(
+      'build',
+      null,
+      KWArg(
+        'config',
+        {alias: 'c', type: 'string', default: 'config.json'}
+      )
+    ),
+    KWArg(
+      'help',
+      {alias: 'h', type: 'boolean', description: 'Displays help & usage info'}
+    ),
+    KWArg(
+      'version',
+      {alias: 'v', type: 'boolean', description: 'Displays version number'}
+    )
   ]);
 
   console.log(args);
