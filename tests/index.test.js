@@ -3,6 +3,7 @@
 (function () {
 
   var expect = require('chai').expect;
+
   var index = require('../src/index');
 
   describe('index.js', function () {
