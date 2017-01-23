@@ -4,7 +4,9 @@
   "description": "Simple node argv parser with explicit JSON config",
   "main": "src/index.js",
   "scripts": {
-    "test": "eslint -c .eslintrc src/ examples/"
+    "lint": "eslint -c .eslintrc src/ examples/",
+    "mocha": "nyc mocha --bail --recursive 'tests/**/*.test.js'",
+    "test": "npm run lint && npm run mocha"
   },
   "repository": {
     "type": "git",
@@ -25,7 +27,10 @@
   },
   "homepage": "https://github.com/jakesidsmith/jargs#readme",
   "devDependencies": {
-    "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v0.0.2"
+    "chai": "=3.5.0",
+    "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v0.0.2",
+    "mocha": "=3.2.0",
+    "nyc": "=10.1.2"
   },
   "engines": {
     "node": "6.9.4"
