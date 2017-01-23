@@ -2,14 +2,11 @@
 
 (function () {
 
-  function collect (/* tree */) {
-    var argv = [].concat(process.argv);
-    var program = argv.shift();
-    var command = argv.shift();
-
+  function collect (program, command, argv, tree) {
     console.log(program);
     console.log(command);
     console.log(argv);
+    console.log(tree);
   }
 
   module.exports = collect;
