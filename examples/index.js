@@ -29,7 +29,7 @@ Return args descriptor with usefull functions like getIn
   var Flag = jargs.Flag;
   var Arg = jargs.Arg;
 
-  var args = jargs.collect([
+  var jarg = jargs.collect(
     Command(
       'init',
       null,
@@ -54,8 +54,8 @@ Return args descriptor with usefull functions like getIn
       'version',
       {alias: 'v', type: 'boolean', description: 'Displays version number'}
     )
-  ]);
+  );
 
-  console.log(args);
+  jarg.command('init');
 
 })();
