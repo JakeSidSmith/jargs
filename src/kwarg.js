@@ -7,7 +7,7 @@
   function KWArg () {
     var properties = getNodeProperties(arguments);
 
-    properties._type = 'command';
+    properties._type = 'kwarg';
 
     return properties;
   }

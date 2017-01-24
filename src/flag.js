@@ -7,7 +7,7 @@
   function Flag () {
     var properties = getNodeProperties(arguments);
 
-    properties._type = 'command';
+    properties._type = 'flag';
 
     return properties;
   }

@@ -7,7 +7,7 @@
   function Arg () {
     var properties = getNodeProperties(arguments);
 
-    properties._type = 'command';
+    properties._type = 'arg';
 
     return properties;
   }
