@@ -7,6 +7,7 @@
   var collect = require('../src/collect');
   var Jarg = require('../src/jarg');
   var Command = require('../src/command');
+  var Arg = require('../src/arg');
 
   describe('collect.js', function () {
 
@@ -19,6 +20,12 @@
       var result;
       var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
 
+      // Without tree
+      result = boundCollect();
+
+      expect(result instanceof Jarg).to.be.true;
+
+      // With single node
       result = boundCollect(
         Command(
           'npm'
@@ -27,7 +34,16 @@
 
       expect(result instanceof Jarg).to.be.true;
 
-      result = boundCollect();
+      // With nested nodes
+      result = boundCollect(
+        Command(
+          'npm',
+          null,
+          Arg(
+            'lib'
+          )
+        )
+      );
 
       expect(result instanceof Jarg).to.be.true;
     });
