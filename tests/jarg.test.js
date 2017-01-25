@@ -28,6 +28,11 @@
       )
     ];
 
+    var duplicateTree = [
+      Command('install'),
+      Command('install')
+    ];
+
     it('should exist', function () {
       expect(Jarg).to.be.ok;
       expect(typeof Jarg).to.equal('function');
@@ -47,6 +52,16 @@
       expect(result._kwargs).to.eql({});
       expect(result._flags).to.eql({});
       expect(result._args).to.eql({});
+    });
+
+    it('should throw an error for duplicate names', function () {
+      var anError = /duplicate.*install.*depth\s0/i;
+
+      function wrapper () {
+        new Jarg(installJargsSave, duplicateTree);
+      }
+
+      expect(wrapper).to.throw(anError);
     });
 
     it('should return a new Jarg instance for first command', function () {
