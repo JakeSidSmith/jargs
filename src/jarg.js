@@ -43,12 +43,12 @@
     }
   }
 
-  Jarg.prototype.value = function value () {
-    return this._value;
-  };
-
   Jarg.prototype.name = function value () {
     return this._name;
+  };
+
+  Jarg.prototype.value = function value () {
+    return this._value;
   };
 
   Jarg.prototype.command = function command (query) {
