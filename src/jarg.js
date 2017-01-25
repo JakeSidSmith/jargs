@@ -52,28 +52,30 @@
   };
 
   Jarg.prototype.command = function command (query) {
-    var argv = [].concat(this._argv);
+    var self = this;
+
+    var argv = [].concat(self._argv);
     var commandName = argv.shift();
 
     if (!query) {
-      if (commandName in this._commands) {
-        return new Jarg(argv, this._commands[commandName].children, this._depth + 1, commandName, true);
+      if (commandName in self._commands) {
+        return new Jarg(argv, self._commands[commandName].children, self._depth + 1, commandName, true);
       }
 
-      return new Jarg([], [], this._depth + 1);
+      return new Jarg([], [], self._depth + 1);
     }
 
-    if (!(query in this._commands)) {
-      throw new Error('Command \'' + query + '\' is not defined in tree at depth ' + this._depth);
+    if (!(query in self._commands)) {
+      throw new Error('Command \'' + query + '\' is not defined in tree at depth ' + self._depth);
     }
 
-    for (var key in this._commands) {
+    for (var key in self._commands) {
       if (key === query && key === commandName) {
-        return new Jarg(argv, this._commands[commandName].children, this._depth + 1, commandName, true);
+        return new Jarg(argv, self._commands[commandName].children, self._depth + 1, commandName, true);
       }
     }
 
-    return new Jarg([], [], this._depth + 1);
+    return new Jarg([], [], self._depth + 1);
   };
 
   module.exports = Jarg;
