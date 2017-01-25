@@ -52,8 +52,18 @@
 
       expect(command).to.be.ok;
       expect(command instanceof Jarg).to.be.true;
-      expect(command.value()).to.be.true;
       expect(command.name()).to.equal('install');
+      expect(command.value()).to.be.true;
+    });
+
+    it('should return a new Jarg instance for matching command', function () {
+      var result = new Jarg(installJargsSave, npmTree);
+      var command = result.command('install');
+
+      expect(command).to.be.ok;
+      expect(command instanceof Jarg).to.be.true;
+      expect(command.name()).to.equal('install');
+      expect(command.value()).to.be.true;
     });
 
   });

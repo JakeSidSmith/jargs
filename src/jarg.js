@@ -53,24 +53,27 @@
 
   Jarg.prototype.command = function command (query) {
     var argv = [].concat(this._argv);
+    var commandName = argv.shift();
 
     if (!query) {
-      if (argv[0] in this._commands) {
-        var commandName = argv.shift();
-
+      if (commandName in this._commands) {
         return new Jarg(argv, this._commands[commandName].children, this._depth + 1, commandName, true);
       }
 
       return new Jarg([], [], this._depth + 1);
     }
 
+    if (!(query in this._commands)) {
+      throw new Error('Command \'' + '\' is not defined in tree at depth ' + this._depth);
+    }
+
     for (var key in this._commands) {
-      if (key === query) {
-        console.log('Found command \'' + key + '\'');
+      if (key === query && key === commandName) {
+        return new Jarg(argv, this._commands[commandName].children, this._depth + 1, commandName, true);
       }
     }
 
-    throw new Error('Command \'' + '\' is not defined in tree at depth ' + this._depth);
+    return new Jarg([], [], this._depth + 1);
   };
 
   module.exports = Jarg;
