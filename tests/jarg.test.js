@@ -8,6 +8,7 @@
 
   var Jarg = require('../src/jarg');
   var Command = require('../src/command');
+  var Flag = require('../src/flag');
   var Arg = require('../src/arg');
 
   describe('jarg.js', function () {
@@ -20,7 +21,7 @@
     it('should construct a Jarg instance', function () {
       var argv = ['install', 'jargs', '--save'];
 
-      var tree = [Command('install', null, Arg('lib'))];
+      var tree = [Command('install', null, Arg('lib'), Flag('save'))];
 
       var result = new Jarg(argv, tree);
 
