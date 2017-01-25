@@ -130,10 +130,8 @@
       });
 
       it('should return a falsey Jarg instance if no commands defined', function () {
-        var result, command;
-
-        result = new Jarg(argv.installJargsSave, tree.version);
-        command = result.command();
+        var result = new Jarg(argv.installJargsSave, tree.version);
+        var command = result.command();
 
         expect(command).to.be.ok;
         expect(command instanceof Jarg).to.be.true;
