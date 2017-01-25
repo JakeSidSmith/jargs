@@ -40,6 +40,9 @@
       expect(result._children).to.equal(npmTree);
       expect(result._depth).to.equal(0);
 
+      expect(result._name).to.be.null;
+      expect(result._value).to.be.null;
+
       expect(result._commands).to.eql({install: npmTree[0], init: npmTree[1], run: npmTree[2]});
       expect(result._kwargs).to.eql({});
       expect(result._flags).to.eql({});
