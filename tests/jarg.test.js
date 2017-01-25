@@ -13,26 +13,47 @@
 
   describe('jarg.js', function () {
 
+    var installJargsSave = ['install', 'jargs', '--save'];
+
+    var npmTree = [
+      Command('install', null,
+        Arg('lib'),
+        Flag('save'),
+        Flag('save-dev'),
+        Flag('save-exact')
+      ),
+      Command('init'),
+      Command('run', null,
+        Arg('command')
+      )
+    ];
+
     it('should exist', function () {
       expect(Jarg).to.be.ok;
       expect(typeof Jarg).to.equal('function');
     });
 
     it('should construct a Jarg instance', function () {
-      var argv = ['install', 'jargs', '--save'];
+      var result = new Jarg(installJargsSave, npmTree);
 
-      var tree = [Command('install', null, Arg('lib'), Flag('save'))];
-
-      var result = new Jarg(argv, tree);
-
-      expect(result._argv).to.equal(argv);
-      expect(result._tree).to.equal(tree);
+      expect(result._argv).to.equal(installJargsSave);
+      expect(result._tree).to.equal(npmTree);
       expect(result._depth).to.equal(0);
 
-      expect(result._commands).to.eql({install: tree[0]});
+      expect(result._commands).to.eql({install: npmTree[0], init: npmTree[1], run: npmTree[2]});
       expect(result._kwargs).to.eql({});
       expect(result._flags).to.eql({});
       expect(result._args).to.eql({});
+    });
+
+    it('should return a new Jarg instance for first command', function () {
+      var result = new Jarg(installJargsSave, npmTree);
+      var command = result.command();
+
+      expect(command).to.be.ok;
+      expect(command instanceof Jarg).to.be.true;
+      expect(command.value()).to.be.true;
+      expect(command.name()).to.equal('install');
     });
 
   });
