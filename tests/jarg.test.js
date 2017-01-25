@@ -84,62 +84,66 @@
       expect(wrapper2).to.throw(anError2);
     });
 
-    it('should return a new Jarg instance for first command', function () {
-      var result, command;
+    describe('command', function () {
 
-      result = new Jarg(argv.installJargsSave, tree.npm);
-      command = result.command();
+      it('should return a new Jarg instance for first command', function () {
+        var result, command;
 
-      expect(command).to.be.ok;
-      expect(command instanceof Jarg).to.be.true;
-      expect(command.name()).to.equal('install');
-      expect(command.value()).to.be.true;
+        result = new Jarg(argv.installJargsSave, tree.npm);
+        command = result.command();
 
-      result = new Jarg(argv.init, tree.npm);
-      command = result.command();
+        expect(command).to.be.ok;
+        expect(command instanceof Jarg).to.be.true;
+        expect(command.name()).to.equal('install');
+        expect(command.value()).to.be.true;
 
-      expect(command).to.be.ok;
-      expect(command instanceof Jarg).to.be.true;
-      expect(command.name()).to.equal('init');
-      expect(command.value()).to.be.true;
-    });
+        result = new Jarg(argv.init, tree.npm);
+        command = result.command();
 
-    it('should return a new Jarg instance for matching command', function () {
-      var result, command;
+        expect(command).to.be.ok;
+        expect(command instanceof Jarg).to.be.true;
+        expect(command.name()).to.equal('init');
+        expect(command.value()).to.be.true;
+      });
 
-      result = new Jarg(argv.installJargsSave, tree.npm);
-      command = result.command('install');
+      it('should return a new Jarg instance for matching command', function () {
+        var result, command;
 
-      expect(command).to.be.ok;
-      expect(command instanceof Jarg).to.be.true;
-      expect(command.name()).to.equal('install');
-      expect(command.value()).to.be.true;
+        result = new Jarg(argv.installJargsSave, tree.npm);
+        command = result.command('install');
 
-      result = new Jarg(argv.init, tree.npm);
-      command = result.command('init');
+        expect(command).to.be.ok;
+        expect(command instanceof Jarg).to.be.true;
+        expect(command.name()).to.equal('install');
+        expect(command.value()).to.be.true;
 
-      expect(command).to.be.ok;
-      expect(command instanceof Jarg).to.be.true;
-      expect(command.name()).to.equal('init');
-      expect(command.value()).to.be.true;
-    });
+        result = new Jarg(argv.init, tree.npm);
+        command = result.command('init');
 
-    it('should throw an error if querying for an unknown command', function () {
-      var anError1 = /command.*null.*depth\s0/i;
-      var anError2 = /command.*unknown.*depth\s0/i;
+        expect(command).to.be.ok;
+        expect(command instanceof Jarg).to.be.true;
+        expect(command.name()).to.equal('init');
+        expect(command.value()).to.be.true;
+      });
 
-      var result = new Jarg(argv.installJargsSave, tree.npm);
+      it('should throw an error if querying for an unknown command', function () {
+        var anError1 = /command.*null.*depth\s0/i;
+        var anError2 = /command.*unknown.*depth\s0/i;
 
-      function wrapper1 () {
-        result.command(null);
-      }
+        var result = new Jarg(argv.installJargsSave, tree.npm);
 
-      function wrapper2 () {
-        result.command('unknown');
-      }
+        function wrapper1 () {
+          result.command(null);
+        }
 
-      expect(wrapper1).not.to.throw(anError1);
-      expect(wrapper2).to.throw(anError2);
+        function wrapper2 () {
+          result.command('unknown');
+        }
+
+        expect(wrapper1).not.to.throw(anError1);
+        expect(wrapper2).to.throw(anError2);
+      });
+
     });
 
   });
