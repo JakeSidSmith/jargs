@@ -56,6 +56,24 @@ Return args descriptor with usefull functions like getIn
     )
   );
 
-  jarg.command('init');
+  /*
+
+  var initCommand = jarg.command('init');
+
+  // command.value is a boolean like a flag, if false it was not called
+  if (initCommand.value) {
+
+  }
+
+  var command = jarg.command();
+
+  switch (command.name) {
+    case 'init':
+      // Run init command
+    default:
+      // Throw error or display help & usage
+  }
+
+  */
 
 })();
