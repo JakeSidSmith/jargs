@@ -64,7 +64,7 @@
     }
 
     if (!(query in this._commands)) {
-      throw new Error('Command \'' + '\' is not defined in tree at depth ' + this._depth);
+      throw new Error('Command \'' + query + '\' is not defined in tree at depth ' + this._depth);
     }
 
     for (var key in this._commands) {

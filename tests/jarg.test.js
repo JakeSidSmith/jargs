@@ -124,6 +124,24 @@
       expect(command.value()).to.be.true;
     });
 
+    it('should throw an error if querying for an unknown command', function () {
+      var anError1 = /command.*null.*depth\s0/i;
+      var anError2 = /command.*unknown.*depth\s0/i;
+
+      var result = new Jarg(argv.installJargsSave, tree.npm);
+
+      function wrapper1 () {
+        result.command(null);
+      }
+
+      function wrapper2 () {
+        result.command('unknown');
+      }
+
+      expect(wrapper1).not.to.throw(anError1);
+      expect(wrapper2).to.throw(anError2);
+    });
+
   });
 
 })();
