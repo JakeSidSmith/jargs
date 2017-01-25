@@ -64,6 +64,22 @@
       expect(wrapper).to.throw(anError);
     });
 
+    it('should throw an error for unknown node types', function () {
+      var anError1 = /unknown.*undefined.*depth\s0/i;
+      var anError2 = /unknown.*unknown.*depth\s0/i;
+
+      function wrapper1 () {
+        new Jarg(installJargsSave, [{}]);
+      }
+
+      function wrapper2 () {
+        new Jarg(installJargsSave, [{_type: 'unknown'}]);
+      }
+
+      expect(wrapper1).to.throw(anError1);
+      expect(wrapper2).to.throw(anError2);
+    });
+
     it('should return a new Jarg instance for first command', function () {
       var result = new Jarg(installJargsSave, npmTree);
       var command = result.command();
