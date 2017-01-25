@@ -16,13 +16,18 @@
     });
 
     it('should return a Jarg instance', function () {
+      var result;
       var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
 
-      var result = boundCollect(
+      result = boundCollect(
         Command(
           'npm'
         )
       );
+
+      expect(result instanceof Jarg).to.be.true;
+
+      result = boundCollect();
 
       expect(result instanceof Jarg).to.be.true;
     });
