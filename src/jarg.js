@@ -7,7 +7,7 @@
 
     self._argv = argv;
     self._tree = tree;
-    self._depth = depth;
+    self._depth = depth || 0;
 
     self._commands = {};
     self._kwargs = {};
