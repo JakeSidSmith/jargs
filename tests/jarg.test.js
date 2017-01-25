@@ -13,25 +13,29 @@
 
   describe('jarg.js', function () {
 
-    var installJargsSave = ['install', 'jargs', '--save'];
+    var argv = {
+      installJargsSave: ['install', 'jargs', '--save'],
+      init: ['init']
+    };
 
-    var npmTree = [
-      Command('install', null,
-        Arg('lib'),
-        Flag('save'),
-        Flag('save-dev'),
-        Flag('save-exact')
-      ),
-      Command('init'),
-      Command('run', null,
-        Arg('command')
-      )
-    ];
-
-    var duplicateTree = [
-      Command('install'),
-      Command('install')
-    ];
+    var tree = {
+      npm: [
+        Command('install', null,
+          Arg('lib'),
+          Flag('save'),
+          Flag('save-dev'),
+          Flag('save-exact')
+        ),
+        Command('init'),
+        Command('run', null,
+          Arg('command')
+        )
+      ],
+      duplicate: [
+        Command('install'),
+        Command('install')
+      ]
+    };
 
     it('should exist', function () {
       expect(Jarg).to.be.ok;
@@ -39,16 +43,16 @@
     });
 
     it('should construct a Jarg instance', function () {
-      var result = new Jarg(installJargsSave, npmTree);
+      var result = new Jarg(argv.installJargsSave, tree.npm);
 
-      expect(result._argv).to.equal(installJargsSave);
-      expect(result._children).to.equal(npmTree);
+      expect(result._argv).to.equal(argv.installJargsSave);
+      expect(result._children).to.equal(tree.npm);
       expect(result._depth).to.equal(0);
 
       expect(result._name).to.be.null;
       expect(result._value).to.be.null;
 
-      expect(result._commands).to.eql({install: npmTree[0], init: npmTree[1], run: npmTree[2]});
+      expect(result._commands).to.eql({install: tree.npm[0], init: tree.npm[1], run: tree.npm[2]});
       expect(result._kwargs).to.eql({});
       expect(result._flags).to.eql({});
       expect(result._args).to.eql({});
@@ -58,7 +62,7 @@
       var anError = /duplicate.*install.*depth\s0/i;
 
       function wrapper () {
-        new Jarg(installJargsSave, duplicateTree);
+        new Jarg(argv.installJargsSave, tree.duplicate);
       }
 
       expect(wrapper).to.throw(anError);
@@ -69,11 +73,11 @@
       var anError2 = /unknown.*unknown.*depth\s0/i;
 
       function wrapper1 () {
-        new Jarg(installJargsSave, [{}]);
+        new Jarg(argv.installJargsSave, [{}]);
       }
 
       function wrapper2 () {
-        new Jarg(installJargsSave, [{_type: 'unknown'}]);
+        new Jarg(argv.installJargsSave, [{_type: 'unknown'}]);
       }
 
       expect(wrapper1).to.throw(anError1);
@@ -81,7 +85,7 @@
     });
 
     it('should return a new Jarg instance for first command', function () {
-      var result = new Jarg(installJargsSave, npmTree);
+      var result = new Jarg(argv.installJargsSave, tree.npm);
       var command = result.command();
 
       expect(command).to.be.ok;
@@ -91,7 +95,7 @@
     });
 
     it('should return a new Jarg instance for matching command', function () {
-      var result = new Jarg(installJargsSave, npmTree);
+      var result = new Jarg(argv.installJargsSave, tree.npm);
       var command = result.command('install');
 
       expect(command).to.be.ok;
