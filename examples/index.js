@@ -65,15 +65,17 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
 
   }
 
+  */
+
   var command = jarg.command();
 
   switch (command.name) {
     case 'init':
       // Run init command
+      console.log('init called');
+      break;
     default:
       // Throw error or display help & usage
+      console.log('unknown command');
   }
-
-  */
-
 })();
