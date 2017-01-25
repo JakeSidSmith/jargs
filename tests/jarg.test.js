@@ -34,6 +34,9 @@
       duplicate: [
         Command('install'),
         Command('install')
+      ],
+      version: [
+        Flag('--version')
       ]
     };
 
@@ -124,6 +127,18 @@
         expect(command instanceof Jarg).to.be.true;
         expect(command.name()).to.equal('init');
         expect(command.value()).to.be.true;
+      });
+
+      it('should return a falsey Jarg instance if no commands defined', function () {
+        var result, command;
+
+        result = new Jarg(argv.installJargsSave, tree.version);
+        command = result.command();
+
+        expect(command).to.be.ok;
+        expect(command instanceof Jarg).to.be.true;
+        expect(command.name()).to.be.null;
+        expect(command.value()).to.be.null;
       });
 
       it('should throw an error if querying for an unknown command', function () {
