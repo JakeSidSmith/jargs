@@ -4,7 +4,7 @@
   "description": "Simple node argv parser with explicit JSON config",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint -c .eslintrc src/ examples/",
+    "lint": "eslint -c .eslintrc src/ examples/ tests/",
     "mocha": "nyc mocha --bail --recursive 'tests/**/*.test.js'",
     "test": "npm run lint && npm run mocha"
   },
