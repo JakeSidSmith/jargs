@@ -139,6 +139,16 @@
         expect(command.value()).to.be.null;
       });
 
+      it('should return a falsey Jarg instance if command in argv is not in commands', function () {
+        var result = new Jarg(argv.init, tree.npm);
+        var command = result.command('install');
+
+        expect(command).to.be.ok;
+        expect(command instanceof Jarg).to.be.true;
+        expect(command.name()).to.be.null;
+        expect(command.value()).to.be.null;
+      });
+
       it('should throw an error if querying for an unknown command', function () {
         var anError1 = /command.*null.*depth\s0/i;
         var anError2 = /command.*unknown.*depth\s0/i;
