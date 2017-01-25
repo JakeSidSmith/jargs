@@ -2,11 +2,11 @@
 
 (function () {
 
-  function Jarg (argv, tree, depth, name, value) {
+  function Jarg (argv, children, depth, name, value) {
     var self = this;
 
     self._argv = argv;
-    self._tree = tree;
+    self._children = children;
     self._depth = depth || 0;
 
     self._name = name || null;
@@ -27,8 +27,8 @@
       self['_' + type + 's'][node.name] = node;
     }
 
-    for (var i = 0; i < self._tree.length; i += 1) {
-      var node = self._tree[i];
+    for (var i = 0; i < self._children.length; i += 1) {
+      var node = self._children[i];
 
       switch (node._type) {
         case 'command':

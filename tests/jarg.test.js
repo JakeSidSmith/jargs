@@ -37,7 +37,7 @@
       var result = new Jarg(installJargsSave, npmTree);
 
       expect(result._argv).to.equal(installJargsSave);
-      expect(result._tree).to.equal(npmTree);
+      expect(result._children).to.equal(npmTree);
       expect(result._depth).to.equal(0);
 
       expect(result._commands).to.eql({install: npmTree[0], init: npmTree[1], run: npmTree[2]});
