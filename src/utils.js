@@ -9,7 +9,7 @@
   function getNodeProperties (args) {
     var argsArray = argsToArray(args);
     var name = argsArray.shift();
-    var options = argsArray.shift();
+    var options = argsArray.shift() || {};
 
     return {
       name: name,
