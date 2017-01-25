@@ -12,10 +12,10 @@ Limit arguments options
 Set option type (e.g. string, number)
 Set number of options (exact, min, & max)
 Nest commands & arguments
-Adjust kwarg scope (global / children)
+Adjust kwarg scope (global / children) (Help and Version classes for globals?)
 Allow kwarg booleans without values to be true e.g. --thing false (false becomes the next arg)
 
-Return args descriptor with usefull functions like getIn
+Return args descriptor with usefull functions like getIn, command, arg, etc
 
 */
 
