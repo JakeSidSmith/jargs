@@ -85,22 +85,42 @@
     });
 
     it('should return a new Jarg instance for first command', function () {
-      var result = new Jarg(argv.installJargsSave, tree.npm);
-      var command = result.command();
+      var result, command;
+
+      result = new Jarg(argv.installJargsSave, tree.npm);
+      command = result.command();
 
       expect(command).to.be.ok;
       expect(command instanceof Jarg).to.be.true;
       expect(command.name()).to.equal('install');
       expect(command.value()).to.be.true;
+
+      result = new Jarg(argv.init, tree.npm);
+      command = result.command();
+
+      expect(command).to.be.ok;
+      expect(command instanceof Jarg).to.be.true;
+      expect(command.name()).to.equal('init');
+      expect(command.value()).to.be.true;
     });
 
     it('should return a new Jarg instance for matching command', function () {
-      var result = new Jarg(argv.installJargsSave, tree.npm);
-      var command = result.command('install');
+      var result, command;
+
+      result = new Jarg(argv.installJargsSave, tree.npm);
+      command = result.command('install');
 
       expect(command).to.be.ok;
       expect(command instanceof Jarg).to.be.true;
       expect(command.name()).to.equal('install');
+      expect(command.value()).to.be.true;
+
+      result = new Jarg(argv.init, tree.npm);
+      command = result.command('init');
+
+      expect(command).to.be.ok;
+      expect(command instanceof Jarg).to.be.true;
+      expect(command.name()).to.equal('init');
       expect(command.value()).to.be.true;
     });
 
