@@ -27,6 +27,10 @@
         throw new Error('Duplicate ' + type + ' \'' + node.name + '\' in tree at depth ' + self._depth);
       }
 
+      if (self._nodes.indexOf(node.name) >= 0) {
+        throw new Error('Duplicate node \'' + node.name + '\' in tree at depth ' + self._depth);
+      }
+
       self._nodes.push(node.name);
       self['_' + type + 's'].push(node.name);
     }

@@ -31,9 +31,13 @@
           Arg('command')
         )
       ],
-      duplicate: [
+      duplicateCommand: [
         Command('install'),
         Command('install')
+      ],
+      duplicateNode: [
+        Command('install'),
+        Arg('install')
       ],
       version: [
         Flag('--version')
@@ -61,11 +65,21 @@
       expect(result._args).to.eql([]);
     });
 
-    it('should throw an error for duplicate names', function () {
-      var anError = /duplicate.*install.*depth\s0/i;
+    it('should throw an error for duplicate command names', function () {
+      var anError = /duplicate.*command.*install.*depth\s0/i;
 
       function wrapper () {
-        new Jarg(argv.installJargsSave, tree.duplicate);
+        new Jarg(argv.installJargsSave, tree.duplicateCommand);
+      }
+
+      expect(wrapper).to.throw(anError);
+    });
+
+    it('should throw an error for duplicate node names', function () {
+      var anError = /duplicate.*node.*install.*depth\s0/i;
+
+      function wrapper () {
+        new Jarg(argv.installJargsSave, tree.duplicateNode);
       }
 
       expect(wrapper).to.throw(anError);
