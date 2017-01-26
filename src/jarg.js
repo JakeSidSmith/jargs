@@ -56,30 +56,17 @@
   };
 
   Jarg.prototype.command = function command (query) {
-    var matchingNode;
     var self = this;
 
     var argv = [].concat(self._argv);
     var commandName = argv.shift();
 
-    if (!query) {
-      if (self._commands.indexOf(commandName) >= 0) {
-        matchingNode = find(self._children, function (node) {
-          return node._type === 'command' && node.name === commandName;
-        });
-
-        return new Jarg(argv, matchingNode.children, self._depth + 1, commandName, true);
-      }
-
-      return new Jarg([], [], self._depth + 1);
-    }
-
-    if (self._commands.indexOf(query) < 0) {
+    if (query && self._commands.indexOf(query) < 0) {
       throw new Error('Command \'' + query + '\' is not defined in tree at depth ' + self._depth);
     }
 
-    if (self._commands.indexOf(commandName) >= 0 && query === commandName) {
-      matchingNode = find(self._children, function (node) {
+    if ((!query || query === commandName) && self._commands.indexOf(commandName) >= 0) {
+      var matchingNode = find(self._children, function (node) {
         return node._type === 'command' && node.name === commandName;
       });
 
