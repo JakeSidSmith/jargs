@@ -55,10 +55,10 @@
       expect(result._name).to.be.null;
       expect(result._value).to.be.null;
 
-      expect(result._commands).to.eql({install: tree.npm[0], init: tree.npm[1], run: tree.npm[2]});
-      expect(result._kwargs).to.eql({});
-      expect(result._flags).to.eql({});
-      expect(result._args).to.eql({});
+      expect(result._commands).to.eql(['install', 'init', 'run']);
+      expect(result._kwargs).to.eql([]);
+      expect(result._flags).to.eql([]);
+      expect(result._args).to.eql([]);
     });
 
     it('should throw an error for duplicate names', function () {
