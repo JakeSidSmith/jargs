@@ -76,6 +76,37 @@
     return new Jarg([], [], self._depth + 1);
   };
 
+  /*
+  Jarg.prototype.flag = function flag (query) {
+    var self = this;
+
+    var argv = [].concat(self._argv);
+    var flagName = argv.shift();
+
+    if (argv.indexOf('--' + query) < 0) {
+      return new Jarg([], [], self._depth + 1, false);
+    }
+
+    if (flagName.indexOf('-') !== 0) {
+      return new Jarg([], [], self._depth + 1, false);
+    }
+
+    if (query && self._commands.indexOf(query) < 0) {
+      throw new Error('Command \'' + query + '\' is not defined in tree at depth ' + self._depth);
+    }
+
+    if ((!query || query === commandName) && self._commands.indexOf(commandName) >= 0) {
+      var matchingNode = find(self._children, function (node) {
+        return node._type === 'command' && node.name === commandName;
+      });
+
+      return new Jarg(argv, matchingNode.children, self._depth + 1, commandName, true);
+    }
+
+    return new Jarg([], [], self._depth + 1, false);
+  };
+  */
+
   module.exports = Jarg;
 
 })();
