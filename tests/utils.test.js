@@ -46,6 +46,28 @@
 
     });
 
+    describe('find', function () {
+
+      var arr = [1, 2, 3, 4, 5];
+
+      it('should return null if no items match the predicate', function () {
+        var result = utils.find(arr, function (value) {
+          return value > 5;
+        });
+
+        expect(result).to.be.null;
+      });
+
+      it('should return the value if an item matches the predicate', function () {
+        var result = utils.find(arr, function (value) {
+          return value < 4 && value > 2;
+        });
+
+        expect(result).to.equal(3);
+      });
+
+    });
+
   });
 
 })();
