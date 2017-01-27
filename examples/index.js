@@ -72,25 +72,21 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
   if (command.exists()) {
     switch (command.name()) {
       case 'init':
-        // Run init command
         console.log('init called');
         break;
       default:
-        throw new Error('Unknown command \'' + command.name() + '\'');
+        console.log('Unknown command \'' + command.name() + '\'');
     }
   } else {
     if (root.kwarg('output').exists()) {
-      // Do somethign flag related
       console.log(root.kwarg('output').value());
     }
 
     if (root.flag('verbose').exists()) {
-      // Do something kwarg related
       console.log(root.flag('verbose').value());
     }
 
     if (root.arg('input').exists()) {
-      // Do something with input
       console.log(root.arg('input').value());
     }
   }
