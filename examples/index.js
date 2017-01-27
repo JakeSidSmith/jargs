@@ -69,31 +69,29 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
 
   var command = root.command();
 
-  switch (command.name) {
-    case 'init':
-      // Run init command
-      console.log('init called');
-      break;
-    default:
-      var kwargs = root.kwargs(); // plain object
-      var flags = root.flags(); // plain object
-      var args = root.args(); // plain object
+  if (command.exists()) {
+    switch (command.name()) {
+      case 'init':
+        // Run init command
+        console.log('init called');
+        break;
+      default:
+        throw new Error('Unknown command \'' + command.name() + '\'');
+    }
+  } else {
+    if (root.kwarg('output').exists()) {
+      // Do somethign flag related
+      console.log(root.kwarg('output').value());
+    }
 
-      if (flags.something) {
-        // Do somethign flag related
-      }
+    if (root.flag('verbose').exists()) {
+      // Do something kwarg related
+      console.log(root.flag('verbose').value());
+    }
 
-      // Need a way to handle kwargs / args being empty string
-
-      if (kwargs.dir) {
-        // Do something kwarg related
-      }
-
-      if (args.input) {
-        // Do something with input
-      }
-
-      // Throw error or display help & usage
-      console.log('unknown command');
+    if (root.arg('input').exists()) {
+      // Do something with input
+      console.log(root.arg('input').value());
+    }
   }
 })();
