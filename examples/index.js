@@ -29,7 +29,7 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
   var Flag = jargs.Flag;
   var Arg = jargs.Arg;
 
-  var jarg = jargs.collect(
+  var root = jargs.collect(
     Command(
       'init',
       null,
@@ -67,7 +67,7 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
 
   */
 
-  var command = jarg.command();
+  var command = root.command();
 
   switch (command.name) {
     case 'init':
@@ -75,6 +75,24 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
       console.log('init called');
       break;
     default:
+      var kwargs = root.kwargs(); // plain object
+      var flags = root.flags(); // plain object
+      var args = root.args(); // plain object
+
+      if (flags.something) {
+        // Do somethign flag related
+      }
+
+      // Need a way to handle kwargs / args being empty string
+
+      if (kwargs.dir) {
+        // Do something kwarg related
+      }
+
+      if (args.input) {
+        // Do something with input
+      }
+
       // Throw error or display help & usage
       console.log('unknown command');
   }
