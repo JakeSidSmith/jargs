@@ -17,7 +17,13 @@
   var find = utils.find;
   var each = utils.each;
 
+  var MATCHES_LEADING_HYPHENS = /^-+/;
+  var MATCHES_EQUALS_VALUE = /=.*/;
+  var MATCHES_NAME_EQUALS = /.*=/;
+
   function createTree (argv, schema, name, value) {
+    argv = [].concat(argv);
+
     var tree = {
       command: null,
       kwargs: {},
@@ -55,6 +61,25 @@
             }
           });
         }
+      } else {
+        var containsEquals = arg.indexOf('=') >= 0;
+        var kwargName = arg.replace(MATCHES_LEADING_HYPHENS, '').replace(MATCHES_EQUALS_VALUE, '');
+        var kwargValue = arg.replace(MATCHES_NAME_EQUALS, '');
+
+        var matchingFlagOrKWArg = find(schema, function (node) {
+          return (node._type === 'flag' || node._type === 'kwarg') && node.name === kwargName;
+        });
+
+        if (matchingFlagOrKWArg) {
+          if (matchingFlagOrKWArg._type === 'flag') {
+            kwargValue = true;
+          } else if (!containsEquals) {
+            kwargValue = argv.shift();
+          }
+
+          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
+            createTree(argv, matchingFlagOrKWArg.chilren, undefined, kwargValue);
+        }
       }
     }
 
@@ -65,7 +90,7 @@
     var args = argsToArray(arguments);
     /* var program = */ args.shift();
     /* var command = */ args.shift();
-    var argv = [].concat(args.shift());
+    var argv = args.shift();
     var schema = args;
 
     return createTree(argv, schema);

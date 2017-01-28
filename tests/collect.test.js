@@ -8,8 +8,8 @@
 
   var collect = require('../src/collect');
   var Command = require('../src/command');
-  // var KWArg = require('../src/arg');
-  // var Flag = require('../src/arg');
+  // var KWArg = require('../src/kwarg');
+  var Flag = require('../src/flag');
   var Arg = require('../src/arg');
 
   describe('collect.js', function () {
@@ -98,6 +98,53 @@
           command: null,
           kwargs: {},
           flags: {},
+          args: {
+            lib: {
+              value: 'jargs',
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            }
+          }
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+    });
+
+    it('should return an arg tree with nested schema and flags', function () {
+      var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
+
+      // With nested nodes
+      var result = boundCollect(
+        Command(
+          'install',
+          null,
+          Arg(
+            'lib'
+          ),
+          Flag(
+            'save'
+          )
+        )
+      );
+
+      expect(result).to.eql({
+        command: {
+          name: 'install',
+          command: null,
+          kwargs: {},
+          flags: {
+            save: {
+              value: true,
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            }
+          },
           args: {
             lib: {
               value: 'jargs',
