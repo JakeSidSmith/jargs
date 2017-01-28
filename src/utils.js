@@ -28,10 +28,17 @@
     return null;
   }
 
+  function each (arr, fn) {
+    for (var i = 0; i < arr.length; i += 1) {
+      fn(arr[i], i);
+    }
+  }
+
   module.exports = {
     argsToArray: argsToArray,
     getNodeProperties: getNodeProperties,
-    find: find
+    find: find,
+    each: each
   };
 
 })();

@@ -7,7 +7,6 @@
   var expect = require('chai').expect;
 
   var collect = require('../src/collect');
-  var Jarg = require('../src/jarg');
   var Command = require('../src/command');
   var Arg = require('../src/arg');
 
@@ -18,28 +17,53 @@
       expect(typeof collect).to.equal('function');
     });
 
-    it('should return a Jarg instance', function () {
-      var result;
+    it('should return an arg tree when no schema provided', function () {
       var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
 
       // Without tree
-      result = boundCollect();
+      var result = boundCollect();
 
-      expect(result instanceof Jarg).to.be.true;
+      expect(result).to.eql({
+        command: null,
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+
+    });
+
+    it('should return an arg tree for single command schema', function () {
+      var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
 
       // With single node
-      result = boundCollect(
+      var result = boundCollect(
         Command(
-          'npm'
+          'install'
         )
       );
 
-      expect(result instanceof Jarg).to.be.true;
+      expect(result).to.eql({
+        command: {
+          name: 'install',
+          command: null,
+          kwargs: {},
+          flags: {},
+          args: {}
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+
+    });
+
+    it('should return an arg tree with nested schema', function () {
+      var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
 
       // With nested nodes
-      result = boundCollect(
+      var result = boundCollect(
         Command(
-          'npm',
+          'install',
           null,
           Arg(
             'lib'
@@ -47,7 +71,26 @@
         )
       );
 
-      expect(result instanceof Jarg).to.be.true;
+      expect(result).to.eql({
+        command: {
+          name: 'install',
+          command: null,
+          kwargs: {},
+          flags: {},
+          args: {
+            lib: {
+              value: 'jargs',
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            }
+          }
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
     });
 
   });
