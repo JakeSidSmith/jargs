@@ -8,6 +8,8 @@
 
   var collect = require('../src/collect');
   var Command = require('../src/command');
+  // var KWArg = require('../src/arg');
+  // var Flag = require('../src/arg');
   var Arg = require('../src/arg');
 
   describe('collect.js', function () {
