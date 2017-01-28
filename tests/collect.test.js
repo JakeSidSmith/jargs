@@ -161,7 +161,7 @@
       });
     });
 
-    it('should return an arg tree with nested schema and kwargs', function () {
+    it('should return an arg tree with kwargs, flags, and args', function () {
       var boundCollect = collect.bind(null, 'node', 'browserify',
         ['--transform', 'babelify', '--verbose', '--outfile=build/index.js', 'src/index.js']);
 
