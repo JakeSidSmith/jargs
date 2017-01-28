@@ -163,12 +163,15 @@
 
     it('should return an arg tree with nested schema and kwargs', function () {
       var boundCollect = collect.bind(null, 'node', 'browserify',
-        ['--transform', 'babelify', '--outfile=build/index.js', 'src/index.js']);
+        ['--transform', 'babelify', '--verbose', '--outfile=build/index.js', 'src/index.js']);
 
       // With nested nodes
       var result = boundCollect(
         Arg(
           'input'
+        ),
+        Flag(
+          'verbose'
         ),
         KWArg(
           'outfile'
@@ -196,7 +199,15 @@
             args: {}
           }
         },
-        flags: {},
+        flags: {
+          verbose: {
+            value: true,
+            command: null,
+            kwargs: {},
+            flags: {},
+            args: {}
+          }
+        },
         args: {
           input: {
             value: 'src/index.js',
