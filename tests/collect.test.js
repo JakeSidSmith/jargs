@@ -17,6 +17,25 @@
       expect(typeof collect).to.equal('function');
     });
 
+    it('should return an arg tree when no args provided', function () {
+      var boundCollect = collect.bind(null, 'node', 'npm', []);
+
+      // Without tree
+      var result = boundCollect(
+        Command(
+          'install'
+        )
+      );
+
+      expect(result).to.eql({
+        command: null,
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+
+    });
+
     it('should return an arg tree when no schema provided', function () {
       var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
 
