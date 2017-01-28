@@ -78,7 +78,7 @@
           }
 
           tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
-            createTree(argv, matchingFlagOrKWArg.chilren, undefined, kwargValue);
+            createTree(argv, matchingFlagOrKWArg.children, undefined, kwargValue);
         }
       }
     }
