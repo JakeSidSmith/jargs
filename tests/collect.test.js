@@ -8,7 +8,7 @@
 
   var collect = require('../src/collect');
   var Command = require('../src/command');
-  // var KWArg = require('../src/kwarg');
+  var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
 
@@ -158,6 +158,43 @@
         kwargs: {},
         flags: {},
         args: {}
+      });
+    });
+
+    it('should return an arg tree with nested schema and kwargs', function () {
+      var boundCollect = collect.bind(null, 'node', 'browserify', ['--transform', 'babelify', 'index.js']);
+
+      // With nested nodes
+      var result = boundCollect(
+        Arg(
+          'input'
+        ),
+        KWArg(
+          'transform'
+        )
+      );
+
+      expect(result).to.eql({
+        command: null,
+        kwargs: {
+          transform: {
+            value: 'babelify',
+            command: null,
+            kwargs: {},
+            flags: {},
+            args: {}
+          }
+        },
+        flags: {},
+        args: {
+          input: {
+            value: 'index.js',
+            command: null,
+            kwargs: {},
+            flags: {},
+            args: {}
+          }
+        }
       });
     });
 
