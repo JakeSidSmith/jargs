@@ -11,6 +11,9 @@
     description: {
       type: 'string'
     },
+    usage: {
+      type: 'string'
+    },
     options: {
       type: 'array'
     },

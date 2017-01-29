@@ -14,6 +14,9 @@
     description: {
       type: 'string'
     },
+    usage: {
+      type: 'string'
+    },
     required: {
       type: 'boolean'
     }
