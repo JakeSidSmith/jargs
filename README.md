@@ -42,6 +42,15 @@ const root = collect(
     ),
     Flag(
       'save', {alias: 'S'}
+    ),
+    Flag(
+      'save-dev', {alias: 'D'}
+    ),
+    Flag(
+      'save-exact', {alias: 'E'}
+    ),
+    Flag(
+      'save-optional', {alias: 'O'}
     )
   ),
   Command(
