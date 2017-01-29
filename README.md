@@ -24,6 +24,8 @@ import { collect, Command, KWArg, Flag, Arg } from 'jargs';
 
 Here's a cutdown example of how to create a schema for NPM.
 
+Note: you can nest nodes as many times as necessary.
+
 ```javascript
 const root = collect(
   Command(
@@ -112,6 +114,8 @@ Node(name, options, ...childNodes);
 Both `options` and `childNodes` are optional.
 All keys in `options` are optional.
 `childNodes` are any arguments following the name & options.
+
+You can nest nodes as many times as necessary.
 
 #### Command
 
