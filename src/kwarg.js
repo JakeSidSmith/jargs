@@ -2,10 +2,13 @@
 
 (function () {
 
-  var getNodeProperties = require('./utils').getNodeProperties;
+  var utils = require('./utils');
+  var getNodeProperties = utils.getNodeProperties;
+  var validateName = utils.validateName;
 
   function KWArg () {
     var properties = getNodeProperties(arguments);
+    validateName(properties.name);
 
     properties._type = 'kwarg';
 
