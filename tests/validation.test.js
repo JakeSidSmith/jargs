@@ -59,6 +59,52 @@
 
     });
 
+    describe('serializeOptions', function () {
+
+      var nodesWithAliases = [Command, KWArg, Flag];
+      // var nodes = [Command, KWArg, Flag, Arg];
+
+      it('should error if node aliases are not strings', function () {
+        var anError = /string/i;
+
+        utils.each(nodesWithAliases, function (node) {
+          expect(node.bind(null, 'name', {alias: undefined})).to.throw(anError);
+          expect(node.bind(null, 'name', {alias: null})).to.throw(anError);
+          expect(node.bind(null, 'name', {alias: {}})).to.throw(anError);
+          expect(node.bind(null, 'name', {alias: []})).to.throw(anError);
+          expect(node.bind(null, 'name', {alias: 1})).to.throw(anError);
+        });
+      });
+
+      it('should error if node aliases are empty', function () {
+        var anError = /empty/i;
+
+        utils.each(nodesWithAliases, function (node) {
+          expect(node.bind(null, 'name', {alias: ''})).to.throw(anError);
+        });
+      });
+
+      it('should error if node names contain spaces', function () {
+        var anError = /spaces/i;
+
+        utils.each(nodesWithAliases, function (node) {
+          expect(node.bind(null, 'name', {alias: ' test'})).to.throw(anError);
+          expect(node.bind(null, 'name', {alias: 'test '})).to.throw(anError);
+          expect(node.bind(null, 'name', {alias: ' te st '})).to.throw(anError);
+        });
+      });
+
+      it('should error if node aliases begin with -', function () {
+        var anError = /begin\swith/i;
+
+        utils.each(nodesWithAliases, function (node) {
+          expect(node.bind(null, 'name', {alias: '-test'})).to.throw(anError);
+          expect(node.bind(null, 'name', {alias: 'word-word'})).not.to.throw(anError);
+        });
+      });
+
+    });
+
   });
 
 })();
