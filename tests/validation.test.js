@@ -62,7 +62,6 @@
     describe('serializeOptions', function () {
 
       var nodesWithAliases = [Command, KWArg, Flag];
-      // var nodes = [Command, KWArg, Flag, Arg];
 
       it('should error if node aliases are not strings', function () {
         var anError = /string/i;
@@ -101,6 +100,28 @@
           expect(node.bind(null, 'name', {alias: '-test'})).to.throw(anError);
           expect(node.bind(null, 'name', {alias: 'word-word'})).not.to.throw(anError);
         });
+      });
+
+      it('should validate options', function () {
+        var anError = /invalid/i;
+
+        expect(Command.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
+        expect(KWArg.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
+        expect(Flag.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
+        expect(Arg.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
+      });
+
+      it('should validate option types', function () {
+        var aStringError = /type\sstring/i;
+        var anArrayError = /type\sarray/i;
+
+        expect(Command.bind(null, 'name', {description: null})).to.throw(aStringError);
+        expect(KWArg.bind(null, 'name', {description: null})).to.throw(aStringError);
+        expect(Flag.bind(null, 'name', {description: null})).to.throw(aStringError);
+        expect(Arg.bind(null, 'name', {description: null})).to.throw(aStringError);
+
+        expect(KWArg.bind(null, 'name', {options: null})).to.throw(anArrayError);
+        expect(Arg.bind(null, 'name', {options: null})).to.throw(anArrayError);
       });
 
     });
