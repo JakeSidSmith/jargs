@@ -121,6 +121,9 @@
           },
           array: {
             type: 'array'
+          },
+          boolean: {
+            type: 'boolean'
           }
         };
 
@@ -128,11 +131,13 @@
         var aNumberError = /type\snumber/i;
         var anObjectError = /type\sobject/i;
         var anArrayError = /type\sarray/i;
+        var aBooleanError = /type\sboolean/i;
 
         expect(utils.serializeOptions.bind(null, {string: null}, validOptions)).to.throw(aStringError);
         expect(utils.serializeOptions.bind(null, {number: null}, validOptions)).to.throw(aNumberError);
         expect(utils.serializeOptions.bind(null, {object: null}, validOptions)).to.throw(anObjectError);
         expect(utils.serializeOptions.bind(null, {array: null}, validOptions)).to.throw(anArrayError);
+        expect(utils.serializeOptions.bind(null, {boolean: null}, validOptions)).to.throw(aBooleanError);
       });
 
     });

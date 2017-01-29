@@ -13,6 +13,9 @@
     },
     description: {
       type: 'string'
+    },
+    required: {
+      type: 'boolean'
     }
   };
 

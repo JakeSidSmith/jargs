@@ -54,7 +54,8 @@
         (valid.type === 'string' && typeof option !== 'string') ||
         (valid.type === 'number' && typeof option !== 'number') ||
         (valid.type === 'object' && (typeof option !== 'object' || option === null)) ||
-        (valid.type === 'array' && !Array.isArray(option))
+        (valid.type === 'array' && !Array.isArray(option)) ||
+        (valid.type === 'boolean' && typeof option !== 'boolean')
       ) {
         throw new Error('Option ' + key + ' must be of type ' + valid.type);
       }

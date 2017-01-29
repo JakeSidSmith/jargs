@@ -13,6 +13,9 @@
     },
     options: {
       type: 'array'
+    },
+    required: {
+      type: 'boolean'
     }
   };
 
