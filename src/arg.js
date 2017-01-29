@@ -8,9 +8,6 @@
   var serializeOptions = utils.serializeOptions;
 
   var validOptions = {
-    alias: {
-      type: 'string'
-    },
     description: {
       type: 'string'
     },
