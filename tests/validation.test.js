@@ -26,6 +26,7 @@
           expect(node.bind(null, null)).to.throw(anError);
           expect(node.bind(null, {})).to.throw(anError);
           expect(node.bind(null, [])).to.throw(anError);
+          expect(node.bind(null, 1)).to.throw(anError);
         });
       });
 
