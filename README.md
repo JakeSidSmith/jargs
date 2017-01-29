@@ -195,7 +195,7 @@ Arg(
 )
 ```
 
-### Command examples
+## Command examples
 
 ```shell
 npm install jargs --save
