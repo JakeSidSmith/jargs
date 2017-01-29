@@ -220,6 +220,78 @@
       });
     });
 
+    it('should return an arg tree from aliases', function () {
+      var boundCollect = collect.bind(null, 'node', 'browserify',
+        ['b', '-t', 'babelify', '-v', '-o=build/index.js', 'src/index.js']);
+
+      // With nested nodes
+      var result = boundCollect(
+        Command(
+          'build',
+          {alias: 'b'},
+          Arg(
+            'input'
+          ),
+          Flag(
+            'verbose',
+            {alias: 'v'}
+          ),
+          KWArg(
+            'outfile',
+            {alias: 'o'}
+          ),
+          KWArg(
+            'transform',
+            {alias: 't'}
+          )
+        )
+      );
+
+      expect(result).to.eql({
+        command: {
+          name: 'build',
+          command: null,
+          kwargs: {
+            transform: {
+              value: 'babelify',
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            },
+            outfile: {
+              value: 'build/index.js',
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            }
+          },
+          flags: {
+            verbose: {
+              value: true,
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            }
+          },
+          args: {
+            input: {
+              value: 'src/index.js',
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            }
+          }
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+    });
+
   });
 
 })();

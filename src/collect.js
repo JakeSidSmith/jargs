@@ -20,6 +20,7 @@
   var MATCHES_LEADING_HYPHENS = /^-+/;
   var MATCHES_EQUALS_VALUE = /=.*/;
   var MATCHES_NAME_EQUALS = /.*=/;
+  var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
   function createTree (argv, schema, name, value) {
     argv = [].concat(argv);
@@ -49,7 +50,7 @@
 
       if (isPositional) {
         var matchingCommand = find(schema, function (node) {
-          return node._type === 'command' && node.name === arg;
+          return node._type === 'command' && (node.name === arg || node.options.alias === arg);
         });
 
         if (matchingCommand) {
@@ -63,11 +64,13 @@
         }
       } else {
         var containsEquals = arg.indexOf('=') >= 0;
+        var isAlias = MATCHES_SINGLE_HYPHEN.test(arg);
         var kwargName = arg.replace(MATCHES_LEADING_HYPHENS, '').replace(MATCHES_EQUALS_VALUE, '');
         var kwargValue = arg.replace(MATCHES_NAME_EQUALS, '');
 
         var matchingFlagOrKWArg = find(schema, function (node) {
-          return (node._type === 'flag' || node._type === 'kwarg') && node.name === kwargName;
+          return (node._type === 'flag' || node._type === 'kwarg') &&
+            (isAlias ? node.options.alias === kwargName : node.name === kwargName);
         });
 
         if (matchingFlagOrKWArg) {
