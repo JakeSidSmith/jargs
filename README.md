@@ -3,6 +3,7 @@
 
 ## About
 
+Jargs is a node argv parser that takes inspiration from [docopt](http://docopt.org/).
 Unlike other arg parsers, jargs allows you to define your commands, arguments, etc in a tree structure.
 This way you can have, for example, nested sub-commands, or arguments that are attached to a specific command.
 
