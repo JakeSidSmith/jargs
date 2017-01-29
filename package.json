@@ -1,7 +1,7 @@
 {
   "name": "jargs",
   "version": "0.0.0",
-  "description": "Simple node arg parser with explicit JSON config",
+  "description": "Simple node arg parser with explicit tree structure schema",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint -c .eslintrc src/ examples/ tests/",
