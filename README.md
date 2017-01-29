@@ -103,6 +103,38 @@ Calling the command `npm install jargs --save` returns the following.
 }
 ```
 
+### Querying the tree
+
+Each node always contains the keys `command`, `kwargs`, `flags`, and `args` so that you can easily query them.
+
+#### Querying Commands
+
+```javascript
+if (root.command) {
+  switch (root.command.name) {
+    case 'install':
+      // Install stuff
+      break;
+    default:
+      // This will never be hit since we check for the command existence first
+  }
+}
+```
+
+#### Querying Flags, KWArgs, and Args
+
+```javascript
+if ('verbose' in root.flags) {
+  // Do something flag related
+}
+```
+
+```javascript
+if ('lib' in root.args) {
+  install(root.args.lib.value);
+}
+```
+
 ### Nodes
 
 All nodes take the following arguments. More info about individual nodes below.
