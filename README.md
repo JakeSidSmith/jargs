@@ -170,3 +170,19 @@ Arg(
   ...childNodes
 )
 ```
+
+### Command examples
+
+```shell
+npm install jargs --save
+```
+
+In the above command `install` is a `Command`, `jargs` is an `Arg`, and `--save` is a `Flag`.
+
+```shell
+browserify --transform babelify --outfile=build/indexjs src/index.js
+```
+
+In the above command `--transform` is a `KWArg` and its value is `babelify`,
+`--outfile` is also a `KWArg` (note the alternative kwarg syntax) with the value `build/index.js`,
+and `src/index.js` is an `Arg`
