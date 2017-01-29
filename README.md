@@ -243,3 +243,55 @@ browserify --transform babelify --outfile=build/indexjs src/index.js
 In the above command `--transform` is a `KWArg` and its value is `babelify`,
 `--outfile` is also a `KWArg` (note the alternative kwarg syntax) with the value `build/index.js`,
 and `src/index.js` is an `Arg`
+
+## Complex schema examples
+
+This example shows how to create the following commands (taken from [docopt](http://docopt.org/)).
+
+### Commands
+
+```shell
+naval_fate ship new <name>...
+naval_fate ship <name> move <x> <y> [--speed=<kn>]
+naval_fate ship shoot <x> <y>
+```
+
+### Schema
+
+```javascript
+const root = collect(
+  Command(
+    'ship', null,
+    Command(
+      'new', null,
+      Arg(
+        'newShipName', {required: true}
+      )
+    ),
+    Command(
+      'shoot', null,
+      Arg(
+        'shootX', {required: true}
+      ),
+      Arg(
+        'shootY', {required: true}
+      )
+    ),
+    Arg(
+      'shipName', null,
+      Command(
+        'move', null,
+        Arg(
+          'moveX', {required: true}
+        ),
+        Arg(
+          'moveY', {required: true}
+        ),
+        KWArg(
+          'speed'
+        )
+      )
+    )
+  )
+);
+```
