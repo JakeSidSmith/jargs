@@ -22,12 +22,6 @@ import { collect, Command, KWArg, Flag, Arg } from 'jargs';
 
 ### Create a schema
 
-All nodes, such as those imported above take the following arguments (more about nodes below).
-
-```javascript
-Node(name, options, ...children);
-```
-
 Here's a cutdown example of how to create a schema for NPM.
 
 ```javascript
@@ -108,6 +102,16 @@ Calling the command `npm install jargs --save` returns the following.
 ```
 
 ### Nodes
+
+All nodes take the following arguments. More info about individual nodes below.
+
+```javascript
+Node(name, options, ...childNodes);
+```
+
+Both `options` and `childNodes` are optional.
+All keys in `options` are optional.
+`childNodes` are any arguments following the name & options.
 
 #### Command
 
