@@ -111,6 +111,9 @@ Calling the command `npm install jargs --save` returns the following.
 
 #### Command
 
+A sub-command of your command line interface.
+You do not need to define a Command for your command line interface itself.
+
 Takes the following options.
 
 ```javascript
@@ -125,6 +128,11 @@ Command(
 ```
 
 #### KWArg
+
+A key word argument such as `--outfile` that takes a custom value.
+These can be defined in 2 different ways: `--outfile filename.js` and `--outfile=filename.js`.
+You don't need to add the `--` to the name, these are dealt with internally.
+If an alias is defined e.g. `{alias: 'o'}` this KWArg will also get the value of `-o=filename.js` (note the single `-`).
 
 Takes the following options.
 
@@ -142,6 +150,11 @@ KWArg(
 
 #### Flag
 
+Like a KWArg, but do not take a custom value. These are used like booleans.
+`--verbose` is an example of a flag.
+You don't need to add the `--` to the name, these are dealt with internally.
+If an alias is defined e.g. `{alias: 'v'}` this Flag will also be true if `-v` is present (note the single `-`).
+
 Takes the following options.
 
 ```javascript
@@ -157,6 +170,9 @@ Flag(
 ```
 
 #### Arg
+
+Positional argument that takes a custom value.
+In the command `npm install jargs`, `jargs` is an Arg.
 
 Takes the following options.
 
