@@ -6,7 +6,7 @@
 
   --flag --kwarg='foo' --kwarg2 "bar" 'baz'
 
-  Automatically removes quotes & splits by spaces
+  Automatically removes quotes & splits by spaces (exclusive) and commas (inclusive)
 
            flag      kwarg \w value kwarg       value  arg
   args: [ '--flag', '--kwarg=foo', '--kwarg2', 'bar', 'baz' ]
