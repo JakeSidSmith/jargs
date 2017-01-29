@@ -25,69 +25,73 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
 
   var jargs = require('../src/index');
   var Command = jargs.Command;
-  var KWArg = jargs.KWArg;
+  // var KWArg = jargs.KWArg;
   var Flag = jargs.Flag;
   var Arg = jargs.Arg;
 
   var root = jargs.collect(
     Command(
       'init',
-      null,
+      {description: 'Create npm package'}
+    ),
+    Command(
+      'install',
+      {alias: 'i', description: 'Install dependencies'},
       Arg(
-        'path',
-        {required: true, type: 'string'}
+        'lib'
+      ),
+      Flag(
+        'save',
+        {alias: 'S'}
+      ),
+      Flag(
+        'save-dev',
+        {alias: 'D'}
+      ),
+      Flag(
+        'save-exact',
+        {alias: 'E'}
+      ),
+      Flag(
+        'save-optional',
+        {alias: 'O'}
       )
     ),
     Command(
-      'build',
-      null,
-      KWArg(
-        'config',
-        {alias: 'c', type: 'string', default: 'config.json'}
+      'run',
+      {alias: 'run-scripts', description: 'Run a script in the package'},
+      Arg(
+        'command'
       )
     ),
     Flag(
       'help',
-      {alias: 'h', type: 'boolean', description: 'Displays help & usage info'}
+      {alias: 'h', description: 'Displays help & usage info'}
     ),
     Flag(
       'version',
-      {alias: 'v', type: 'boolean', description: 'Displays version number'}
+      {alias: 'v', description: 'Displays version number'}
     )
   );
 
-  /*
-
-  var initCommand = jarg.command('init');
-
-  // command.value is a boolean like a flag, if false it was not called
-  if (initCommand.value) {
-
-  }
-
-  */
-
-  var command = root.command();
-
-  if (command.exists()) {
-    switch (command.name()) {
+  if (root.command) {
+    switch (root.command.name) {
       case 'init':
-        console.log('init called');
+        // Do init stuff
+        break;
+      case 'install':
+        // Do install stuff
+        break;
+      case 'run':
+        // Do run stuff
         break;
       default:
-        console.log('Unknown command \'' + command.name() + '\'');
+        // Should never get here
     }
-  } else {
-    if (root.kwarg('output').exists()) {
-      console.log(root.kwarg('output').value());
-    }
-
-    if (root.flag('verbose').exists()) {
-      console.log(root.flag('verbose').value());
-    }
-
-    if (root.arg('input').exists()) {
-      console.log(root.arg('input').value());
-    }
+  } else if (root.flags.help) {
+    // Display help
+  } else if (root.flags.version) {
+    // Display version
   }
+
 })();
