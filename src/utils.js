@@ -24,7 +24,7 @@
     }
 
     if (!name) {
-      throw new Error('Name cannot be falsey');
+      throw new Error('Name cannot be empty');
     }
 
     if (name.indexOf(' ') >= 0) {
