@@ -20,19 +20,19 @@
 
   function validateName (name) {
     if (typeof name !== 'string') {
-      throw new Error('Name must be a string');
+      throw new Error('Names and aliases must be a string');
     }
 
     if (!name) {
-      throw new Error('Name cannot be empty');
+      throw new Error('Names and aliases cannot be empty');
     }
 
     if (name.indexOf(' ') >= 0) {
-      throw new Error('Name cannot contain spaces');
+      throw new Error('Names and aliases cannot contain spaces');
     }
 
     if (name.indexOf('-') === 0) {
-      throw new Error('Name cannot begin with \'-\'');
+      throw new Error('Names and aliases cannot begin with \'-\'');
     }
   }
 
