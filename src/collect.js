@@ -57,7 +57,7 @@
           tree.command = createTree(argv, matchingCommand.children, matchingCommand.name);
         } else {
           each(schema, function (node) {
-            if (node._type === 'arg') {
+            if (node._type === 'arg' && !tree.args[node.name]) {
               tree.args[node.name] = createTree(argv, node.children, undefined, arg);
             }
           });
@@ -73,7 +73,7 @@
             (isAlias ? node.options.alias === kwargName : node.name === kwargName);
         });
 
-        if (matchingFlagOrKWArg) {
+        if (matchingFlagOrKWArg && !tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name]) {
           if (matchingFlagOrKWArg._type === 'flag') {
             kwargValue = true;
           } else if (!containsEquals) {

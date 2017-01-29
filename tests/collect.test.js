@@ -220,6 +220,44 @@
       });
     });
 
+    it('should return an arg tree and use first values always', function () {
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['--kwarg=correct', '--kwarg=incorrect', 'correct', 'incorrect']);
+
+      // With nested nodes
+      var result = boundCollect(
+        Arg(
+          'arg'
+        ),
+        KWArg(
+          'kwarg'
+        )
+      );
+
+      expect(result).to.eql({
+        command: null,
+        kwargs: {
+          kwarg: {
+            value: 'correct',
+            command: null,
+            kwargs: {},
+            flags: {},
+            args: {}
+          }
+        },
+        flags: {},
+        args: {
+          arg: {
+            value: 'correct',
+            command: null,
+            kwargs: {},
+            flags: {},
+            args: {}
+          }
+        }
+      });
+    });
+
     it('should return an arg tree from aliases', function () {
       var boundCollect = collect.bind(null, 'node', 'browserify',
         ['b', '-t', 'babelify', '-v', '-o=build/index.js', 'src/index.js']);
