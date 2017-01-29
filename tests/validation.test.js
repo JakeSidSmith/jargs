@@ -105,23 +105,34 @@
       it('should validate options', function () {
         var anError = /invalid/i;
 
-        expect(Command.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
-        expect(KWArg.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
-        expect(Flag.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
-        expect(Arg.bind(null, 'name', {foo: 'bar'})).to.throw(anError);
+        expect(utils.serializeOptions.bind(null, {foo: 'bar'}, {bar: 'foo'})).to.throw(anError);
       });
 
       it('should validate option types', function () {
+        var validOptions = {
+          string: {
+            type: 'string'
+          },
+          number: {
+            type: 'number'
+          },
+          object: {
+            type: 'object'
+          },
+          array: {
+            type: 'array'
+          }
+        };
+
         var aStringError = /type\sstring/i;
+        var aNumberError = /type\snumber/i;
+        var anObjectError = /type\sobject/i;
         var anArrayError = /type\sarray/i;
 
-        expect(Command.bind(null, 'name', {description: null})).to.throw(aStringError);
-        expect(KWArg.bind(null, 'name', {description: null})).to.throw(aStringError);
-        expect(Flag.bind(null, 'name', {description: null})).to.throw(aStringError);
-        expect(Arg.bind(null, 'name', {description: null})).to.throw(aStringError);
-
-        expect(KWArg.bind(null, 'name', {options: null})).to.throw(anArrayError);
-        expect(Arg.bind(null, 'name', {options: null})).to.throw(anArrayError);
+        expect(utils.serializeOptions.bind(null, {string: null}, validOptions)).to.throw(aStringError);
+        expect(utils.serializeOptions.bind(null, {number: null}, validOptions)).to.throw(aNumberError);
+        expect(utils.serializeOptions.bind(null, {object: null}, validOptions)).to.throw(anObjectError);
+        expect(utils.serializeOptions.bind(null, {array: null}, validOptions)).to.throw(anArrayError);
       });
 
     });
