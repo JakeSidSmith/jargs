@@ -1,4 +1,4 @@
-# jargs
+# jargs [![CircleCI](https://circleci.com/gh/JakeSidSmith/jargs.svg?style=svg)](https://circleci.com/gh/JakeSidSmith/jargs)
 **Simple node arg parser with explicit tree structure schema**
 
 ## About
