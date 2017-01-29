@@ -5,10 +5,21 @@
   var utils = require('./utils');
   var getNodeProperties = utils.getNodeProperties;
   var validateName = utils.validateName;
+  var serializeOptions = utils.serializeOptions;
+
+  var validOptions = {
+    alias: {
+      type: 'string'
+    },
+    description: {
+      type: 'string'
+    }
+  };
 
   function Command () {
     var properties = getNodeProperties(arguments);
     validateName(properties.name);
+    serializeOptions(properties.options, validOptions);
 
     properties._type = 'command';
 

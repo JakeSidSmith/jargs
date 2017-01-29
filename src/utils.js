@@ -36,6 +36,31 @@
     }
   }
 
+  function serializeOptions (options, validOptions) {
+    for (var key in options) {
+      var option = options[key];
+
+      if (!(key in validOptions)) {
+        throw new Error('Invalid option \'' + key + '\'');
+      }
+
+      if (key === 'alias') {
+        validateName(option);
+      }
+
+      var valid = validOptions[key];
+
+      if (
+        (valid.type === 'string' && typeof option !== 'string') ||
+        (valid.type === 'number' && typeof option !== 'number') ||
+        (valid.type === 'object' && typeof option !== 'object') ||
+        (valid.type === 'array' && !Array.isArray(option))
+      ) {
+        throw new Error('Option ' + key + ' must be of type ' + valid.type);
+      }
+    }
+  }
+
   function find (arr, fn) {
     for (var i = 0; i < arr.length; i += 1) {
       if (fn(arr[i], i)) {
@@ -56,6 +81,7 @@
     argsToArray: argsToArray,
     getNodeProperties: getNodeProperties,
     validateName: validateName,
+    serializeOptions: serializeOptions,
     find: find,
     each: each
   };
