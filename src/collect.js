@@ -23,7 +23,7 @@
   var MATCHES_NAME_EQUALS = /.*=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-  function createTree (argv, schema, name, value) {
+  function createTree (argv, schema, value) {
     argv = [].concat(argv);
 
     var tree = {
@@ -33,11 +33,9 @@
       args: {}
     };
 
-    if (typeof name !== 'undefined') {
-      tree.name = name;
-    }
-
-    if (typeof value !== 'undefined') {
+    if (schema._type === 'command') {
+      tree.name = schema.name;
+    } else if (typeof value !== 'undefined') {
       tree.value = value;
     }
 
@@ -50,16 +48,16 @@
       var isPositional = arg.indexOf('-') !== 0; // command or arg
 
       if (isPositional) {
-        var matchingCommand = find(schema, function (node) {
+        var matchingCommand = find(schema.children, function (node) {
           return node._type === 'command' && (node.name === arg || node.options.alias === arg);
         });
 
         if (matchingCommand) {
-          tree.command = createTree(argv, matchingCommand.children, matchingCommand.name);
+          tree.command = createTree(argv, matchingCommand);
         } else {
-          each(schema, function (node) {
+          each(schema.children, function (node) {
             if (node._type === 'arg' && !tree.args[node.name]) {
-              tree.args[node.name] = createTree(argv, node.children, undefined, arg);
+              tree.args[node.name] = createTree(argv, node, arg);
             }
           });
         }
@@ -69,7 +67,7 @@
         var kwargName = arg.replace(MATCHES_LEADING_HYPHENS, '').replace(MATCHES_EQUALS_VALUE, '');
         var kwargValue = arg.replace(MATCHES_NAME_EQUALS, '');
 
-        var matchingFlagOrKWArg = find(schema, function (node) {
+        var matchingFlagOrKWArg = find(schema.children, function (node) {
           return (node._type === 'flag' || node._type === 'kwarg') &&
             (isAlias ? node.options.alias === kwargName : node.name === kwargName);
         });
@@ -82,7 +80,7 @@
           }
 
           tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
-            createTree(argv, matchingFlagOrKWArg.children, undefined, kwargValue);
+            createTree(argv, matchingFlagOrKWArg, kwargValue);
         }
       }
     }
@@ -95,7 +93,7 @@
     /* var program = */ args.shift();
     /* var command = */ args.shift();
     var argv = args.shift();
-    var schema = args;
+    var schema = {children: args};
 
     return createTree(argv, schema);
   }
