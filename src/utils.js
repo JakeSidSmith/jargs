@@ -62,6 +62,11 @@
     }
   }
 
+  function throwError (error) {
+    process.stderr.write(error + '\n\n');
+    process.exit(1);
+  }
+
   function find (arr, fn) {
     for (var i = 0; i < arr.length; i += 1) {
       if (fn(arr[i], i)) {
@@ -83,6 +88,7 @@
     getNodeProperties: getNodeProperties,
     validateName: validateName,
     serializeOptions: serializeOptions,
+    throwError: throwError,
     find: find,
     each: each
   };

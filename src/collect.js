@@ -14,6 +14,7 @@
 
   var utils = require('./utils');
   var argsToArray = utils.argsToArray;
+  // var throwError = utils.throwError;
   var find = utils.find;
   var each = utils.each;
 
