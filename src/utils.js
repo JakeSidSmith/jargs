@@ -78,6 +78,7 @@
   }
 
   /* istanbul ignore next */
+  // TODO: Stub process functions in tests to properly test throwError
   function throwError (error) {
     process.stderr.write(error + '\n\n');
     process.exit(1);
