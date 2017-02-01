@@ -77,6 +77,7 @@
     }
   }
 
+  /* istanbul ignore next */
   function throwError (error) {
     process.stderr.write(error + '\n\n');
     process.exit(1);
