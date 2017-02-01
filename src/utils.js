@@ -34,6 +34,7 @@
       throw new Error('Names and aliases cannot be empty');
     }
 
+    // TODO: Names and aliases should only contain [a-z0-9-]
     if (name.indexOf(' ') >= 0) {
       throw new Error('Names and aliases cannot contain spaces');
     }
