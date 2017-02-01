@@ -50,17 +50,7 @@
         });
 
         if (matchingCommand) {
-          if (matchingCommand.children.length) {
-            tree.command = createTree(argv, matchingCommand);
-          } else {
-            tree.command = {
-              name: matchingCommand.name,
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            };
-          }
+          tree.command = createTree(argv, matchingCommand);
         } else {
           var matchingArg = find(schema.children, function (node) {
             return node._type === 'arg' && !tree.args[node.name];
@@ -69,19 +59,7 @@
           if (!matchingArg) {
             throwError('Unknown argument: ' + arg);
           } else {
-            var argValue = arg;
-
-            if (matchingArg.children.length) {
-              tree.args[matchingArg.name] = createTree(argv, matchingArg, argValue);
-            } else {
-              tree.args[matchingArg.name] = {
-                value: argValue,
-                command: null,
-                kwargs: {},
-                flags: {},
-                args: {}
-              };
-            }
+            tree.args[matchingArg.name] = arg;
           }
         }
       } else {
@@ -106,18 +84,7 @@
             kwargValue = argv.shift();
           }
 
-          if (matchingFlagOrKWArg.children.length) {
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
-              createTree(argv, matchingFlagOrKWArg, kwargValue);
-          } else {
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = {
-              value: kwargValue,
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            };
-          }
+          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
         }
       }
     }
