@@ -30,7 +30,9 @@
     "chai": "=3.5.0",
     "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v0.0.2",
     "mocha": "=3.2.0",
-    "nyc": "=10.1.2"
+    "nyc": "=10.1.2",
+    "sinon": "=1.17.7",
+    "sinon-chai": "=2.8.0"
   },
   "engines": {
     "node": "6.9.4"
