@@ -54,7 +54,22 @@
           expect(properties.children).to.be.undefined;
         }
 
-        fn('foo', {alias: 'bar'}, 'child1', 'child2', 'child3');
+        fn('foo', {alias: 'bar'});
+      });
+
+      it('should should throw an error if children are provided, but not welcome', function () {
+        var anError = /children/i;
+
+        function fn () {
+          var properties = utils.getNodeProperties(arguments);
+
+          expect(properties).to.be.ok;
+          expect(properties.name).to.equal('foo');
+          expect(properties.options).to.eql({alias: 'bar'});
+          expect(properties.children).to.be.undefined;
+        }
+
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, 'child')).to.throw(anError);
       });
 
     });
