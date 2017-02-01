@@ -75,7 +75,7 @@
 
         if (!matchingFlagOrKWArg) {
           throwError('Unknown argument: ' + arg);
-        } else if (tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name]) {
+        } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
           throwError('Duplicate argument: ' + arg);
         } else {
           if (matchingFlagOrKWArg._type === 'flag') {
