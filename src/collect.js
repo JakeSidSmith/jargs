@@ -14,9 +14,8 @@
 
   var utils = require('./utils');
   var argsToArray = utils.argsToArray;
-  // var throwError = utils.throwError;
+  var throwError = utils.throwError;
   var find = utils.find;
-  var each = utils.each;
 
   var MATCHES_LEADING_HYPHENS = /^-+/;
   var MATCHES_EQUALS_VALUE = /=.*/;
@@ -24,8 +23,6 @@
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
   function createTree (argv, schema, value) {
-    argv = [].concat(argv);
-
     var tree = {
       command: null,
       kwargs: {},
@@ -53,13 +50,39 @@
         });
 
         if (matchingCommand) {
-          tree.command = createTree(argv, matchingCommand);
+          if (matchingCommand.children.length) {
+            tree.command = createTree(argv, matchingCommand);
+          } else {
+            tree.command = {
+              name: matchingCommand.name,
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            };
+          }
         } else {
-          each(schema.children, function (node) {
-            if (node._type === 'arg' && !tree.args[node.name]) {
-              tree.args[node.name] = createTree(argv, node, arg);
-            }
+          var matchingArg = find(schema.children, function (node) {
+            return node._type === 'arg' && !tree.args[node.name];
           });
+
+          if (!matchingArg) {
+            throwError('Unknown argument: ' + arg);
+          } else {
+            var argValue = arg;
+
+            if (matchingArg.children.length) {
+              tree.args[matchingArg.name] = createTree(argv, matchingArg, argValue);
+            } else {
+              tree.args[matchingArg.name] = {
+                value: argValue,
+                command: null,
+                kwargs: {},
+                flags: {},
+                args: {}
+              };
+            }
+          }
         }
       } else {
         var containsEquals = arg.indexOf('=') >= 0;
@@ -72,15 +95,29 @@
             (isAlias ? node.options.alias === kwargName : node.name === kwargName);
         });
 
-        if (matchingFlagOrKWArg && !tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name]) {
+        if (!matchingFlagOrKWArg) {
+          throwError('Unknown argument: ' + arg);
+        } else if (tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name]) {
+          throwError('Duplicate argument: ' + arg);
+        } else {
           if (matchingFlagOrKWArg._type === 'flag') {
             kwargValue = true;
           } else if (!containsEquals) {
             kwargValue = argv.shift();
           }
 
-          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
-            createTree(argv, matchingFlagOrKWArg, kwargValue);
+          if (matchingFlagOrKWArg.children.length) {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
+              createTree(argv, matchingFlagOrKWArg, kwargValue);
+          } else {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = {
+              value: kwargValue,
+              command: null,
+              kwargs: {},
+              flags: {},
+              args: {}
+            };
+          }
         }
       }
     }
