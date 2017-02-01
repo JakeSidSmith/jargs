@@ -29,31 +29,35 @@ Note: you can nest nodes as many times as necessary.
 
 ```javascript
 const root = collect(
-  Command(
-    'init'
-  ),
-  Command(
-    'install', {alias: 'i'},
-    Arg(
-      'lib'
+  Program(
+    'npm',
+    null,
+    Command(
+      'init'
     ),
-    Flag(
-      'save', {alias: 'S'}
+    Command(
+      'install', {alias: 'i'},
+      Arg(
+        'lib'
+      ),
+      Flag(
+        'save', {alias: 'S'}
+      ),
+      Flag(
+        'save-dev', {alias: 'D'}
+      ),
+      Flag(
+        'save-exact', {alias: 'E'}
+      ),
+      Flag(
+        'save-optional', {alias: 'O'}
+      )
     ),
-    Flag(
-      'save-dev', {alias: 'D'}
-    ),
-    Flag(
-      'save-exact', {alias: 'E'}
-    ),
-    Flag(
-      'save-optional', {alias: 'O'}
-    )
-  ),
-  Command(
-    'run', {alias: 'run-scripts'},
-    Arg(
-      'command'
+    Command(
+      'run', {alias: 'run-scripts'},
+      Arg(
+        'command'
+      )
     )
   )
 );
@@ -263,36 +267,40 @@ naval_fate ship shoot <x> <y>
 
 ```javascript
 const root = collect(
-  Command(
-    'ship', null,    
-    Arg(
-      'shipName'
-    ),
+  Program(
+    'naval_fate',
+    null,
     Command(
-      'new', null,
+      'ship', null,    
       Arg(
-        'newShipName', {required: true}
-      )
-    ),
-    Command(
-      'shoot', null,
-      Arg(
-        'shootX', {required: true}
+        'shipName'
       ),
-      Arg(
-        'shootY', {required: true}
-      )
-    ),
-    Command(
-      'move', null,
-      Arg(
-        'moveX', {required: true}
+      Command(
+        'new', null,
+        Arg(
+          'newShipName', {required: true}
+        )
       ),
-      Arg(
-        'moveY', {required: true}
+      Command(
+        'shoot', null,
+        Arg(
+          'shootX', {required: true}
+        ),
+        Arg(
+          'shootY', {required: true}
+        )
       ),
-      KWArg(
-        'speed'
+      Command(
+        'move', null,
+        Arg(
+          'moveX', {required: true}
+        ),
+        Arg(
+          'moveY', {required: true}
+        ),
+        KWArg(
+          'speed'
+        )
       )
     )
   )
