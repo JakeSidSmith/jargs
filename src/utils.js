@@ -67,6 +67,14 @@
         throw new Error('Option ' + key + ' must be of type ' + valid.type);
       }
     }
+
+    for (var validKey in validOptions) {
+      var validOption = validOptions[validKey];
+
+      if (('default' in validOption) && !(validKey in options)) {
+        options[validKey] = validOption.default;
+      }
+    }
   }
 
   function throwError (error) {
