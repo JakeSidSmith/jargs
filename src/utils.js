@@ -6,16 +6,21 @@
     return Array.prototype.slice.call(args);
   }
 
-  function getNodeProperties (args) {
+  function getNodeProperties (args, getChildren) {
     var argsArray = argsToArray(args);
     var name = argsArray.shift();
     var options = argsArray.shift() || {};
 
-    return {
+    var properties = {
       name: name,
-      options: options,
-      children: argsArray
+      options: options
     };
+
+    if (getChildren) {
+      properties.children = argsArray;
+    }
+
+    return properties;
   }
 
   function validateName (name) {

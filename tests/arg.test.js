@@ -16,7 +16,7 @@
       expect(node).to.be.ok;
       expect(node.name).to.equal('foo');
       expect(node.options).to.eql({});
-      expect(node.children).to.eql(['child1', 'child2']);
+      expect(node.children).to.be.undefined;
       expect(node._type).to.equal('arg');
     });
 

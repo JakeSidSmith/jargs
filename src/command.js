@@ -23,7 +23,7 @@
   };
 
   function Command () {
-    var properties = getNodeProperties(arguments);
+    var properties = getNodeProperties(arguments, true);
     validateName(properties.name);
     serializeOptions(properties.options, validOptions);
 
