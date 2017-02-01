@@ -18,6 +18,8 @@
 
     if (getChildren) {
       properties.children = argsArray;
+    } else if (argsArray.length) {
+      throw new Error('Only commands can have children');
     }
 
     return properties;
