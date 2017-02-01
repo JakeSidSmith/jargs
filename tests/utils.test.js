@@ -31,14 +31,27 @@
 
     describe('getNodeProperties', function () {
 
-      it('should get a node\'s properties from the supplied arguments', function () {
+      it('should get a node\'s properties from the supplied arguments (with children)', function () {
+        function fn () {
+          var properties = utils.getNodeProperties(arguments, true);
+
+          expect(properties).to.be.ok;
+          expect(properties.name).to.equal('foo');
+          expect(properties.options).to.eql({alias: 'bar'});
+          expect(properties.children).to.eql(['child1', 'child2', 'child3']);
+        }
+
+        fn('foo', {alias: 'bar'}, 'child1', 'child2', 'child3');
+      });
+
+      it('should get a node\'s properties from the supplied arguments (without children)', function () {
         function fn () {
           var properties = utils.getNodeProperties(arguments);
 
           expect(properties).to.be.ok;
           expect(properties.name).to.equal('foo');
           expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.eql(['child1', 'child2', 'child3']);
+          expect(properties.children).to.be.undefined;
         }
 
         fn('foo', {alias: 'bar'}, 'child1', 'child2', 'child3');
