@@ -22,7 +22,7 @@
   var MATCHES_NAME_EQUALS = /.*=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-  function createTree (argv, schema, value) {
+  function createTree (argv, schema) {
     var tree = {
       command: null,
       kwargs: {},
@@ -32,8 +32,6 @@
 
     if (schema._type === 'command') {
       tree.name = schema.name;
-    } else if (typeof value !== 'undefined') {
-      tree.value = value;
     }
 
     if (!argv.length) {
