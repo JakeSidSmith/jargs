@@ -180,6 +180,66 @@
       });
     });
 
+    it('should prioritize commands and traverse their children (test 1)', function () {
+      var result;
+      var boundCollect = collect.bind(null, 'node', 'browserify', ['command', 'command']);
+
+      result = boundCollect(
+        Arg(
+          'arg1'
+        ),
+        Command(
+          'command',
+          null,
+          Arg(
+            'arg2'
+          )
+        )
+      );
+
+      expect(result).to.eql({
+        command: {
+          name: 'command',
+          command: null,
+          kwargs: {},
+          flags: {},
+          args: {
+            arg2: 'command'
+          }
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+    });
+
+    it('should prioritize commands and traverse their children (test 2)', function () {
+      var result;
+      var boundCollect = collect.bind(null, 'node', 'browserify', ['not-a-command']);
+
+      result = boundCollect(
+        Arg(
+          'arg1'
+        ),
+        Command(
+          'command',
+          null,
+          Arg(
+            'arg2'
+          )
+        )
+      );
+
+      expect(result).to.eql({
+        command: null,
+        kwargs: {},
+        flags: {},
+        args: {
+          arg1: 'not-a-command'
+        }
+      });
+    });
+
     it('should return an arg tree from aliases', function () {
       var boundCollect = collect.bind(null, 'node', 'browserify',
         ['b', '-t', 'babelify', '-v', '-o=build/index.js', 'src/index.js']);
