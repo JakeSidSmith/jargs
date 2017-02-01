@@ -53,7 +53,7 @@
           tree.command = createTree(argv, matchingCommand);
         } else {
           var matchingArg = find(schema.children, function (node) {
-            return node._type === 'arg' && !tree.args[node.name];
+            return node._type === 'arg' && !(node.name in tree.args);
           });
 
           if (!matchingArg) {
