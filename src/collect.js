@@ -94,9 +94,17 @@
     /* var program = */ args.shift();
     /* var command = */ args.shift();
     var argv = args.shift();
-    var schema = {children: args};
+    var program = args.shift();
 
-    return createTree(argv, schema);
+    if (!program) {
+      throw new Error('No program defined');
+    }
+
+    if (program._type !== 'program') {
+      throw new Error('Root node must be a Program');
+    }
+
+    return createTree(argv, program);
   }
 
   module.exports = collect;
