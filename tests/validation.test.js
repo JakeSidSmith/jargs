@@ -63,6 +63,21 @@
 
       var nodesWithAliases = [Command, KWArg, Flag];
 
+      it('should should throw an error if options is not an object', function () {
+        var anError = /object/i;
+
+        expect(Arg.bind(null, 'foo', 'test')).to.throw(anError);
+        expect(Arg.bind(null, 'foo', [])).to.throw(anError);
+        expect(Arg.bind(null, 'foo', 7)).to.throw(anError);
+        expect(Arg.bind(null, 'foo', undefined)).not.to.throw(anError);
+      });
+
+      it('should should throw an error if a node is passed as options', function () {
+        var anError = /node/i;
+
+        expect(Arg.bind(null, 'foo', Arg('test'))).to.throw(anError);
+      });
+
       it('should error if node aliases are not strings', function () {
         var anError = /string/i;
 
