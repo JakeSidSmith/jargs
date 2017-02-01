@@ -44,6 +44,14 @@
   }
 
   function serializeOptions (options, validOptions) {
+    if (!(typeof options === 'undefined' || typeof options === 'object') || Array.isArray(options)) {
+      throw new Error('Options must be an object');
+    }
+
+    if ('_type' in options) {
+      throw new Error('It looks like you\'ve accidentally passed a node as another nodes second argument');
+    }
+
     for (var key in options) {
       var option = options[key];
 
