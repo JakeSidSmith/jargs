@@ -297,6 +297,31 @@
       throwErrorStub.restore();
     });
 
+    it('should throw an error for unknown commands / args', function () {
+      var throwErrorStub = stub(utils, 'throwError');
+      var anError = /unknown/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['another-command']);
+
+      // With nested nodes
+      boundCollect(
+        Command(
+          'command'
+        ),
+        Flag(
+          'flag'
+        ),
+        KWArg(
+          'kwarg'
+        )
+      );
+
+      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+
+      throwErrorStub.restore();
+    });
+
   });
 
 })();
