@@ -250,6 +250,28 @@
       throwErrorStub.restore();
     });
 
+    it('should throw an error for duplicate flags', function () {
+      var throwErrorStub = stub(utils, 'throwError');
+      var anError = /duplicate/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['--flag', '--flag', 'correct', 'incorrect']);
+
+      // With nested nodes
+      boundCollect(
+        Arg(
+          'arg'
+        ),
+        Flag(
+          'flag'
+        )
+      );
+
+      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+
+      throwErrorStub.restore();
+    });
+
   });
 
 })();
