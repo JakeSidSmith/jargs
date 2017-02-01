@@ -15,7 +15,7 @@
 
       expect(node).to.be.ok;
       expect(node.name).to.equal('foo');
-      expect(node.options).to.eql({alias: 'bar'});
+      expect(node.options).to.eql({alias: 'bar', description: '', usage: '', required: false});
       expect(node.children).to.eql(['child1', 'child2']);
       expect(node._type).to.equal('command');
     });
