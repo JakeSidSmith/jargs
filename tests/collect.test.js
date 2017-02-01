@@ -99,13 +99,7 @@
           kwargs: {},
           flags: {},
           args: {
-            lib: {
-              value: 'jargs',
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            }
+            lib: 'jargs'
           }
         },
         kwargs: {},
@@ -137,22 +131,10 @@
           command: null,
           kwargs: {},
           flags: {
-            save: {
-              value: true,
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            }
+            save: true
           },
           args: {
-            lib: {
-              value: 'jargs',
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            }
+            lib: 'jargs'
           }
         },
         kwargs: {},
@@ -184,38 +166,14 @@
       expect(result).to.eql({
         command: null,
         kwargs: {
-          transform: {
-            value: 'babelify',
-            command: null,
-            kwargs: {},
-            flags: {},
-            args: {}
-          },
-          outfile: {
-            value: 'build/index.js',
-            command: null,
-            kwargs: {},
-            flags: {},
-            args: {}
-          }
+          transform: 'babelify',
+          outfile: 'build/index.js'
         },
         flags: {
-          verbose: {
-            value: true,
-            command: null,
-            kwargs: {},
-            flags: {},
-            args: {}
-          }
+          verbose: true
         },
         args: {
-          input: {
-            value: 'src/index.js',
-            command: null,
-            kwargs: {},
-            flags: {},
-            args: {}
-          }
+          input: 'src/index.js'
         }
       });
     });
@@ -237,23 +195,11 @@
       expect(result).to.eql({
         command: null,
         kwargs: {
-          kwarg: {
-            value: 'correct',
-            command: null,
-            kwargs: {},
-            flags: {},
-            args: {}
-          }
+          kwarg: 'correct'
         },
         flags: {},
         args: {
-          arg: {
-            value: 'correct',
-            command: null,
-            kwargs: {},
-            flags: {},
-            args: {}
-          }
+          arg: 'correct'
         }
       });
     });
@@ -290,38 +236,14 @@
           name: 'build',
           command: null,
           kwargs: {
-            transform: {
-              value: 'babelify',
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            },
-            outfile: {
-              value: 'build/index.js',
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            }
+            transform: 'babelify',
+            outfile: 'build/index.js'
           },
           flags: {
-            verbose: {
-              value: true,
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            }
+            verbose: true
           },
           args: {
-            input: {
-              value: 'src/index.js',
-              command: null,
-              kwargs: {},
-              flags: {},
-              args: {}
-            }
+            input: 'src/index.js'
           }
         },
         kwargs: {},
