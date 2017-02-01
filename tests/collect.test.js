@@ -8,6 +8,7 @@
   var stub = require('sinon').stub;
 
   var collect = require('../src/collect');
+  var Program = require('../src/program');
   var Command = require('../src/command');
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
@@ -21,30 +22,39 @@
       expect(typeof collect).to.equal('function');
     });
 
+    it('should throw an error if no Program provided', function () {
+      var anError = /program/i;
+
+      var boundCollect = collect.bind(null, 'node', 'npm', []);
+
+      // Without tree
+      expect(boundCollect).to.throw(anError);
+
+    });
+
+    it('should throw an error if root node is not a Program', function () {
+      var anError = /program/i;
+
+      var boundCollect = collect.bind(null, 'node', 'npm', [], Arg('test'));
+
+      // Without tree
+      expect(boundCollect).to.throw(anError);
+
+    });
+
     it('should return an arg tree when no args provided', function () {
       var boundCollect = collect.bind(null, 'node', 'npm', []);
 
       // Without tree
       var result = boundCollect(
-        Command(
-          'install'
+        Program(
+          'program',
+          null,
+          Command(
+            'install'
+          )
         )
       );
-
-      expect(result).to.eql({
-        command: null,
-        kwargs: {},
-        flags: {},
-        args: {}
-      });
-
-    });
-
-    it('should return an arg tree when no schema provided', function () {
-      var boundCollect = collect.bind(null, 'node', 'npm', []);
-
-      // Without tree
-      var result = boundCollect();
 
       expect(result).to.eql({
         command: null,
@@ -60,8 +70,12 @@
 
       // With single node
       var result = boundCollect(
-        Command(
-          'install'
+        Program(
+          'program',
+          null,
+          Command(
+            'install'
+          )
         )
       );
 
@@ -85,11 +99,15 @@
 
       // With nested nodes
       var result = boundCollect(
-        Command(
-          'install',
+        Program(
+          'program',
           null,
-          Arg(
-            'lib'
+          Command(
+            'install',
+            null,
+            Arg(
+              'lib'
+            )
           )
         )
       );
@@ -115,14 +133,18 @@
 
       // With nested nodes
       var result = boundCollect(
-        Command(
-          'install',
+        Program(
+          'program',
           null,
-          Arg(
-            'lib'
-          ),
-          Flag(
-            'save'
+          Command(
+            'install',
+            null,
+            Arg(
+              'lib'
+            ),
+            Flag(
+              'save'
+            )
           )
         )
       );
@@ -151,17 +173,21 @@
 
       // With nested nodes
       var result = boundCollect(
-        Arg(
-          'input'
-        ),
-        Flag(
-          'verbose'
-        ),
-        KWArg(
-          'outfile'
-        ),
-        KWArg(
-          'transform'
+        Program(
+          'program',
+          null,
+          Arg(
+            'input'
+          ),
+          Flag(
+            'verbose'
+          ),
+          KWArg(
+            'outfile'
+          ),
+          KWArg(
+            'transform'
+          )
         )
       );
 
@@ -185,14 +211,18 @@
       var boundCollect = collect.bind(null, 'node', 'browserify', ['command', 'command']);
 
       result = boundCollect(
-        Arg(
-          'arg1'
-        ),
-        Command(
-          'command',
+        Program(
+          'program',
           null,
           Arg(
-            'arg2'
+            'arg1'
+          ),
+          Command(
+            'command',
+            null,
+            Arg(
+              'arg2'
+            )
           )
         )
       );
@@ -218,14 +248,18 @@
       var boundCollect = collect.bind(null, 'node', 'browserify', ['not-a-command']);
 
       result = boundCollect(
-        Arg(
-          'arg1'
-        ),
-        Command(
-          'command',
+        Program(
+          'program',
           null,
           Arg(
-            'arg2'
+            'arg1'
+          ),
+          Command(
+            'command',
+            null,
+            Arg(
+              'arg2'
+            )
           )
         )
       );
@@ -246,23 +280,27 @@
 
       // With nested nodes
       var result = boundCollect(
-        Command(
-          'build',
-          {alias: 'b'},
-          Arg(
-            'input'
-          ),
-          Flag(
-            'verbose',
-            {alias: 'v'}
-          ),
-          KWArg(
-            'outfile',
-            {alias: 'o'}
-          ),
-          KWArg(
-            'transform',
-            {alias: 't'}
+        Program(
+          'program',
+          null,
+          Command(
+            'build',
+            {alias: 'b'},
+            Arg(
+              'input'
+            ),
+            Flag(
+              'verbose',
+              {alias: 'v'}
+            ),
+            KWArg(
+              'outfile',
+              {alias: 'o'}
+            ),
+            KWArg(
+              'transform',
+              {alias: 't'}
+            )
           )
         )
       );
@@ -297,11 +335,15 @@
 
       // With nested nodes
       boundCollect(
-        Arg(
-          'arg'
-        ),
-        KWArg(
-          'kwarg'
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          KWArg(
+            'kwarg'
+          )
         )
       );
 
@@ -319,11 +361,15 @@
 
       // With nested nodes
       boundCollect(
-        Arg(
-          'arg'
-        ),
-        Flag(
-          'flag'
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          Flag(
+            'flag'
+          )
         )
       );
 
@@ -341,14 +387,18 @@
 
       // With nested nodes
       boundCollect(
-        Arg(
-          'arg'
-        ),
-        Flag(
-          'flag'
-        ),
-        KWArg(
-          'kwarg'
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          Flag(
+            'flag'
+          ),
+          KWArg(
+            'kwarg'
+          )
         )
       );
 
@@ -366,14 +416,18 @@
 
       // With nested nodes
       boundCollect(
-        Command(
-          'command'
-        ),
-        Flag(
-          'flag'
-        ),
-        KWArg(
-          'kwarg'
+        Program(
+          'program',
+          null,
+          Command(
+            'command'
+          ),
+          Flag(
+            'flag'
+          ),
+          KWArg(
+            'kwarg'
+          )
         )
       );
 
