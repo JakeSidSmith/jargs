@@ -14,7 +14,6 @@
 
   var utils = require('./utils');
   var argsToArray = utils.argsToArray;
-  var throwError = utils.throwError;
   var find = utils.find;
 
   var MATCHES_LEADING_HYPHENS = /^-+/;
@@ -55,7 +54,7 @@
           });
 
           if (!matchingArg) {
-            throwError('Unknown argument: ' + arg);
+            utils.throwError('Unknown argument: ' + arg);
           } else {
             tree.args[matchingArg.name] = arg;
           }
@@ -72,9 +71,9 @@
         });
 
         if (!matchingFlagOrKWArg) {
-          throwError('Unknown argument: ' + arg);
+          utils.throwError('Unknown argument: ' + arg);
         } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
-          throwError('Duplicate argument: ' + arg);
+          utils.throwError('Duplicate argument: ' + arg);
         } else {
           if (matchingFlagOrKWArg._type === 'flag') {
             kwargValue = true;
