@@ -12,13 +12,16 @@
       type: 'string'
     },
     description: {
-      type: 'string'
+      type: 'string',
+      default: ''
     },
     usage: {
-      type: 'string'
+      type: 'string',
+      default: ''
     },
     required: {
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     }
   };
 

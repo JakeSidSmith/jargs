@@ -9,16 +9,19 @@
 
   var validOptions = {
     description: {
-      type: 'string'
+      type: 'string',
+      default: ''
     },
     usage: {
-      type: 'string'
+      type: 'string',
+      default: ''
     },
     options: {
       type: 'array'
     },
     required: {
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     }
   };
 
