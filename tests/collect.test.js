@@ -233,7 +233,7 @@
       var anError = /duplicate/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
-        ['--kwarg=correct', '--kwarg=incorrect', 'correct', 'incorrect']);
+        ['--kwarg=correct', '--kwarg=incorrect']);
 
       // With nested nodes
       boundCollect(
@@ -255,7 +255,7 @@
       var anError = /duplicate/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
-        ['--flag', '--flag', 'correct', 'incorrect']);
+        ['--flag', '--flag']);
 
       // With nested nodes
       boundCollect(
@@ -264,6 +264,31 @@
         ),
         Flag(
           'flag'
+        )
+      );
+
+      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+
+      throwErrorStub.restore();
+    });
+
+    it('should throw an error for unknown flags / kwargs', function () {
+      var throwErrorStub = stub(utils, 'throwError');
+      var anError = /unknown/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['--version']);
+
+      // With nested nodes
+      boundCollect(
+        Arg(
+          'arg'
+        ),
+        Flag(
+          'flag'
+        ),
+        KWArg(
+          'kwarg'
         )
       );
 
