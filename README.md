@@ -142,13 +142,13 @@ if ('lib' in root.args) {
 
 ### Nodes
 
-All nodes take the following arguments, though `Command` takes additional arguments (more info about individual nodes below).
+All nodes take the following arguments, though `Command` and `Program` take additional arguments (more info about individual nodes below).
 
 ```javascript
 Node(name, options);
 ```
 
-Commands can take an infinite number or arguments. Any arguments after `name` & `options` become that commands child nodes e.g.
+Command and Program can take an infinite number or arguments. Any arguments after `name` & `options` become that node's child nodes e.g.
 
 ```javascript
 Command(name, options, KWArg(), Flag(), Arg());
@@ -156,14 +156,32 @@ Command(name, options, KWArg(), Flag(), Arg());
 
 Both `options` and `childNodes` are optional.
 All keys in `options` are optional and have defaults (more info below).
-`childNodes` are any arguments following the name & options (only valid for `Commands`).
+`childNodes` are any arguments following the name & options (only valid for `Command` and `Program`).
 
 You can nest `Commands` as many times as necessary.
+
+#### Program
+
+A sub-command of your command line interface.
+Program is the main command / name of your program.
+
+Takes the following options.
+
+```javascript
+Program(
+  'program-name'
+  {
+    description: 'A command', // default: empty string
+    usage: 'program-name sub-command --flag' // default: empty string
+  },
+  ...childNodes
+)
+```
 
 #### Command
 
 A sub-command of your command line interface.
-You do not need to define a Command for your command line interface itself.
+Program is the main command / name of your program.
 
 Takes the following options.
 
@@ -172,7 +190,8 @@ Command(
   'command-name'
   {
     alias: 'command-alias', // default: undefined
-    description: 'A command' // default: empty string
+    description: 'A command', // default: empty string
+    usage: 'program-name sub-command --flag' // default: empty string
   },
   ...childNodes
 )
@@ -193,7 +212,8 @@ KWArg(
   {
     alias: 'kwarg-alias', // default: undefined
     description: 'A key word argument', // default: empty string
-    options: ['option1', 'option2'] // default: undefined
+    options: ['option1', 'option2'], // default: undefined
+    usage: 'program-name sub-command --kwarg' // default: empty string
   }
 )
 ```
@@ -213,7 +233,8 @@ Flag(
   {
     alias: 'flag-alias', // default: undefined
     description: 'A flag', // default: empty string
-    options: ['option1', 'option2'] // default: undefined
+    options: ['option1', 'option2'], // default: undefined
+    usage: 'program-name sub-command --flag' // default: empty string
   }
 )
 ```
@@ -230,7 +251,8 @@ Arg(
   'arg-name'
   {
     alias: 'arg-alias', // default: undefined
-    description: 'An arg' // default: empty string
+    description: 'An arg', // default: empty string
+    usage: 'program-name sub-command arg' // default: empty string
   }
 )
 ```
