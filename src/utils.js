@@ -49,7 +49,7 @@
     }
 
     if ('_type' in options) {
-      throw new Error('It looks like you\'ve accidentally passed a node as another nodes second argument');
+      throw new Error('It looks like you\'ve accidentally passed a node as another node\'s second argument (options)');
     }
 
     for (var key in options) {
