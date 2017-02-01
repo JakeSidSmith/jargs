@@ -1,16 +1,18 @@
-/* global describe, it, xit */
+/* global describe, it */
 
 'use strict';
 
 (function () {
 
   var expect = require('chai').expect;
+  var stub = require('sinon').stub;
 
   var collect = require('../src/collect');
   var Command = require('../src/command');
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
+  var utils = require('../src/utils');
 
   describe('collect.js', function () {
 
@@ -178,32 +180,6 @@
       });
     });
 
-    xit('should return an arg tree and use first values always', function () {
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--kwarg=correct', '--kwarg=incorrect', 'correct', 'incorrect']);
-
-      // With nested nodes
-      var result = boundCollect(
-        Arg(
-          'arg'
-        ),
-        KWArg(
-          'kwarg'
-        )
-      );
-
-      expect(result).to.eql({
-        command: null,
-        kwargs: {
-          kwarg: 'correct'
-        },
-        flags: {},
-        args: {
-          arg: 'correct'
-        }
-      });
-    });
-
     it('should return an arg tree from aliases', function () {
       var boundCollect = collect.bind(null, 'node', 'browserify',
         ['b', '-t', 'babelify', '-v', '-o=build/index.js', 'src/index.js']);
@@ -250,6 +226,28 @@
         flags: {},
         args: {}
       });
+    });
+
+    it('should throw an error for duplicate kwargs', function () {
+      var throwErrorStub = stub(utils, 'throwError');
+      var anError = /duplicate/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['--kwarg=correct', '--kwarg=incorrect', 'correct', 'incorrect']);
+
+      // With nested nodes
+      boundCollect(
+        Arg(
+          'arg'
+        ),
+        KWArg(
+          'kwarg'
+        )
+      );
+
+      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+
+      throwErrorStub.restore();
     });
 
   });
