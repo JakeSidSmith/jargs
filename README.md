@@ -80,22 +80,10 @@ Calling the command `npm install jargs --save` returns the following.
     name: 'install',
     kwargs: {},
     flags: {
-      save: {
-        value: true,
-        command: null,
-        kwargs: {},
-        flags: {},
-        args: {}
-      }
+      save: true
     },
     args: {
-      lib: {
-        value: 'jargs',
-        command: null,
-        kwargs: {},
-        flags: {},
-        args: {}
-      }
+      lib: 'jargs'
     }
   },
   kwargs: {},
@@ -117,38 +105,56 @@ if (root.command) {
       // Install stuff
       break;
     default:
-      // This will never be hit since we check for the command existence first
+      // This should never be hit since we check for the command existence first
   }
 }
 ```
 
 #### Querying Flags, KWArgs, and Args
 
+##### Flags
+
 ```javascript
-if ('verbose' in root.flags) {
-  // Do something flag related
+if (root.flags.verbose) {
+  doSomethingWithThisFlag(root.flags.verbose);
 }
 ```
 
+##### KWArgs
+
+```javascript
+if ('lib' in root.kwargs) {
+  doSomethingWithThisKWArg(root.kwargs.lib);
+}
+```
+
+##### Args
+
 ```javascript
 if ('lib' in root.args) {
-  install(root.args.lib.value);
+  doSomethingWithThisArg(root.args.lib);
 }
 ```
 
 ### Nodes
 
-All nodes take the following arguments. More info about individual nodes below.
+All nodes take the following arguments, though `Command` takes additional arguments (more info about individual nodes below).
 
 ```javascript
-Node(name, options, ...childNodes);
+Node(name, options);
+```
+
+Commands can take an infinite number or arguments. Any arguments after `name` & `options` become that commands child nodes e.g.
+
+```javascript
+Command(name, options, KWArg(), Flag(), Arg());
 ```
 
 Both `options` and `childNodes` are optional.
-All keys in `options` are optional.
-`childNodes` are any arguments following the name & options.
+All keys in `options` are optional and have defaults (more info below).
+`childNodes` are any arguments following the name & options (only valid for `Commands`).
 
-You can nest nodes as many times as necessary.
+You can nest `Commands` as many times as necessary.
 
 #### Command
 
@@ -161,8 +167,8 @@ Takes the following options.
 Command(
   'command-name'
   {
-    alias: 'command-alias',
-    description: 'A command'
+    alias: 'command-alias', // default: undefined
+    description: 'A command' // default: empty string
   },
   ...childNodes
 )
@@ -181,11 +187,10 @@ Takes the following options.
 KWArg(
   'kwarg-name'
   {
-    alias: 'kwarg-alias',
-    description: 'A key word argument',
-    options: ['option1', 'option2']
-  },
-  ...childNodes
+    alias: 'kwarg-alias', // default: undefined
+    description: 'A key word argument', // default: empty string
+    options: ['option1', 'option2'] // default: undefined
+  }
 )
 ```
 
@@ -202,11 +207,10 @@ Takes the following options.
 Flag(
   'flag-name'
   {
-    alias: 'flag-alias',
-    description: 'A flag',
-    options: ['option1', 'option2']
-  },
-  ...childNodes
+    alias: 'flag-alias', // default: undefined
+    description: 'A flag', // default: empty string
+    options: ['option1', 'option2'] // default: undefined
+  }
 )
 ```
 
@@ -221,10 +225,9 @@ Takes the following options.
 Arg(
   'arg-name'
   {
-    alias: 'arg-alias',
-    description: 'An arg'
-  },
-  ...childNodes
+    alias: 'arg-alias', // default: undefined
+    description: 'An arg' // default: empty string
+  }
 )
 ```
 
@@ -261,7 +264,10 @@ naval_fate ship shoot <x> <y>
 ```javascript
 const root = collect(
   Command(
-    'ship', null,
+    'ship', null,    
+    Arg(
+      'shipName'
+    ),
     Command(
       'new', null,
       Arg(
@@ -277,19 +283,16 @@ const root = collect(
         'shootY', {required: true}
       )
     ),
-    Arg(
-      'shipName', null,
-      Command(
-        'move', null,
-        Arg(
-          'moveX', {required: true}
-        ),
-        Arg(
-          'moveY', {required: true}
-        ),
-        KWArg(
-          'speed'
-        )
+    Command(
+      'move', null,
+      Arg(
+        'moveX', {required: true}
+      ),
+      Arg(
+        'moveY', {required: true}
+      ),
+      KWArg(
+        'speed'
       )
     )
   )
