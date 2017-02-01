@@ -148,7 +148,7 @@ All nodes take the following arguments, though `Command` and `Program` take addi
 Node(name, options);
 ```
 
-Command and Program can take an infinite number or arguments. Any arguments after `name` & `options` become that node's child nodes e.g.
+`Command` and `Program` can take an infinite number or arguments. Any arguments after `name` & `options` become that node's child nodes e.g.
 
 ```javascript
 Command(name, options, KWArg(), Flag(), Arg());
@@ -162,8 +162,7 @@ You can nest `Commands` as many times as necessary.
 
 #### Program
 
-A sub-command of your command line interface.
-Program is the main command / name of your program.
+Program is the main command / name of your program. This should always be the root node in your schema.
 
 Takes the following options.
 
