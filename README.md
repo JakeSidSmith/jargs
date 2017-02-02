@@ -171,7 +171,8 @@ Program(
   'program-name'
   {
     description: 'A command', // default: empty string
-    usage: 'program-name sub-command --flag' // default: empty string
+    usage: 'program-name sub-command --flag', // default: empty string,
+    callback: function () {}
   },
   ...childNodes
 )
@@ -190,7 +191,8 @@ Command(
   {
     alias: 'command-alias', // default: undefined
     description: 'A command', // default: empty string
-    usage: 'program-name sub-command --flag' // default: empty string
+    usage: 'program-name sub-command --flag', // default: empty string
+    callback: function () {}
   },
   ...childNodes
 )
