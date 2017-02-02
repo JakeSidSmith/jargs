@@ -326,7 +326,7 @@
       });
     });
 
-    it('should throw an error for duplicate kwargs', function () {
+    it('should exit with help for duplicate kwargs', function () {
       var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /duplicate/i;
 
@@ -352,7 +352,7 @@
       exitWithHelpStub.restore();
     });
 
-    it('should throw an error for duplicate flags', function () {
+    it('should exit with help for duplicate flags', function () {
       var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /duplicate/i;
 
@@ -378,7 +378,7 @@
       exitWithHelpStub.restore();
     });
 
-    it('should throw an error for unknown flags / kwargs', function () {
+    it('should exit with help for unknown flags / kwargs', function () {
       var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /unknown/i;
 
@@ -407,7 +407,7 @@
       exitWithHelpStub.restore();
     });
 
-    it('should throw an error for unknown commands / args', function () {
+    it('should exit with help for unknown commands / args', function () {
       var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /unknown/i;
 
