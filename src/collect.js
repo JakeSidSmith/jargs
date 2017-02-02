@@ -21,7 +21,7 @@
   var MATCHES_NAME_EQUALS = /.*=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-  function createTree (argv, schema) {
+  function createTree (argv, schema, commands) {
     var tree = {
       command: null,
       kwargs: {},
@@ -31,6 +31,11 @@
 
     if (schema._type === 'command') {
       tree.name = schema.name;
+    }
+
+    if (typeof schema.options.callback === 'function') {
+      console.log('Stashed callback'); // eslint-disable-line
+      commands.push(schema.options.callback.bind(null, tree));
     }
 
     if (!argv.length) {
@@ -47,7 +52,7 @@
         });
 
         if (matchingCommand) {
-          tree.command = createTree(argv, matchingCommand);
+          tree.command = createTree(argv, matchingCommand, commands);
         } else {
           var matchingArg = find(schema.children, function (node) {
             return node._type === 'arg' && !(node.name in tree.args);
@@ -86,6 +91,10 @@
       }
     }
 
+    while (commands.length) {
+      commands.shift()();
+    };
+
     return tree;
   }
 
@@ -95,6 +104,7 @@
     /* var command = */ args.shift();
     var argv = args.shift();
     var program = args.shift();
+    var commands = [];
 
     if (!program) {
       throw new Error('No program defined');
@@ -104,7 +114,7 @@
       throw new Error('Root node must be a Program');
     }
 
-    return createTree(argv, program);
+    return createTree(argv, program, commands);
   }
 
   module.exports = collect;

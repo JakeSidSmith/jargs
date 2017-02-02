@@ -5,7 +5,9 @@
 (function () {
 
   var expect = require('chai').expect;
-  var stub = require('sinon').stub;
+  var sinon = require('sinon');
+  var stub = sinon.stub;
+  var spy = sinon.spy;
 
   var collect = require('../src/collect');
   var Program = require('../src/program');
@@ -206,10 +208,9 @@
     });
 
     it('should prioritize commands and traverse their children (test 1)', function () {
-      var result;
       var boundCollect = collect.bind(null, 'node', 'browserify', ['command', 'command']);
 
-      result = boundCollect(
+      var result = boundCollect(
         Program(
           'program',
           null,
@@ -243,10 +244,9 @@
     });
 
     it('should prioritize commands and traverse their children (test 2)', function () {
-      var result;
       var boundCollect = collect.bind(null, 'node', 'browserify', ['not-a-command']);
 
-      result = boundCollect(
+      var result = boundCollect(
         Program(
           'program',
           null,
@@ -271,6 +271,51 @@
           arg1: 'not-a-command'
         }
       });
+    });
+
+    it('should call program and command callbacks if matched', function () {
+      var boundCollect = collect.bind(null, 'node', 'browserify', ['argy', 'command2', 'argygain', 'command3']);
+
+      var programSpy = spy();
+      var command1Spy = spy();
+      var command2Spy = spy();
+      var command3Spy = spy();
+
+      var result = boundCollect(
+        Program(
+          'program',
+          {callback: programSpy},
+          Arg(
+            'arg1'
+          ),
+          Command(
+            'command1',
+            {callback: command1Spy},
+            Arg(
+              'arg3'
+            )
+          ),
+          Command(
+            'command2',
+            {callback: command2Spy},
+            Arg(
+              'arg2'
+            ),
+            Command(
+              'command3',
+              {callback: command3Spy}
+            )
+          )
+        )
+      );
+
+      expect(programSpy).to.have.been.calledOnce;
+      expect(programSpy).to.have.been.calledWith(result);
+      expect(command2Spy).to.have.been.calledOnce;
+      expect(command2Spy).to.have.been.calledWith(result.command);
+      expect(command3Spy).to.have.been.calledOnce;
+      expect(command3Spy).to.have.been.calledWith(result.command.command);
+      expect(command1Spy).not.to.have.been.called;
     });
 
     it('should return an arg tree from aliases', function () {
