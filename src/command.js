@@ -22,6 +22,9 @@
     required: {
       type: 'boolean',
       default: false
+    },
+    callback: {
+      type: 'function'
     }
   };
 

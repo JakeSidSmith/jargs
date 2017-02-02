@@ -15,6 +15,9 @@
     usage: {
       type: 'string',
       default: ''
+    },
+    callback: {
+      type: 'function'
     }
   };
 
