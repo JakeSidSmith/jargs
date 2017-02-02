@@ -34,7 +34,6 @@
     }
 
     if (typeof schema.options.callback === 'function') {
-      console.log('Stashed callback'); // eslint-disable-line
       commands.push(schema.options.callback.bind(null, tree));
     }
 
