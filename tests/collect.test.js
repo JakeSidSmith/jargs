@@ -316,6 +316,9 @@
       expect(command3Spy).to.have.been.calledOnce;
       expect(command3Spy).to.have.been.calledWith(result.command.command);
       expect(command1Spy).not.to.have.been.called;
+
+      expect(result.args.arg1).to.equal('argy');
+      expect(result.command.args.arg2).to.equal('argygain');
     });
 
     it('should return an arg tree from aliases', function () {
