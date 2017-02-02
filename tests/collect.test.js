@@ -13,7 +13,6 @@
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
-  var utils = require('../src/utils');
 
   describe('collect.js', function () {
 
@@ -327,8 +326,9 @@
     });
 
     it('should exit with help for duplicate kwargs', function () {
-      var exitWithHelpStub = stub(utils, 'exitWithHelp');
-      var anError = /duplicate/i;
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /duplicate.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--kwarg=correct', '--kwarg=incorrect']);
@@ -347,14 +347,16 @@
         )
       );
 
-      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
 
-      exitWithHelpStub.restore();
+      strerrStub.restore();
+      exitStub.restore();
     });
 
     it('should exit with help for duplicate flags', function () {
-      var exitWithHelpStub = stub(utils, 'exitWithHelp');
-      var anError = /duplicate/i;
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /duplicate.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--flag', '--flag']);
@@ -373,14 +375,16 @@
         )
       );
 
-      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
 
-      exitWithHelpStub.restore();
+      strerrStub.restore();
+      exitStub.restore();
     });
 
     it('should exit with help for unknown flags / kwargs', function () {
-      var exitWithHelpStub = stub(utils, 'exitWithHelp');
-      var anError = /unknown/i;
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /unknown.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--version']);
@@ -402,14 +406,16 @@
         )
       );
 
-      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
 
-      exitWithHelpStub.restore();
+      strerrStub.restore();
+      exitStub.restore();
     });
 
     it('should exit with help for unknown commands / args', function () {
-      var exitWithHelpStub = stub(utils, 'exitWithHelp');
-      var anError = /unknown/i;
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /unknown.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['another-command']);
@@ -431,9 +437,10 @@
         )
       );
 
-      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
 
-      exitWithHelpStub.restore();
+      strerrStub.restore();
+      exitStub.restore();
     });
 
   });
