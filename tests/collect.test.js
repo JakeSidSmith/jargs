@@ -327,7 +327,7 @@
     });
 
     it('should throw an error for duplicate kwargs', function () {
-      var throwErrorStub = stub(utils, 'throwError');
+      var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /duplicate/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
@@ -347,13 +347,13 @@
         )
       );
 
-      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
 
-      throwErrorStub.restore();
+      exitWithHelpStub.restore();
     });
 
     it('should throw an error for duplicate flags', function () {
-      var throwErrorStub = stub(utils, 'throwError');
+      var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /duplicate/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
@@ -373,13 +373,13 @@
         )
       );
 
-      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
 
-      throwErrorStub.restore();
+      exitWithHelpStub.restore();
     });
 
     it('should throw an error for unknown flags / kwargs', function () {
-      var throwErrorStub = stub(utils, 'throwError');
+      var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /unknown/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
@@ -402,13 +402,13 @@
         )
       );
 
-      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
 
-      throwErrorStub.restore();
+      exitWithHelpStub.restore();
     });
 
     it('should throw an error for unknown commands / args', function () {
-      var throwErrorStub = stub(utils, 'throwError');
+      var exitWithHelpStub = stub(utils, 'exitWithHelp');
       var anError = /unknown/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
@@ -431,9 +431,9 @@
         )
       );
 
-      expect(throwErrorStub).to.have.been.calledWithMatch(anError);
+      expect(exitWithHelpStub).to.have.been.calledWithMatch(anError);
 
-      throwErrorStub.restore();
+      exitWithHelpStub.restore();
     });
 
   });

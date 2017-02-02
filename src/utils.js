@@ -87,8 +87,8 @@
   }
 
   /* istanbul ignore next */
-  // TODO: Stub process functions in tests to properly test throwError
-  function throwError (error) {
+  // TODO: Stub process functions in tests to properly test exitWithHelp
+  function exitWithHelp (error) {
     process.stderr.write(error + '\n\n');
     process.exit(1);
   }
@@ -114,7 +114,7 @@
     getNodeProperties: getNodeProperties,
     validateName: validateName,
     serializeOptions: serializeOptions,
-    throwError: throwError,
+    exitWithHelp: exitWithHelp,
     find: find,
     each: each
   };

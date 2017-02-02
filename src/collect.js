@@ -54,7 +54,7 @@
           });
 
           if (!matchingArg) {
-            utils.throwError('Unknown argument: ' + arg);
+            utils.exitWithHelp('Unknown argument: ' + arg);
           } else {
             tree.args[matchingArg.name] = arg;
           }
@@ -71,9 +71,9 @@
         });
 
         if (!matchingFlagOrKWArg) {
-          utils.throwError('Unknown argument: ' + kwargName);
+          utils.exitWithHelp('Unknown argument: ' + kwargName);
         } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
-          utils.throwError('Duplicate argument: ' + kwargName);
+          utils.exitWithHelp('Duplicate argument: ' + kwargName);
         } else {
           if (matchingFlagOrKWArg._type === 'flag') {
             kwargValue = true;
