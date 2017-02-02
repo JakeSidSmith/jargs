@@ -38,13 +38,21 @@
         });
       });
 
-      it('should error if node names contain spaces', function () {
-        var anError = /spaces/i;
+      it('should error if node names contain anything but letters, numbers & hyphens', function () {
+        var anError = /letters.+numbers.+hyphens/i;
 
         utils.each(nodes, function (node) {
           expect(node.bind(null, ' test')).to.throw(anError);
           expect(node.bind(null, 'test ')).to.throw(anError);
           expect(node.bind(null, ' te st ')).to.throw(anError);
+
+          expect(node.bind(null, '_test')).to.throw(anError);
+          expect(node.bind(null, 'test_')).to.throw(anError);
+          expect(node.bind(null, '_te_st_')).to.throw(anError);
+
+          expect(node.bind(null, '+test')).to.throw(anError);
+          expect(node.bind(null, 'test=')).to.throw(anError);
+          expect(node.bind(null, 'te:st')).to.throw(anError);
         });
       });
 
@@ -98,13 +106,21 @@
         });
       });
 
-      it('should error if node names contain spaces', function () {
-        var anError = /spaces/i;
+      it('should error if node aliases contain anything by letters, numbers, and hyphens', function () {
+        var anError = /letters.+numbers.+hyphens/i;
 
         utils.each(nodesWithAliases, function (node) {
-          expect(node.bind(null, 'name', {alias: ' test'})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: 'test '})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: ' te st '})).to.throw(anError);
+          expect(node.bind(null, ' test')).to.throw(anError);
+          expect(node.bind(null, 'test ')).to.throw(anError);
+          expect(node.bind(null, ' te st ')).to.throw(anError);
+
+          expect(node.bind(null, '_test')).to.throw(anError);
+          expect(node.bind(null, 'test_')).to.throw(anError);
+          expect(node.bind(null, '_te_st_')).to.throw(anError);
+
+          expect(node.bind(null, '+test')).to.throw(anError);
+          expect(node.bind(null, 'test=')).to.throw(anError);
+          expect(node.bind(null, 'te:st')).to.throw(anError);
         });
       });
 

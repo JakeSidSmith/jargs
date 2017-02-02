@@ -2,6 +2,8 @@
 
 (function () {
 
+  var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
+
   function argsToArray (args) {
     return Array.prototype.slice.call(args);
   }
@@ -34,9 +36,8 @@
       throw new Error('Names and aliases cannot be empty');
     }
 
-    // TODO: Names and aliases should only contain [a-z0-9-]
-    if (name.indexOf(' ') >= 0) {
-      throw new Error('Names and aliases cannot contain spaces');
+    if (MATCHES_BAD_NAME_CHARS.test(name)) {
+      throw new Error('Names and aliases may only contain letters, numbers, and hyphens');
     }
 
     if (name.indexOf('-') === 0) {
