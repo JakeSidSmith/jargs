@@ -33,7 +33,7 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
   var root = jargs.collect(
     Program(
       'npm',
-      null,
+      {usage: 'npm command <library> [--flag]'},
       Command(
         'init',
         {description: 'Create npm package'}
