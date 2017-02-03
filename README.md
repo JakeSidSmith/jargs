@@ -213,8 +213,7 @@ KWArg(
   {
     alias: 'kwarg-alias', // default: undefined
     description: 'A key word argument', // default: empty string
-    options: ['option1', 'option2'], // default: undefined
-    usage: 'program-name sub-command --kwarg' // default: empty string
+    options: ['option1', 'option2'] // default: undefined
   }
 )
 ```
@@ -234,8 +233,7 @@ Flag(
   {
     alias: 'flag-alias', // default: undefined
     description: 'A flag', // default: empty string
-    options: ['option1', 'option2'], // default: undefined
-    usage: 'program-name sub-command --flag' // default: empty string
+    options: ['option1', 'option2'] // default: undefined
   }
 )
 ```
@@ -252,8 +250,7 @@ Arg(
   'arg-name'
   {
     alias: 'arg-alias', // default: undefined
-    description: 'An arg', // default: empty string
-    usage: 'program-name sub-command arg' // default: empty string
+    description: 'An arg' // default: empty string
   }
 )
 ```

@@ -15,10 +15,6 @@
       type: 'string',
       default: ''
     },
-    usage: {
-      type: 'string',
-      default: ''
-    },
     options: {
       type: 'array'
     },

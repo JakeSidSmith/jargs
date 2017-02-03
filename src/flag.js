@@ -15,10 +15,6 @@
       type: 'string',
       default: ''
     },
-    usage: {
-      type: 'string',
-      default: ''
-    },
     required: {
       type: 'boolean',
       default: false
