@@ -10,6 +10,7 @@
 
   module.exports = {
     collect: require('./collect').bind(null, program, command, argv),
+    Program: require('./program'),
     Command: require('./command'),
     KWArg: require('./kwarg'),
     Flag: require('./flag'),

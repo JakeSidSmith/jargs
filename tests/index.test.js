@@ -13,6 +13,7 @@
     it('should export some stuff', function () {
       var keyTypeMap = {
         collect: 'function',
+        Program: 'function',
         Command: 'function',
         KWArg: 'function',
         Flag: 'function',
