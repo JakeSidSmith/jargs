@@ -18,6 +18,9 @@
     required: {
       type: 'boolean',
       default: false
+    },
+    type: {
+      type: 'string'
     }
   };
 

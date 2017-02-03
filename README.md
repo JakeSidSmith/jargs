@@ -213,7 +213,8 @@ KWArg(
   {
     alias: 'kwarg-alias', // default: undefined
     description: 'A key word argument', // default: empty string
-    options: ['option1', 'option2'] // default: undefined
+    options: ['option1', 'option2'], // default: undefined
+    type: 'string'
   }
 )
 ```
@@ -250,7 +251,8 @@ Arg(
   'arg-name'
   {
     alias: 'arg-alias', // default: undefined
-    description: 'An arg' // default: empty string
+    description: 'An arg', // default: empty string
+    type: 'string'
   }
 )
 ```
