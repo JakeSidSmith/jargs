@@ -144,7 +144,8 @@
         var namePrefix = option._type !== 'arg' ? '--' : '';
         var aliasPrefix = namePrefix.substring(0, 1);
         var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
-        return '    ' + namePrefix + option.name + alias + '   ' + option.options.description;
+        var type = option.options.type ? '[' + option.options.type + ']' : '';
+        return '    ' + namePrefix + option.name + alias + '   ' + option.options.description + '   ' + type;
       }).join('\n') +
       (options.length ? '\n\n' : '') +
       '  ' + error + '\n\n';
