@@ -24,53 +24,58 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
 (function () {
 
   var jargs = require('../src/index');
+  var Program = jargs.Program;
   var Command = jargs.Command;
   // var KWArg = jargs.KWArg;
   var Flag = jargs.Flag;
   var Arg = jargs.Arg;
 
   var root = jargs.collect(
-    Command(
-      'init',
-      {description: 'Create npm package'}
-    ),
-    Command(
-      'install',
-      {alias: 'i', description: 'Install dependencies'},
-      Arg(
-        'lib'
+    Program(
+      'npm',
+      null,
+      Command(
+        'init',
+        {description: 'Create npm package'}
+      ),
+      Command(
+        'install',
+        {alias: 'i', description: 'Install dependencies'},
+        Arg(
+          'lib'
+        ),
+        Flag(
+          'save',
+          {alias: 'S'}
+        ),
+        Flag(
+          'save-dev',
+          {alias: 'D'}
+        ),
+        Flag(
+          'save-exact',
+          {alias: 'E'}
+        ),
+        Flag(
+          'save-optional',
+          {alias: 'O'}
+        )
+      ),
+      Command(
+        'run',
+        {alias: 'run-scripts', description: 'Run a script in the package'},
+        Arg(
+          'command'
+        )
       ),
       Flag(
-        'save',
-        {alias: 'S'}
+        'help',
+        {alias: 'h', description: 'Displays help & usage info'}
       ),
       Flag(
-        'save-dev',
-        {alias: 'D'}
-      ),
-      Flag(
-        'save-exact',
-        {alias: 'E'}
-      ),
-      Flag(
-        'save-optional',
-        {alias: 'O'}
+        'version',
+        {alias: 'v', description: 'Displays version number'}
       )
-    ),
-    Command(
-      'run',
-      {alias: 'run-scripts', description: 'Run a script in the package'},
-      Arg(
-        'command'
-      )
-    ),
-    Flag(
-      'help',
-      {alias: 'h', description: 'Displays help & usage info'}
-    ),
-    Flag(
-      'version',
-      {alias: 'v', description: 'Displays version number'}
     )
   );
 
