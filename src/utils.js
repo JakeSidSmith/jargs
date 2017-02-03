@@ -4,6 +4,22 @@
 
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
+  function find (arr, fn) {
+    for (var i = 0; i < arr.length; i += 1) {
+      if (fn(arr[i], i)) {
+        return arr[i];
+      }
+    }
+
+    return null;
+  }
+
+  function each (arr, fn) {
+    for (var i = 0; i < arr.length; i += 1) {
+      fn(arr[i], i);
+    }
+  }
+
   function argsToArray (args) {
     return Array.prototype.slice.call(args);
   }
@@ -88,36 +104,67 @@
     }
   }
 
+  /*
+    Usage: program <command> [options]
+
+    Commands:
+      command  Do a thing
+
+    Options:
+      --help, -h     Show help                                             [boolean]
+      --version, -v  Return the version number                             [boolean]
+
+    Examples:
+      program command --flag                                   (A brief description)
+
+    Unknown argument: unknown
+  */
+
+  function createHelp (schema, error) {
+    var commands = [];
+    var options = [];
+
+    each(schema.children, function (node) {
+      if (node._type === 'command') {
+        commands.push(node);
+      } else {
+        options.push(node);
+      }
+    });
+
+    return '\n' + (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '') +
+      (commands.length ? '  Commands:\n' : '') +
+      commands.map(function (command) {
+        var alias = (command.options.alias ? ', ' + command.options.alias : '');
+        return '    ' + command.name + alias + '   ' + command.options.description;
+      }).join('\n') +
+      (commands.length ? '\n\n' : '') +
+      (options.length ? '  Options:\n' : '') +
+      options.map(function (option) {
+        var namePrefix = option._type !== 'arg' ? '--' : '';
+        var aliasPrefix = namePrefix.substring(0, 1);
+        var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
+        return '    ' + namePrefix + option.name + alias + '   ' + option.options.description;
+      }).join('\n') +
+      (options.length ? '\n\n' : '') +
+      '  ' + error + '\n\n';
+  }
+
   /* istanbul ignore next */
-  function exitWithHelp (error) {
-    process.stderr.write(error + '\n\n');
+  function exitWithHelp (help) {
+    process.stderr.write(help);
     process.exit(1);
   }
 
-  function find (arr, fn) {
-    for (var i = 0; i < arr.length; i += 1) {
-      if (fn(arr[i], i)) {
-        return arr[i];
-      }
-    }
-
-    return null;
-  }
-
-  function each (arr, fn) {
-    for (var i = 0; i < arr.length; i += 1) {
-      fn(arr[i], i);
-    }
-  }
-
   module.exports = {
+    find: find,
+    each: each,
     argsToArray: argsToArray,
     getNodeProperties: getNodeProperties,
     validateName: validateName,
     serializeOptions: serializeOptions,
-    exitWithHelp: exitWithHelp,
-    find: find,
-    each: each
+    createHelp: createHelp,
+    exitWithHelp: exitWithHelp
   };
 
 })();

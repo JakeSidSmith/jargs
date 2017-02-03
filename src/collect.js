@@ -58,7 +58,7 @@
           });
 
           if (!matchingArg) {
-            utils.exitWithHelp('Unknown argument: ' + arg);
+            utils.exitWithHelp(utils.createHelp(schema, 'Unknown argument: ' + arg));
           } else {
             tree.args[matchingArg.name] = arg;
           }
@@ -75,9 +75,9 @@
         });
 
         if (!matchingFlagOrKWArg) {
-          utils.exitWithHelp('Unknown argument: ' + kwargName);
+          utils.exitWithHelp(utils.createHelp(schema, 'Unknown argument: ' + kwargName));
         } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
-          utils.exitWithHelp('Duplicate argument: ' + kwargName);
+          utils.exitWithHelp(utils.createHelp(schema, 'Duplicate argument: ' + kwargName));
         } else {
           if (matchingFlagOrKWArg._type === 'flag') {
             kwargValue = true;
