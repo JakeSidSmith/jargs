@@ -15,7 +15,7 @@
 
       expect(node).to.be.ok;
       expect(node.name).to.equal('foo');
-      expect(node.options).to.eql({description: '', usage: ''});
+      expect(node.options).to.eql({description: '', usage: '', examples: []});
       expect(node.children).to.eql(['child1', 'child2']);
       expect(node._type).to.equal('program');
     });

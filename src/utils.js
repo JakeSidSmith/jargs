@@ -148,6 +148,11 @@
         return '    ' + namePrefix + option.name + alias + '   ' + option.options.description + '   ' + type;
       }).join('\n') +
       (options.length ? '\n\n' : '') +
+      (schema.options.examples.length ? '  Examples:\n' : '') +
+      schema.options.examples.map(function (example) {
+        return '    ' + example;
+      }).join('\n') +
+      (schema.options.examples.length ? '\n\n' : '') +
       '  ' + error + '\n\n';
   }
 

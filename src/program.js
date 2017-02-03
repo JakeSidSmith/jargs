@@ -18,6 +18,10 @@
     },
     callback: {
       type: 'function'
+    },
+    examples: {
+      type: 'array',
+      default: []
     }
   };
 
