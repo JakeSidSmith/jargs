@@ -132,14 +132,16 @@
       }
     });
 
-    return '\n' + (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '') +
-      (commands.length ? '  Commands:\n' : '') +
+    var usageText = (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '');
+
+    var commandsText = (commands.length ? '  Commands:\n' : '') +
       commands.map(function (command) {
         var alias = (command.options.alias ? ', ' + command.options.alias : '');
         return '    ' + command.name + alias + '   ' + command.options.description;
       }).join('\n') +
-      (commands.length ? '\n\n' : '') +
-      (options.length ? '  Options:\n' : '') +
+      (commands.length ? '\n\n' : '');
+
+    var optionsText = (options.length ? '  Options:\n' : '') +
       options.map(function (option) {
         var namePrefix = option._type !== 'arg' ? '--' : '';
         var aliasPrefix = namePrefix.substring(0, 1);
@@ -147,13 +149,22 @@
         var type = option.options.type ? '[' + option.options.type + ']' : '';
         return '    ' + namePrefix + option.name + alias + '   ' + option.options.description + '   ' + type;
       }).join('\n') +
-      (options.length ? '\n\n' : '') +
-      (schema.options.examples.length ? '  Examples:\n' : '') +
+      (options.length ? '\n\n' : '');
+
+    var examplesText = (schema.options.examples.length ? '  Examples:\n' : '') +
       schema.options.examples.map(function (example) {
         return '    ' + example;
       }).join('\n') +
-      (schema.options.examples.length ? '\n\n' : '') +
-      '  ' + error + '\n\n';
+      (schema.options.examples.length ? '\n\n' : '');
+
+    var errorText = '  ' + error + '\n\n';
+
+    return '\n' +
+      usageText +
+      commandsText +
+      optionsText +
+      examplesText +
+      errorText;
   }
 
   /* istanbul ignore next */
