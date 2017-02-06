@@ -219,6 +219,53 @@
         expect(utils.createHelp(schema, error)).to.equal(expected);
       });
 
+      it('should create some complex help text', function () {
+        var schema = Command(
+          'test',
+          {alias: 't', description: 'A command', usage: 'Used like this', examples: ['Example 1', 'Example 2']},
+          Arg(
+            'arg',
+            {description: 'Desc 1', type: 'string'}
+          ),
+          Flag(
+            'flag',
+            {alias: 'f', description: 'Desc 2'}
+          ),
+          KWArg(
+            'kwarg',
+            {alias: 'k', description: 'Desc 3', type: 'number'}
+          ),
+          Command(
+            'sub',
+            {description: 'A sub command'}
+          )
+        );
+        var error = 'An error';
+
+        var expected = [
+          '',
+          '  Usage: Used like this',
+          '',
+          '  Commands:',
+          '    sub   A sub command',
+          '',
+          '  Options:',
+          '    arg   Desc 1   [string]',
+          '    --flag, -f   Desc 2',
+          '    --kwarg, -k   Desc 3   [number]',
+          '',
+          '  Examples:',
+          '    Example 1',
+          '    Example 2',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema, error)).to.equal(expected);
+      });
+
     });
 
   });
