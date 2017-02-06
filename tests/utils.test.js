@@ -124,21 +124,47 @@
         var schema = Command('test');
         var error = 'An error';
 
-        expect(utils.createHelp(schema, error)).to.equal('\n  An error\n\n');
+        var expected = [
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema, error)).to.equal(expected);
       });
 
       it('should create help with usage text', function () {
         var schema = Command('test', {usage: 'How to use'});
         var error = 'An error';
 
-        expect(utils.createHelp(schema, error)).to.equal('\n  Usage: How to use\n\n  An error\n\n');
+        var expected = [
+          '',
+          '  Usage: How to use',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema, error)).to.equal(expected);
       });
 
       it('should create help with commands text', function () {
         var schema = Command('test', null, Command('sub', {alias: 's', description: 'Description'}));
         var error = 'An error';
 
-        expect(utils.createHelp(schema, error)).to.equal('\n  Commands:\n    sub, s   Description\n\n  An error\n\n');
+        var expected = [
+          '',
+          '  Commands:',
+          '    sub, s   Description',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema, error)).to.equal(expected);
       });
 
       it('should create help with options text', function () {
