@@ -6,6 +6,10 @@
 
   var expect = require('chai').expect;
 
+  var Command = require('../src/command');
+  var KWArg = require('../src/kwarg');
+  var Flag = require('../src/flag');
+  var Arg = require('../src/arg');
   var utils = require('../src/utils');
 
   describe('utils.js', function () {
@@ -110,6 +114,109 @@
         });
 
         expect(count).to.equal(5);
+      });
+
+    });
+
+    describe('createHelp', function () {
+
+      it('should create a basic error message', function () {
+        var schema = Command('test');
+        var error = 'An error';
+
+        expect(utils.createHelp(schema, error)).to.equal('\n  An error\n\n');
+      });
+
+      it('should create help with usage text', function () {
+        var schema = Command('test', {usage: 'How to use'});
+        var error = 'An error';
+
+        expect(utils.createHelp(schema, error)).to.equal('\n  Usage: How to use\n\n  An error\n\n');
+      });
+
+      it('should create help with commands text', function () {
+        var schema = Command('test', null, Command('sub', {alias: 's', description: 'Description'}));
+        var error = 'An error';
+
+        expect(utils.createHelp(schema, error)).to.equal('\n  Commands:\n    sub, s   Description\n\n  An error\n\n');
+      });
+
+      it('should create help with options text', function () {
+        var schema = Command(
+          'test',
+          null,
+          Arg(
+            'arg',
+            {description: 'Desc 1'}
+          ),
+          Flag(
+            'flag',
+            {alias: 'f', description: 'Desc 2'}
+          )
+        );
+        var error = 'An error';
+
+        var expected = [
+          '',
+          '  Options:',
+          '    arg   Desc 1',
+          '    --flag, -f   Desc 2',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema, error)).to.equal(expected);
+      });
+
+      it('should create help with options text with types', function () {
+        var schema = Command(
+          'test',
+          null,
+          Arg(
+            'arg',
+            {description: 'Desc 1', type: 'string'}
+          ),
+          KWArg(
+            'kwarg',
+            {alias: 'k', description: 'Desc 2', type: 'number'}
+          )
+        );
+        var error = 'An error';
+
+        var expected = [
+          '',
+          '  Options:',
+          '    arg   Desc 1   [string]',
+          '    --kwarg, -k   Desc 2   [number]',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema, error)).to.equal(expected);
+      });
+
+      it('should create help with examples text', function () {
+        var schema = Command(
+          'test',
+          {examples: ['Just like this']}
+        );
+        var error = 'An error';
+
+        var expected = [
+          '',
+          '  Examples:',
+          '    Just like this',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema, error)).to.equal(expected);
       });
 
     });
