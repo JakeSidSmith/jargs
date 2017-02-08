@@ -302,7 +302,9 @@
           ['install, i', 'Install new dependencies, or dependencies saved in your package.json']
         ];
 
-        var descriptionIndent = 4 + table[1][0].length + 4;
+        var indent = '    ';
+        var margin = '  ';
+        var descriptionIndent = indent.length + table[1][0].length + margin.length;
 
         var result = utils.formatTable(table, {alignRight: [], wrap: [1]});
         var lines = result.split('\n');
@@ -310,43 +312,50 @@
         expect(lines.length).to.equal(3);
 
         expect(lines[0].indexOf('Build')).to.equal(descriptionIndent);
-        expect(lines[0].substring(0, 4)).to.equal('    ');
-        expect(lines[0].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+        expect(lines[0].substring(0, indent.length)).to.equal(indent);
+        expect(lines[0].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
 
         expect(lines[1].indexOf('Install')).to.equal(descriptionIndent);
-        expect(lines[1].substring(0, 4)).to.equal('    ');
-        expect(lines[1].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+        expect(lines[1].substring(0, indent.length)).to.equal(indent);
+        expect(lines[1].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
 
         expect(/\S/.exec(lines[2]).index).to.equal(descriptionIndent);
-        expect(lines[2].substring(0, 4)).to.equal('    ');
-        expect(lines[2].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+        expect(lines[2].substring(0, indent.length)).to.equal(indent);
+        expect(lines[2].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
       });
 
       it('should format a table with 3 columns, and wrap the 2nd column (options)', function () {
         var table = [
           ['--help', 'Display help & usage information', ''],
-          ['--transform, -t', 'Plugin to use when compiling your javascript blah blah blah', '[string]']
+          ['--transform, -t', 'Plugin to use when compiling your javascript blah blah blah', '[string]'],
+          ['--version, -v', 'Display version number', '']
         ];
 
-        var descriptionIndent = 4 + table[1][0].length + 4;
+        var indent = '    ';
+        var margin = '  ';
+        var descriptionIndent = indent.length + table[1][0].length + margin.length;
 
         var result = utils.formatTable(table, {alignRight: [2], wrap: [1]});
         var lines = result.split('\n');
 
-        expect(lines.length).to.equal(3);
+        expect(lines.length).to.equal(4);
 
         expect(lines[0].indexOf('Display')).to.equal(descriptionIndent);
-        expect(lines[0].substring(0, 4)).to.equal('    ');
-        expect(lines[0].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+        expect(lines[0].substring(0, indent.length)).to.equal(indent);
+        expect(lines[0].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
 
         expect(lines[1].indexOf('Plugin')).to.equal(descriptionIndent);
-        expect(lines[1].substring(0, 4)).to.equal('    ');
-        expect(lines[1].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
-        expect(lines[1].substring(lines[1].length - 8 - 4)).to.equal('    [string]');
+        expect(lines[1].substring(0, indent.length)).to.equal(indent);
+        expect(lines[1].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+        expect(lines[1].substring(lines[1].length - 8 - margin.length)).to.equal(margin + '[string]');
 
         expect(/\S/.exec(lines[2]).index).to.equal(descriptionIndent);
-        expect(lines[2].substring(0, 4)).to.equal('    ');
-        expect(lines[2].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+        expect(lines[2].substring(0, indent.length)).to.equal(indent);
+        expect(lines[2].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(lines[3].indexOf('Display')).to.equal(descriptionIndent);
+        expect(lines[3].substring(0, indent.length)).to.equal(indent);
+        expect(lines[3].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
       });
 
     });

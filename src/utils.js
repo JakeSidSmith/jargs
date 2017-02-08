@@ -7,7 +7,7 @@
 
   var TABLE_OPTIONS = {
     indentation: '    ',
-    margin: '    ',
+    margin: '  ',
     width: 80
   };
 
@@ -248,16 +248,15 @@
         }
       });
 
-      if (rowIndex < table.length - 1) {
-        currentConcat += '\n';
-      }
-
       concat += currentConcat;
-      concat += nextConcats.length ? '\n' : '';
 
       each(nextConcats, function (nextConcat) {
-        concat += nextConcat;
+        concat += '\n' + nextConcat;
       });
+
+      if (rowIndex < table.length - 1) {
+        concat += '\n';
+      }
     });
 
     return concat;
