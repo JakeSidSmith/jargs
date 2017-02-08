@@ -2,6 +2,7 @@
 
 (function () {
 
+  var MATCHES_LEADING_SPACES = /^\s/;
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
   var TABLE_OPTIONS = {
@@ -232,12 +233,14 @@
 
           while (wrappedText.length) {
             nextConcats.push(createSpaces(currentConcat.length));
-            nextConcats[nextConcats.length - 1] += wrappedText.substring(0, remainingSpace);
+
+            nextConcats[nextConcats.length - 1] +=
+              wrappedText.replace(MATCHES_LEADING_SPACES, '').substring(0, remainingSpace);
+
             wrappedText = wrappedText.substring(remainingSpace);
           }
 
           currentConcat += padRight(cell.substring(0, remainingSpace), remainingSpace);
-          currentConcat += nextConcats.length ? '\n' : '';
         }
 
         if (index < row.length - 1) {
@@ -250,6 +253,7 @@
       }
 
       concat += currentConcat;
+      concat += nextConcats.length ? '\n' : '';
 
       each(nextConcats, function (nextConcat) {
         concat += nextConcat;

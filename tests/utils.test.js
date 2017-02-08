@@ -322,6 +322,33 @@
         expect(lines[2].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
       });
 
+      it('should format a table with 3 columns, and wrap the 2nd column (options)', function () {
+        var table = [
+          ['--help', 'Display help & usage information', ''],
+          ['--transform, -t', 'Plugin to use when compiling your javascript blah blah blah', '[string]']
+        ];
+
+        var descriptionIndent = 4 + table[1][0].length + 4;
+
+        var result = utils.formatTable(table, {alignRight: [2], wrap: [1]});
+        var lines = result.split('\n');
+
+        expect(lines.length).to.equal(3);
+
+        expect(lines[0].indexOf('Display')).to.equal(descriptionIndent);
+        expect(lines[0].substring(0, 4)).to.equal('    ');
+        expect(lines[0].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+
+        expect(lines[1].indexOf('Plugin')).to.equal(descriptionIndent);
+        expect(lines[1].substring(0, 4)).to.equal('    ');
+        expect(lines[1].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+        expect(lines[1].substring(lines[1].length - 8 - 4)).to.equal('    [string]');
+
+        expect(/\S/.exec(lines[2]).index).to.equal(descriptionIndent);
+        expect(lines[2].substring(0, 4)).to.equal('    ');
+        expect(lines[2].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+      });
+
     });
 
   });
