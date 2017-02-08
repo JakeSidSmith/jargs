@@ -157,14 +157,18 @@
         var expected = [
           '',
           '  Commands:',
-          '    sub, s   Description',
+          '    sub, s  Description',
           '',
           '  An error',
           '',
           ''
         ].join('\n');
 
-        expect(utils.createHelp(schema, error)).to.equal(expected);
+        var result = utils.createHelp(schema, error);
+
+        console.log(result);
+
+        expect(result).to.equal(expected);
       });
 
       it('should create help with options text', function () {
@@ -185,8 +189,8 @@
         var expected = [
           '',
           '  Options:',
-          '    arg   Desc 1',
-          '    --flag, -f   Desc 2',
+          '    arg         Desc 1',
+          '    --flag, -f  Desc 2',
           '',
           '  An error',
           '',
@@ -214,8 +218,8 @@
         var expected = [
           '',
           '  Options:',
-          '    arg   Desc 1   [string]',
-          '    --kwarg, -k   Desc 2   [number]',
+          '    arg          Desc 1                                                 [string]',
+          '    --kwarg, -k  Desc 2                                                 [number]',
           '',
           '  An error',
           '',
@@ -273,12 +277,12 @@
           '  Usage: Used like this',
           '',
           '  Commands:',
-          '    sub   A sub command',
+          '    sub  A sub command',
           '',
           '  Options:',
-          '    arg   Desc 1   [string]',
+          '    arg          Desc 1                                                 [string]',
           '    --flag, -f   Desc 2',
-          '    --kwarg, -k   Desc 3   [number]',
+          '    --kwarg, -k  Desc 3                                                 [number]',
           '',
           '  Examples:',
           '    Example 1',

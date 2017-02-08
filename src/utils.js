@@ -2,7 +2,8 @@
 
 (function () {
 
-  var MATCHES_LEADING_SPACES = /^\s/;
+  var MATCHES_LEADING_SPACES = /^\s+/;
+  var MATCHES_TRAILING_SPACES = /\s+$/;
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
   var TABLE_OPTIONS = {
@@ -127,53 +128,6 @@
     Unknown argument: unknown
   */
 
-  function createHelp (schema, error) {
-    var commands = [];
-    var options = [];
-
-    each(schema.children, function (node) {
-      if (node._type === 'command') {
-        commands.push(node);
-      } else {
-        options.push(node);
-      }
-    });
-
-    var usageText = (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '');
-
-    var commandsText = (commands.length ? '  Commands:\n' : '') +
-      commands.map(function (command) {
-        var alias = (command.options.alias ? ', ' + command.options.alias : '');
-        return '    ' + command.name + alias + '   ' + command.options.description;
-      }).join('\n') +
-      (commands.length ? '\n\n' : '');
-
-    var optionsText = (options.length ? '  Options:\n' : '') +
-      options.map(function (option) {
-        var namePrefix = option._type !== 'arg' ? '--' : '';
-        var aliasPrefix = namePrefix.substring(0, 1);
-        var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
-        var type = option.options.type ? '   [' + option.options.type + ']' : '';
-        return '    ' + namePrefix + option.name + alias + '   ' + option.options.description + type;
-      }).join('\n') +
-      (options.length ? '\n\n' : '');
-
-    var examplesText = (schema.options.examples.length ? '  Examples:\n' : '') +
-      schema.options.examples.map(function (example) {
-        return '    ' + example;
-      }).join('\n') +
-      (schema.options.examples.length ? '\n\n' : '');
-
-    var errorText = '  ' + error + '\n\n';
-
-    return '\n' +
-      usageText +
-      commandsText +
-      optionsText +
-      examplesText +
-      errorText;
-  }
-
   function getMaxTableWidths (table) {
     var maxWidths = [];
 
@@ -194,10 +148,10 @@
     each(maxWidths, function (value, index) {
       if (options.wrap.indexOf(index) < 0) {
         remainingSpace -= value;
+      }
 
-        if (index < maxWidths.length - 1) {
-          remainingSpace -= TABLE_OPTIONS.margin.length;
-        }
+      if (index < maxWidths.length - 1) {
+        remainingSpace -= TABLE_OPTIONS.margin.length;
       }
     });
 
@@ -259,13 +213,62 @@
       }
     });
 
-    return concat;
+    return concat.split('\n').map(function (line) {
+      return line.replace(MATCHES_TRAILING_SPACES, '');
+    }).join('\n');
   }
 
   function formatTable (table, options) {
     var maxWidths = getMaxTableWidths(table);
     var remainingSpace = getRemainingSpace(maxWidths, options);
     return createTable(table, options, maxWidths, remainingSpace);
+  }
+
+  function createHelp (schema, error) {
+    var commands = [];
+    var options = [];
+
+    each(schema.children, function (node) {
+      if (node._type === 'command') {
+        commands.push(node);
+      } else {
+        options.push(node);
+      }
+    });
+
+    var usageText = (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '');
+
+    var commandsText = (commands.length ? '  Commands:\n' : '') +
+      formatTable(commands.map(function (command) {
+        var alias = (command.options.alias ? ', ' + command.options.alias : '');
+        return [command.name + alias, command.options.description];
+      }), {wrap: [1], alignRight: [2]}) +
+      (commands.length ? '\n\n' : '');
+
+    var optionsText = (options.length ? '  Options:\n' : '') +
+      formatTable(options.map(function (option) {
+        var namePrefix = option._type !== 'arg' ? '--' : '';
+        var aliasPrefix = namePrefix.substring(0, 1);
+        var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
+        var type = option.options.type ? '   [' + option.options.type + ']' : '';
+        return [namePrefix + option.name + alias, option.options.description, type];
+      }), {wrap: [1], alignRight: [2]}) +
+      (options.length ? '\n\n' : '');
+
+    var examplesText = (schema.options.examples.length ? '  Examples:\n' : '') +
+      schema.options.examples.map(function (example) {
+        return '    ' + example;
+      }).join('\n') +
+      (schema.options.examples.length ? '\n\n' : '');
+
+    var errorText = '  ' + error + '\n\n';
+
+    return '\n' +
+      usageText +
+      commandsText +
+      optionsText +
+      examplesText +
+      errorText;
   }
 
   /* istanbul ignore next */
@@ -281,8 +284,8 @@
     getNodeProperties: getNodeProperties,
     validateName: validateName,
     serializeOptions: serializeOptions,
-    createHelp: createHelp,
     formatTable: formatTable,
+    createHelp: createHelp,
     exitWithHelp: exitWithHelp
   };
 
