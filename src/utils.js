@@ -278,22 +278,12 @@
       }
     });
 
-    var usageText = (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '');
-
-    var commandsText = createCommandsText(commands);
-
-    var optionsText = createOptionsText(options);
-
-    var examplesText = createExamplesText(schema.options.examples);
-
-    var errorText = '  ' + error + '\n\n';
-
     return '\n' +
-      usageText +
-      commandsText +
-      optionsText +
-      examplesText +
-      errorText;
+      (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '') +
+      createCommandsText(commands) +
+      createOptionsText(options) +
+      createExamplesText(schema.options.examples) +
+      '  ' + error + '\n\n';
   }
 
   /* istanbul ignore next */
