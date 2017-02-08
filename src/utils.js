@@ -236,6 +236,36 @@
     return createTable(table, options, maxWidths, remainingSpace);
   }
 
+  function createCommandsText (commands) {
+    return (commands.length ? '  Commands:\n' : '') +
+      formatTable(commands.map(function (command) {
+        var alias = (command.options.alias ? ', ' + command.options.alias : '');
+        return [command.name + alias, command.options.description];
+      }), {wrap: [1], alignRight: [2]}) +
+      (commands.length ? '\n\n' : '');
+  }
+
+  function createOptionsText (options) {
+    return (options.length ? '  Options:\n' : '') +
+      formatTable(options.map(function (option) {
+        var namePrefix = option._type === 'arg' ? '<' : '--';
+        var nameSuffix = option._type === 'arg' ? '>' : '';
+        var aliasPrefix = namePrefix.substring(0, 1);
+        var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
+        var type = option.options.type ? '   [' + option.options.type + ']' : '';
+        return [namePrefix + option.name + nameSuffix + alias, option.options.description, type];
+      }), {wrap: [1], alignRight: [2]}) +
+      (options.length ? '\n\n' : '');
+  }
+
+  function createExamplesText (examples) {
+    return (examples.length ? '  Examples:\n' : '') +
+      examples.map(function (example) {
+        return '    ' + example;
+      }).join('\n') +
+      (examples.length ? '\n\n' : '');
+  }
+
   function createHelp (schema, error) {
     var commands = [];
     var options = [];
@@ -250,29 +280,11 @@
 
     var usageText = (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '');
 
-    var commandsText = (commands.length ? '  Commands:\n' : '') +
-      formatTable(commands.map(function (command) {
-        var alias = (command.options.alias ? ', ' + command.options.alias : '');
-        return [command.name + alias, command.options.description];
-      }), {wrap: [1], alignRight: [2]}) +
-      (commands.length ? '\n\n' : '');
+    var commandsText = createCommandsText(commands);
 
-    var optionsText = (options.length ? '  Options:\n' : '') +
-      formatTable(options.map(function (option) {
-        var namePrefix = option._type === 'arg' ? '<' : '--';
-        var nameSuffix = option._type === 'arg' ? '>' : '';
-        var aliasPrefix = namePrefix.substring(0, 1);
-        var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
-        var type = option.options.type ? '   [' + option.options.type + ']' : '';
-        return [namePrefix + option.name + nameSuffix + alias, option.options.description, type];
-      }), {wrap: [1], alignRight: [2]}) +
-      (options.length ? '\n\n' : '');
+    var optionsText = createOptionsText(options);
 
-    var examplesText = (schema.options.examples.length ? '  Examples:\n' : '') +
-      schema.options.examples.map(function (example) {
-        return '    ' + example;
-      }).join('\n') +
-      (schema.options.examples.length ? '\n\n' : '');
+    var examplesText = createExamplesText(schema.options.examples);
 
     var errorText = '  ' + error + '\n\n';
 
