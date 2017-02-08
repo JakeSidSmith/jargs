@@ -4,6 +4,12 @@
 
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
+  var TABLE_OPTIONS = {
+    indentation: '    ',
+    margin: '    ',
+    width: 80
+  };
+
   function find (arr, fn) {
     for (var i = 0; i < arr.length; i += 1) {
       if (fn(arr[i], i)) {
@@ -167,6 +173,98 @@
       errorText;
   }
 
+  function getMaxTableWidths (table) {
+    var maxWidths = [];
+
+    each(table, function (row) {
+      each(row, function (cell, index) {
+        if (typeof maxWidths[index] === 'undefined' || cell.length > maxWidths[index]) {
+          maxWidths[index] = cell.length;
+        }
+      });
+    });
+
+    return maxWidths;
+  }
+
+  function getRemainingSpace (maxWidths, options) {
+    var remainingSpace = TABLE_OPTIONS.width - TABLE_OPTIONS.indentation.length;
+
+    each(maxWidths, function (value, index) {
+      if (options.wrap.indexOf(index) < 0) {
+        remainingSpace -= value;
+
+        if (index < maxWidths.length - 1) {
+          remainingSpace -= TABLE_OPTIONS.margin.length;
+        }
+      }
+    });
+
+    return remainingSpace;
+  }
+
+  function createSpaces (length) {
+    var spaces = '';
+
+    for (var i = 0; i < length; i += 1) {
+      spaces += ' ';
+    }
+
+    return spaces;
+  }
+
+  function padRight (str, length) {
+    return (str + createSpaces(length)).substring(0, length);
+  }
+
+  function createTable (table, options, maxWidths, remainingSpace) {
+    var concat = '';
+
+    each(table, function (row, rowIndex) {
+      var currentConcat = TABLE_OPTIONS.indentation;
+      var nextConcats = [];
+
+      each(row, function (cell, index) {
+        if (options.wrap.indexOf(index) < 0) {
+          currentConcat += padRight(cell, maxWidths[index]);
+        } else {
+          var wrappedText = cell.substring(remainingSpace);
+
+          while (wrappedText.length) {
+            nextConcats.push(createSpaces(currentConcat.length));
+            nextConcats[nextConcats.length - 1] += wrappedText.substring(0, remainingSpace);
+            wrappedText = wrappedText.substring(remainingSpace);
+          }
+
+          currentConcat += padRight(cell.substring(0, remainingSpace), remainingSpace);
+          currentConcat += nextConcats.length ? '\n' : '';
+        }
+
+        if (index < row.length - 1) {
+          currentConcat += TABLE_OPTIONS.margin;
+        }
+      });
+
+      if (rowIndex < table.length - 1) {
+        currentConcat += '\n';
+      }
+
+      concat += currentConcat;
+
+      each(nextConcats, function (nextConcat) {
+        concat += nextConcat;
+      });
+    });
+
+    return concat;
+  }
+
+  function formatTable (table, options) {
+    var maxWidths = getMaxTableWidths(table);
+    var remainingSpace = getRemainingSpace(maxWidths, options);
+    return createTable(table, options, maxWidths, remainingSpace);
+  }
+
   /* istanbul ignore next */
   function exitWithHelp (help) {
     process.stderr.write(help);
@@ -181,6 +279,7 @@
     validateName: validateName,
     serializeOptions: serializeOptions,
     createHelp: createHelp,
+    formatTable: formatTable,
     exitWithHelp: exitWithHelp
   };
 

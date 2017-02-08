@@ -294,6 +294,36 @@
 
     });
 
+    describe('formatTable', function () {
+
+      it('should format a table with 2 columns, and wrap the last column (commands)', function () {
+        var table = [
+          ['build', 'Build your project'],
+          ['install, i', 'Install new dependencies, or dependencies saved in your package.json']
+        ];
+
+        var descriptionIndent = 4 + table[1][0].length + 4;
+
+        var result = utils.formatTable(table, {alignRight: [], wrap: [1]});
+        var lines = result.split('\n');
+
+        expect(lines.length).to.equal(3);
+
+        expect(lines[0].indexOf('Build')).to.equal(descriptionIndent);
+        expect(lines[0].substring(0, 4)).to.equal('    ');
+        expect(lines[0].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+
+        expect(lines[1].indexOf('Install')).to.equal(descriptionIndent);
+        expect(lines[1].substring(0, 4)).to.equal('    ');
+        expect(lines[1].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+
+        expect(/\S/.exec(lines[2]).index).to.equal(descriptionIndent);
+        expect(lines[2].substring(0, 4)).to.equal('    ');
+        expect(lines[2].substring(descriptionIndent - 4, descriptionIndent)).to.equal('    ');
+      });
+
+    });
+
   });
 
 })();
