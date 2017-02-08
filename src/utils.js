@@ -247,11 +247,12 @@
 
     var optionsText = (options.length ? '  Options:\n' : '') +
       formatTable(options.map(function (option) {
-        var namePrefix = option._type !== 'arg' ? '--' : '';
+        var namePrefix = option._type === 'arg' ? '<' : '--';
+        var nameSuffix = option._type === 'arg' ? '>' : '';
         var aliasPrefix = namePrefix.substring(0, 1);
         var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
         var type = option.options.type ? '   [' + option.options.type + ']' : '';
-        return [namePrefix + option.name + alias, option.options.description, type];
+        return [namePrefix + option.name + nameSuffix + alias, option.options.description, type];
       }), {wrap: [1], alignRight: [2]}) +
       (options.length ? '\n\n' : '');
 

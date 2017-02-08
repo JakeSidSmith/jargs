@@ -166,8 +166,6 @@
 
         var result = utils.createHelp(schema, error);
 
-        console.log(result);
-
         expect(result).to.equal(expected);
       });
 
@@ -189,7 +187,7 @@
         var expected = [
           '',
           '  Options:',
-          '    arg         Desc 1',
+          '    <arg>       Desc 1',
           '    --flag, -f  Desc 2',
           '',
           '  An error',
@@ -218,7 +216,7 @@
         var expected = [
           '',
           '  Options:',
-          '    arg          Desc 1                                                 [string]',
+          '    <arg>        Desc 1                                                 [string]',
           '    --kwarg, -k  Desc 2                                                 [number]',
           '',
           '  An error',
@@ -280,7 +278,7 @@
           '    sub  A sub command',
           '',
           '  Options:',
-          '    arg          Desc 1                                                 [string]',
+          '    <arg>        Desc 1                                                 [string]',
           '    --flag, -f   Desc 2',
           '    --kwarg, -k  Desc 3                                                 [number]',
           '',
