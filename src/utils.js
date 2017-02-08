@@ -168,8 +168,12 @@
     return spaces;
   }
 
-  function padRight (str, length) {
-    return (str + createSpaces(length)).substring(0, length);
+  function pad (str, length, right) {
+    if (!right) {
+      return (str + createSpaces(length)).substring(0, length);
+    }
+
+    return (createSpaces(length) + str).substring(str.length, str.length + length);
   }
 
   function createTable (table, options, maxWidths, remainingSpace) {
@@ -181,7 +185,11 @@
 
       each(row, function (cell, index) {
         if (options.wrap.indexOf(index) < 0) {
-          currentConcat += padRight(cell, maxWidths[index]);
+          currentConcat += pad(
+            cell,
+            maxWidths[index],
+            options.alignRight.indexOf(index) >= 0
+          );
         } else {
           var wrappedText = cell.substring(remainingSpace);
 
@@ -194,7 +202,11 @@
             wrappedText = wrappedText.substring(remainingSpace);
           }
 
-          currentConcat += padRight(cell.substring(0, remainingSpace), remainingSpace);
+          currentConcat += pad(
+            cell.substring(0, remainingSpace),
+            remainingSpace,
+            options.alignRight.indexOf(index) >= 0
+          );
         }
 
         if (index < row.length - 1) {

@@ -261,7 +261,7 @@
           ),
           KWArg(
             'kwarg',
-            {alias: 'k', description: 'Desc 3', type: 'number'}
+            {alias: 'k', description: 'Desc 3', type: 'boolean'}
           ),
           Command(
             'sub',
@@ -280,7 +280,7 @@
           '  Options:',
           '    <arg>        Desc 1                                                 [string]',
           '    --flag, -f   Desc 2',
-          '    --kwarg, -k  Desc 3                                                 [number]',
+          '    --kwarg, -k  Desc 3                                                [boolean]',
           '',
           '  Examples:',
           '    Example 1',
