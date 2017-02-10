@@ -2,7 +2,7 @@
 
 (function () {
 
-  var MATCHES_LEADING_SPACES = /^\s+/;
+  var MATCHES_LEADING_AND_TRAILING_SPACES = /(^\s+|\s+$)/;
   var MATCHES_TRAILING_SPACES = /\s+$/;
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
@@ -26,6 +26,16 @@
     for (var i = 0; i < arr.length; i += 1) {
       fn(arr[i], i);
     }
+  }
+
+  function sum (arr) {
+    var total = 0;
+
+    for (var i = 0; i < arr.length; i += 1) {
+      total += arr[i];
+    }
+
+    return total;
   }
 
   function argsToArray (args) {
@@ -191,20 +201,37 @@
             options.alignRight.indexOf(index) >= 0
           );
         } else {
-          var wrappedText = cell.substring(remainingSpace);
+          var totalWrappedMaxWidth = sum(maxWidths.filter(function (width, maxWidthIndex) {
+            return options.wrap.indexOf(maxWidthIndex) >= 0;
+          }));
+          var availableSpace = Math.round(maxWidths[index] / totalWrappedMaxWidth * remainingSpace);
+
+          var wrappedText = cell.substring(availableSpace);
+
+          var wrappedLineIndex = 0;
 
           while (wrappedText.length) {
-            nextConcats.push(createSpaces(currentConcat.length));
+            if (typeof nextConcats[wrappedLineIndex] === 'undefined') {
+              nextConcats[wrappedLineIndex] = createSpaces(currentConcat.length);
+            } else {
+              nextConcats[wrappedLineIndex] += TABLE_OPTIONS.margin;
+            }
 
-            nextConcats[nextConcats.length - 1] +=
-              wrappedText.replace(MATCHES_LEADING_SPACES, '').substring(0, remainingSpace);
+            nextConcats[wrappedLineIndex] +=
+              pad(
+                wrappedText.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
+                availableSpace,
+                options.alignRight.indexOf(index) >= 0
+              );
 
-            wrappedText = wrappedText.substring(remainingSpace);
+            wrappedText = wrappedText.substring(availableSpace);
+
+            wrappedLineIndex += 1;
           }
 
           currentConcat += pad(
-            cell.substring(0, remainingSpace),
-            remainingSpace,
+            cell.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
+            availableSpace,
             options.alignRight.indexOf(index) >= 0
           );
         }
@@ -295,6 +322,7 @@
   module.exports = {
     find: find,
     each: each,
+    sum: sum,
     argsToArray: argsToArray,
     getNodeProperties: getNodeProperties,
     validateName: validateName,

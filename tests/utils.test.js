@@ -118,6 +118,16 @@
 
     });
 
+    describe('sum', function () {
+
+      it('should sum the values in an array', function () {
+        expect(utils.sum([1, 2, 3, 4])).to.equal(10);
+        expect(utils.sum([1, 2, 3, 4, 5])).to.equal(15);
+        expect(utils.sum([3, 4, 2])).to.equal(9);
+      });
+
+    });
+
     describe('createHelp', function () {
 
       it('should create a basic error message', function () {
@@ -358,6 +368,55 @@
         expect(lines[3].indexOf('Display')).to.equal(descriptionIndent);
         expect(lines[3].substring(0, indent.length)).to.equal(indent);
         expect(lines[3].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+      });
+
+      it('should format a table with 3 columns, and wrap the last 2, and right align the final column', function () {
+        var table = [
+          [
+            'line1',
+            'Some text that should be wrapped',
+            'Some right aligned text that will be wrappped'
+          ],
+          [
+            'line2, l2',
+            'Some non-wrapped text',
+            'Some right aligned text'
+          ],
+          [
+            'line3, l3',
+            'Another line of text that should be wrapped',
+            'Some more right aligned text that will be wrappped'
+          ],
+        ];
+
+        var indent = '    ';
+        var margin = '  ';
+        var descriptionIndent = indent.length + table[1][0].length + margin.length;
+
+        var result = utils.formatTable(table, {alignRight: [2], wrap: [1, 2]});
+        var lines = result.split('\n');
+
+        expect(lines.length).to.equal(5);
+
+        expect(lines[0].indexOf('Some')).to.equal(descriptionIndent);
+        expect(lines[0].substring(0, indent.length)).to.equal(indent);
+        expect(lines[0].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(/\S/.exec(lines[1]).index).to.equal(descriptionIndent);
+        expect(lines[1].substring(0, indent.length)).to.equal(indent);
+        expect(lines[1].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(lines[2].indexOf('Some')).to.equal(descriptionIndent);
+        expect(lines[2].substring(0, indent.length)).to.equal(indent);
+        expect(lines[2].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(lines[3].indexOf('Another')).to.equal(descriptionIndent);
+        expect(lines[3].substring(0, indent.length)).to.equal(indent);
+        expect(lines[3].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(/\S/.exec(lines[4]).index).to.equal(descriptionIndent);
+        expect(lines[4].substring(0, indent.length)).to.equal(indent);
+        expect(lines[4].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
       });
 
     });
