@@ -379,14 +379,24 @@
           ],
           [
             'line2, l2',
-            'Some non-wrapped text',
+            'Some incidentally wrapped text',
             'Some right aligned text'
           ],
           [
             'line3, l3',
-            'Another line of text that should be wrapped',
-            'Some more right aligned text that will be wrappped'
+            'No wrap',
+            'Right aligned'
           ],
+          [
+            'line4, l4',
+            'Another line of text that should be wrapped',
+            'Some more right aligned text that will be wrapped onto 3 different lines because it\'s really quite long'
+          ],
+          [
+            'line5, l5',
+            'Ahyphenatedwordwillbewrapped',
+            'Anotherhyphenatedwordwillbewrappedbuthastobelongerbecausethiscolumniswider'
+          ]
         ];
 
         var indent = '    ';
@@ -396,7 +406,7 @@
         var result = utils.formatTable(table, {alignRight: [2], wrap: [1, 2]});
         var lines = result.split('\n');
 
-        expect(lines.length).to.equal(5);
+        expect(lines.length).to.equal(10);
 
         expect(lines[0].indexOf('Some')).to.equal(descriptionIndent);
         expect(lines[0].substring(0, indent.length)).to.equal(indent);
@@ -410,13 +420,33 @@
         expect(lines[2].substring(0, indent.length)).to.equal(indent);
         expect(lines[2].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
 
-        expect(lines[3].indexOf('Another')).to.equal(descriptionIndent);
+        expect(/\S/.exec(lines[3]).index).to.equal(descriptionIndent);
         expect(lines[3].substring(0, indent.length)).to.equal(indent);
         expect(lines[3].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
 
-        expect(/\S/.exec(lines[4]).index).to.equal(descriptionIndent);
+        expect(lines[4].indexOf('No')).to.equal(descriptionIndent);
         expect(lines[4].substring(0, indent.length)).to.equal(indent);
         expect(lines[4].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(lines[5].indexOf('Another')).to.equal(descriptionIndent);
+        expect(lines[5].substring(0, indent.length)).to.equal(indent);
+        expect(lines[5].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(/\S/.exec(lines[6]).index).to.equal(descriptionIndent);
+        expect(lines[6].substring(0, indent.length)).to.equal(indent);
+        expect(lines[6].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(/\S/.exec(lines[7]).index).to.equal(descriptionIndent);
+        expect(lines[7].substring(0, indent.length)).to.equal(indent);
+        expect(lines[7].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(lines[8].indexOf('Ahyphen')).to.equal(descriptionIndent);
+        expect(lines[8].substring(0, indent.length)).to.equal(indent);
+        expect(lines[8].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+
+        expect(/\S/.exec(lines[9]).index).to.equal(descriptionIndent);
+        expect(lines[9].substring(0, indent.length)).to.equal(indent);
+        expect(lines[9].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
       });
 
     });

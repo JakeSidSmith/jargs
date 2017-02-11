@@ -4,6 +4,7 @@
 
   var MATCHES_LEADING_AND_TRAILING_SPACES = /(^\s+|\s+$)/;
   var MATCHES_TRAILING_SPACES = /\s+$/;
+  var MATCHES_SPACE = /\s/;
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
   var TABLE_OPTIONS = {
@@ -186,28 +187,62 @@
     return (createSpaces(length) + str).substring(str.length, str.length + length);
   }
 
-  function wrapText (cell, availableSpace, currentConcat, nextConcats, alignRight) {
-    var wrappedText = cell.substring(availableSpace);
+  function wrapText (text, availableSpace, currentConcat, nextConcats, alignRight) {
+    var wrappedWords = text.split(MATCHES_SPACE);
     var wrappedLineIndex = 0;
 
-    while (wrappedText.length) {
-      if (typeof nextConcats[wrappedLineIndex] === 'undefined') {
-        nextConcats[wrappedLineIndex] = createSpaces(currentConcat.length);
+    function indentLine (lineIndex) {
+      if (typeof nextConcats[lineIndex] === 'undefined') {
+        nextConcats[lineIndex] = createSpaces(currentConcat.length);
       } else {
-        nextConcats[wrappedLineIndex] += TABLE_OPTIONS.margin;
+        nextConcats[lineIndex] += TABLE_OPTIONS.margin;
+      }
+    }
+
+    indentLine(wrappedLineIndex);
+
+    each(wrappedWords, function (word, wordIndex) {
+      if (word.length > availableSpace) {
+        var hyphenatedWord = word;
+
+        while (hyphenatedWord.length) {
+          var withHyphen = availableSpace > 1 &&
+            hyphenatedWord.charAt(availableSpace) !== '-' &&
+            hyphenatedWord.length > availableSpace;
+
+          nextConcats[wrappedLineIndex] += hyphenatedWord.substring(0, availableSpace - (withHyphen ? 1 : 0)) +
+            (withHyphen ? '-' : '');
+          hyphenatedWord = hyphenatedWord.substring(availableSpace - (withHyphen ? 1 : 0));
+
+          if (hyphenatedWord.length) {
+            wrappedLineIndex += 1;
+            indentLine(wrappedLineIndex);
+          }
+        }
+      } else if (nextConcats[wrappedLineIndex].length - currentConcat.length + word.length > availableSpace) {
+        wrappedLineIndex += 1;
+        indentLine(wrappedLineIndex);
+        nextConcats[wrappedLineIndex] += word;
+      } else {
+        nextConcats[wrappedLineIndex] += word;
       }
 
-      nextConcats[wrappedLineIndex] +=
+      if (
+        nextConcats[wrappedLineIndex].length < currentConcat.length + availableSpace &&
+        wordIndex < wrappedWords.length - 1
+      ) {
+        nextConcats[wrappedLineIndex] += ' ';
+      }
+    });
+
+    each(nextConcats, function (nextConcat, index) {
+      nextConcats[index] = nextConcat.substring(0, currentConcat.length) +
         pad(
-          wrappedText.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
+          nextConcat.substring(currentConcat.length).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
           availableSpace,
           alignRight
         );
-
-      wrappedText = wrappedText.substring(availableSpace);
-
-      wrappedLineIndex += 1;
-    }
+    });
   }
 
   function mapCells (table, options, maxWidths, remainingSpace, row, rowIndex) {
@@ -225,13 +260,13 @@
         var totalWrappedMaxWidth = sum(maxWidths.filter(function (width, maxWidthIndex) {
           return options.wrap.indexOf(maxWidthIndex) >= 0;
         }));
-        var availableSpace = Math.round(maxWidths[index] / totalWrappedMaxWidth * remainingSpace);
+        var availableSpace = Math.max(1, Math.round(maxWidths[index] / totalWrappedMaxWidth * remainingSpace));
         var alignRight = options.alignRight.indexOf(index) >= 0;
 
         wrapText(cell, availableSpace, currentConcat, nextConcats, alignRight);
 
         currentConcat += pad(
-          cell.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
+          nextConcats[0].substring(currentConcat.length, currentConcat.length + availableSpace),
           availableSpace,
           alignRight
         );
@@ -242,8 +277,10 @@
       }
     });
 
-    each(nextConcats, function (nextConcat) {
-      currentConcat += '\n' + nextConcat;
+    each(nextConcats, function (nextConcat, nextConcatIndex) {
+      if (nextConcatIndex > 0) {
+        currentConcat += '\n' + nextConcat;
+      }
     });
 
     if (rowIndex < table.length - 1) {
