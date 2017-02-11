@@ -186,73 +186,85 @@
     return (createSpaces(length) + str).substring(str.length, str.length + length);
   }
 
-  function createTable (table, options, maxWidths, remainingSpace) {
-    var concat = '';
+  function wrapText (cell, availableSpace, currentConcat, nextConcats, alignRight) {
+    var wrappedText = cell.substring(availableSpace);
+    var wrappedLineIndex = 0;
 
-    each(table, function (row, rowIndex) {
-      var currentConcat = TABLE_OPTIONS.indentation;
-      var nextConcats = [];
+    while (wrappedText.length) {
+      if (typeof nextConcats[wrappedLineIndex] === 'undefined') {
+        nextConcats[wrappedLineIndex] = createSpaces(currentConcat.length);
+      } else {
+        nextConcats[wrappedLineIndex] += TABLE_OPTIONS.margin;
+      }
 
-      each(row, function (cell, index) {
-        if (options.wrap.indexOf(index) < 0) {
-          currentConcat += pad(
-            cell,
-            maxWidths[index],
-            options.alignRight.indexOf(index) >= 0
-          );
-        } else {
-          var totalWrappedMaxWidth = sum(maxWidths.filter(function (width, maxWidthIndex) {
-            return options.wrap.indexOf(maxWidthIndex) >= 0;
-          }));
-          var availableSpace = Math.round(maxWidths[index] / totalWrappedMaxWidth * remainingSpace);
+      nextConcats[wrappedLineIndex] +=
+        pad(
+          wrappedText.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
+          availableSpace,
+          alignRight
+        );
 
-          var wrappedText = cell.substring(availableSpace);
+      wrappedText = wrappedText.substring(availableSpace);
 
-          var wrappedLineIndex = 0;
+      wrappedLineIndex += 1;
+    }
+  }
 
-          while (wrappedText.length) {
-            if (typeof nextConcats[wrappedLineIndex] === 'undefined') {
-              nextConcats[wrappedLineIndex] = createSpaces(currentConcat.length);
-            } else {
-              nextConcats[wrappedLineIndex] += TABLE_OPTIONS.margin;
-            }
+  function mapCells (table, options, maxWidths, remainingSpace, row, rowIndex) {
+    var currentConcat = TABLE_OPTIONS.indentation;
+    var nextConcats = [];
 
-            nextConcats[wrappedLineIndex] +=
-              pad(
-                wrappedText.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
-                availableSpace,
-                options.alignRight.indexOf(index) >= 0
-              );
+    each(row, function (cell, index) {
+      if (options.wrap.indexOf(index) < 0) {
+        currentConcat += pad(
+          cell,
+          maxWidths[index],
+          options.alignRight.indexOf(index) >= 0
+        );
+      } else {
+        var totalWrappedMaxWidth = sum(maxWidths.filter(function (width, maxWidthIndex) {
+          return options.wrap.indexOf(maxWidthIndex) >= 0;
+        }));
+        var availableSpace = Math.round(maxWidths[index] / totalWrappedMaxWidth * remainingSpace);
+        var alignRight = options.alignRight.indexOf(index) >= 0;
 
-            wrappedText = wrappedText.substring(availableSpace);
+        wrapText(cell, availableSpace, currentConcat, nextConcats, alignRight);
 
-            wrappedLineIndex += 1;
-          }
+        currentConcat += pad(
+          cell.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
+          availableSpace,
+          alignRight
+        );
+      }
 
-          currentConcat += pad(
-            cell.substring(0, availableSpace).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
-            availableSpace,
-            options.alignRight.indexOf(index) >= 0
-          );
-        }
-
-        if (index < row.length - 1) {
-          currentConcat += TABLE_OPTIONS.margin;
-        }
-      });
-
-      concat += currentConcat;
-
-      each(nextConcats, function (nextConcat) {
-        concat += '\n' + nextConcat;
-      });
-
-      if (rowIndex < table.length - 1) {
-        concat += '\n';
+      if (index < row.length - 1) {
+        currentConcat += TABLE_OPTIONS.margin;
       }
     });
 
-    return concat.split('\n').map(function (line) {
+    each(nextConcats, function (nextConcat) {
+      currentConcat += '\n' + nextConcat;
+    });
+
+    if (rowIndex < table.length - 1) {
+      currentConcat += '\n';
+    }
+
+    return currentConcat;
+  }
+
+  function mapRows (table, options, maxWidths, remainingSpace) {
+    var concat = '';
+
+    each(table, function (row, rowIndex) {
+      concat += mapCells(table, options, maxWidths, remainingSpace, row, rowIndex);
+    });
+
+    return concat;
+  }
+
+  function createTable (table, options, maxWidths, remainingSpace) {
+    return mapRows(table, options, maxWidths, remainingSpace).split('\n').map(function (line) {
       return line.replace(MATCHES_TRAILING_SPACES, '');
     }).join('\n');
   }
