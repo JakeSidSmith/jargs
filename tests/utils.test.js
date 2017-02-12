@@ -391,6 +391,30 @@
         expect(result).to.equal(expected);
       });
 
+      it('should format a table with 3 columns and wrap them all', function () {
+        var table = [
+          [
+            '40 character string la da da da da... da',
+            'Another 40 character string la da da doo',
+            'A super long 80 character string that will still be wrapped equal to the others!'
+          ]
+        ];
+
+        // 80 - 4 - 2 - 2 = 72
+        // 72 / 4 = 18
+        // Column 1 & 2 get 18 chars, and column 3 gets 36
+
+        var expected = [
+          '    40 character        Another 40          A super long 80 character string',
+          '    string la da da da  character string    that will still be wrapped equal to',
+          '    da... da            la da da doo        the others!'
+        ].join('\n');
+
+        var result = utils.formatTable(table, {alignRight: [], wrap: [0, 1, 2]});
+
+        expect(result).to.equal(expected);
+      });
+
     });
 
   });
