@@ -106,7 +106,7 @@
         });
       });
 
-      it('should error if node aliases contain anything by letters, numbers, and hyphens', function () {
+      it('should error if node aliases contain anything but letters, numbers, and hyphens', function () {
         var anError = /letters.+numbers.+hyphens/i;
 
         utils.each(nodesWithAliases, function (node) {
