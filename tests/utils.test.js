@@ -314,26 +314,15 @@
           ['install, i', 'Install new dependencies, or dependencies saved in your package.json']
         ];
 
-        var indent = '    ';
-        var margin = '  ';
-        var descriptionIndent = indent.length + table[1][0].length + margin.length;
+        var expected = [
+          '    build       Build your project',
+          '    install, i  Install new dependencies, or dependencies saved in your',
+          '                package.json'
+        ].join('\n');
 
         var result = utils.formatTable(table, {alignRight: [], wrap: [1]});
-        var lines = result.split('\n');
 
-        expect(lines.length).to.equal(3);
-
-        expect(lines[0].indexOf('Build')).to.equal(descriptionIndent);
-        expect(lines[0].substring(0, indent.length)).to.equal(indent);
-        expect(lines[0].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(lines[1].indexOf('Install')).to.equal(descriptionIndent);
-        expect(lines[1].substring(0, indent.length)).to.equal(indent);
-        expect(lines[1].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(/\S/.exec(lines[2]).index).to.equal(descriptionIndent);
-        expect(lines[2].substring(0, indent.length)).to.equal(indent);
-        expect(lines[2].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+        expect(result).to.equal(expected);
       });
 
       it('should format a table with 3 columns, and wrap the 2nd column (options)', function () {
@@ -343,31 +332,16 @@
           ['--version, -v', 'Display version number', '']
         ];
 
-        var indent = '    ';
-        var margin = '  ';
-        var descriptionIndent = indent.length + table[1][0].length + margin.length;
+        var expected = [
+          '    --help           Display help & usage information',
+          '    --transform, -t  Plugin to use when compiling your javascript blah  [string]',
+          '                     blah blah',
+          '    --version, -v    Display version number'
+        ].join('\n');
 
         var result = utils.formatTable(table, {alignRight: [2], wrap: [1]});
-        var lines = result.split('\n');
 
-        expect(lines.length).to.equal(4);
-
-        expect(lines[0].indexOf('Display')).to.equal(descriptionIndent);
-        expect(lines[0].substring(0, indent.length)).to.equal(indent);
-        expect(lines[0].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(lines[1].indexOf('Plugin')).to.equal(descriptionIndent);
-        expect(lines[1].substring(0, indent.length)).to.equal(indent);
-        expect(lines[1].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-        expect(lines[1].substring(lines[1].length - 8 - margin.length)).to.equal(margin + '[string]');
-
-        expect(/\S/.exec(lines[2]).index).to.equal(descriptionIndent);
-        expect(lines[2].substring(0, indent.length)).to.equal(indent);
-        expect(lines[2].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(lines[3].indexOf('Display')).to.equal(descriptionIndent);
-        expect(lines[3].substring(0, indent.length)).to.equal(indent);
-        expect(lines[3].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+        expect(result).to.equal(expected);
       });
 
       it('should format a table with 3 columns, and wrap the last 2, and right align the final column', function () {
@@ -399,54 +373,22 @@
           ]
         ];
 
-        var indent = '    ';
-        var margin = '  ';
-        var descriptionIndent = indent.length + table[1][0].length + margin.length;
+        var expected = [
+          '    line1      Some text that               Some right aligned text that will be',
+          '               should be wrapped                                        wrappped',
+          '    line2, l2  Some incidentally                         Some right aligned text',
+          '               wrapped text',
+          '    line3, l3  No wrap                                             Right aligned',
+          '    line4, l4  Another line of         Some more right aligned text that will be',
+          '               text that should be   wrapped onto 3 different lines because it\'s',
+          '               wrapped                                         really quite long',
+          '    line5, l5  Ahyphenatedwordwil-  Anotherhyphenatedwordwillbewrappedbuthastob-',
+          '               lbewrapped                        elongerbecausethiscolumniswider'
+        ].join('\n');
 
         var result = utils.formatTable(table, {alignRight: [2], wrap: [1, 2]});
-        var lines = result.split('\n');
 
-        expect(lines.length).to.equal(10);
-
-        expect(lines[0].indexOf('Some')).to.equal(descriptionIndent);
-        expect(lines[0].substring(0, indent.length)).to.equal(indent);
-        expect(lines[0].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(/\S/.exec(lines[1]).index).to.equal(descriptionIndent);
-        expect(lines[1].substring(0, indent.length)).to.equal(indent);
-        expect(lines[1].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(lines[2].indexOf('Some')).to.equal(descriptionIndent);
-        expect(lines[2].substring(0, indent.length)).to.equal(indent);
-        expect(lines[2].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(/\S/.exec(lines[3]).index).to.equal(descriptionIndent);
-        expect(lines[3].substring(0, indent.length)).to.equal(indent);
-        expect(lines[3].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(lines[4].indexOf('No')).to.equal(descriptionIndent);
-        expect(lines[4].substring(0, indent.length)).to.equal(indent);
-        expect(lines[4].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(lines[5].indexOf('Another')).to.equal(descriptionIndent);
-        expect(lines[5].substring(0, indent.length)).to.equal(indent);
-        expect(lines[5].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(/\S/.exec(lines[6]).index).to.equal(descriptionIndent);
-        expect(lines[6].substring(0, indent.length)).to.equal(indent);
-        expect(lines[6].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(/\S/.exec(lines[7]).index).to.equal(descriptionIndent);
-        expect(lines[7].substring(0, indent.length)).to.equal(indent);
-        expect(lines[7].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(lines[8].indexOf('Ahyphen')).to.equal(descriptionIndent);
-        expect(lines[8].substring(0, indent.length)).to.equal(indent);
-        expect(lines[8].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
-
-        expect(/\S/.exec(lines[9]).index).to.equal(descriptionIndent);
-        expect(lines[9].substring(0, indent.length)).to.equal(indent);
-        expect(lines[9].substring(descriptionIndent - margin.length, descriptionIndent)).to.equal(margin);
+        expect(result).to.equal(expected);
       });
 
     });
