@@ -33,48 +33,87 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
   var root = jargs.collect(
     Program(
       'npm',
-      {usage: 'npm command <library> [--flag]', examples: ['npm install jargs --save --save-exact']},
+      {
+        usage: 'npm command <library> [--flag]',
+        examples: [
+          'npm run jargs --save --save-exact'
+        ]
+      },
       Command(
         'init',
-        {description: 'Create npm package'}
+        {
+          description: 'Create npm package',
+          usage: 'npm init'
+        }
       ),
       Command(
         'install',
-        {alias: 'i', description: 'Install dependencies'},
+        {
+          alias: 'i',
+          description: 'Install dependencies',
+          usage: 'npm install <lib> [--flags]',
+          examples: [
+            'npm install jargs --save --save-exact'
+          ]
+        },
         Arg(
           'lib'
         ),
         Flag(
           'save',
-          {alias: 'S'}
+          {
+            alias: 'S',
+            description: 'Add to package.json dependencies'
+          }
         ),
         Flag(
           'save-dev',
-          {alias: 'D'}
+          {
+            alias: 'D',
+            description: 'Add to package.json dev-dependencies'
+          }
         ),
         Flag(
           'save-exact',
-          {alias: 'E'}
+          {
+            alias: 'E',
+            description: 'Save exact latest version to package.json'
+          }
         ),
         Flag(
           'save-optional',
-          {alias: 'O'}
+          {
+            alias: 'O',
+            description: 'Add to package.json optional-dependencies'
+          }
         )
       ),
       Command(
         'run',
-        {alias: 'run-scripts', description: 'Run a script in the package'},
+        {
+          alias: 'run-scripts',
+          description: 'Run a script in the package'
+        },
         Arg(
-          'command'
+          'script',
+          {
+            description: 'Script from package.json to run'
+          }
         )
       ),
       Flag(
         'help',
-        {alias: 'h', description: 'Displays help & usage info'}
+        {
+          alias: 'h',
+          description: 'Displays help & usage info'
+        }
       ),
       Flag(
         'version',
-        {alias: 'v', description: 'Displays version number'}
+        {
+          alias: 'v',
+          description: 'Displays version number'
+        }
       )
     )
   );
