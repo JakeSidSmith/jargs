@@ -1,4 +1,4 @@
-/* global describe, it */
+/* global describe, beforeEach, afterEach, it */
 
 'use strict';
 
@@ -15,8 +15,23 @@
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
+  var utils = require('../src/utils');
 
   describe('collect.js', function () {
+
+    function throwError (error) {
+      throw new Error(error);
+    }
+
+    var exitWithHelpStub;
+
+    beforeEach(function () {
+      exitWithHelpStub = stub(utils, 'exitWithHelp', throwError);
+    });
+
+    afterEach(function () {
+      exitWithHelpStub.restore();
+    });
 
     it('should exist', function () {
       expect(collect).to.be.ok;
@@ -374,14 +389,11 @@
     });
 
     it('should exit with help for no kwarg value', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /value.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=', 'invalid']);
-
-      // With nested nodes
-      boundCollect(
+      boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -394,21 +406,16 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      // With nested nodes
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should exit with help for invalid alias syntax', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /syntax.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test', ['-k=invalid']);
-
-      // With nested nodes
-      boundCollect(
+      boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -424,22 +431,17 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should exit with help for duplicate kwargs', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /duplicate.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--kwarg=correct', '--kwarg=incorrect']);
 
-      // With nested nodes
-      boundCollect(
+      var boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -452,22 +454,17 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should exit with help for duplicate flags', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /duplicate.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--flag', '--flag']);
 
-      // With nested nodes
-      boundCollect(
+      boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -480,22 +477,17 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should exit with help for duplicate flag aliases', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /duplicate.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--flag', '-f']);
 
-      // With nested nodes
-      boundCollect(
+      boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -511,22 +503,17 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should exit with help for unknown flags / kwargs', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /unknown.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--version']);
 
-      // With nested nodes
-      boundCollect(
+      boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -542,22 +529,17 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should exit with help for unknown flag / kwarg aliases', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /unknown.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['-v']);
 
-      // With nested nodes
-      boundCollect(
+      boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -573,22 +555,17 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should exit with help for unknown commands / args', function () {
-      var strerrStub = stub(process.stderr, 'write');
-      var exitStub = stub(process, 'exit');
       var anError = /unknown.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['another-command']);
 
-      // With nested nodes
-      boundCollect(
+      boundCollect = boundCollect.bind(
+        null,
         Program(
           'program',
           null,
@@ -604,10 +581,7 @@
         )
       );
 
-      expect(strerrStub).to.have.been.calledWithMatch(anError);
-
-      strerrStub.restore();
-      exitStub.restore();
+      expect(boundCollect).to.throw(anError);
     });
 
   });
