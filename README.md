@@ -250,7 +250,6 @@ Arg(
   'arg-name'
   {
     description: 'An arg', // default: empty string
-    type: 'string'
   }
 )
 ```
