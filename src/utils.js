@@ -112,6 +112,10 @@
       ) {
         throw new Error('Option ' + key + ' must be of type ' + valid.type);
       }
+
+      if (valid.length && option.length !== valid.length) {
+        throw new Error('Option ' + key + ' must be of length ' + valid.length);
+      }
     }
 
     for (var validKey in validOptions) {

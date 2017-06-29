@@ -9,7 +9,8 @@
 
   var validOptions = {
     alias: {
-      type: 'string'
+      type: 'string',
+      length: 1
     },
     description: {
       type: 'string',
