@@ -9,7 +9,7 @@
   Automatically removes quotes & splits by spaces (exclusive) and commas (inclusive)
 
            command       flag      kwarg \w value kwarg       value  arg
-  args: [ 'sub-command' '--flag', '--kwarg=foo', '--kwarg2', 'bar', 'baz' ]
+  argv: [ 'sub-command' '--flag', '--kwarg=foo', '--kwarg2', 'bar', 'baz' ]
   */
 
   var utils = require('./utils');
