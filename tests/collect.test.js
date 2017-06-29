@@ -486,6 +486,37 @@
       exitStub.restore();
     });
 
+    it('should exit with help for duplicate flag aliases', function () {
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /duplicate.*\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['--flag', '-f']);
+
+      // With nested nodes
+      boundCollect(
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          Flag(
+            'flag',
+            {
+              alias: 'f'
+            }
+          )
+        )
+      );
+
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
+
+      strerrStub.restore();
+      exitStub.restore();
+    });
+
     it('should exit with help for unknown flags / kwargs', function () {
       var strerrStub = stub(process.stderr, 'write');
       var exitStub = stub(process, 'exit');
@@ -493,6 +524,37 @@
 
       var boundCollect = collect.bind(null, 'node', 'test',
         ['--version']);
+
+      // With nested nodes
+      boundCollect(
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          Flag(
+            'flag'
+          ),
+          KWArg(
+            'kwarg'
+          )
+        )
+      );
+
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
+
+      strerrStub.restore();
+      exitStub.restore();
+    });
+
+    it('should exit with help for unknown flag / kwarg aliases', function () {
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /unknown.*\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['-v']);
 
       // With nested nodes
       boundCollect(
