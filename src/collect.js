@@ -97,23 +97,23 @@
     return tree;
   }
 
-  function collect (/* program, command, argv, ...tree */) {
+  function collect (/* program, command, argv, ...rootNode */) {
     var args = argsToArray(arguments);
     /* var program = */ args.shift();
     /* var command = */ args.shift();
     var argv = args.shift();
-    var program = args.shift();
+    var rootNode = args.shift();
     var commands = [];
 
-    if (!program) {
+    if (!rootNode) {
       throw new Error('No program defined');
     }
 
-    if (program._type !== 'program') {
+    if (rootNode._type !== 'program') {
       throw new Error('Root node must be a Program');
     }
 
-    return createTree(argv, program, commands);
+    return createTree(argv, rootNode, commands);
   }
 
   module.exports = collect;
