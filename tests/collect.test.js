@@ -716,6 +716,35 @@
       });
     });
 
+    it('should exit with help for invalid chained flag aliases', function () {
+      var anError = /invalid.*\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['-fk']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Flag(
+            'flag',
+            {
+              alias: 'f'
+            }
+          ),
+          KWArg(
+            'kwarg',
+            {
+              alias: 'k'
+            }
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
   });
 
 })();
