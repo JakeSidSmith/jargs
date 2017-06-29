@@ -215,8 +215,6 @@ KWArg(
   {
     alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
-    options: ['option1', 'option2'], // default: undefined
-    type: 'string'
   }
 )
 ```
@@ -236,7 +234,6 @@ Flag(
   {
     alias: 'f', // default: undefined
     description: 'A flag', // default: empty string
-    options: ['option1', 'option2'] // default: undefined
   }
 )
 ```
