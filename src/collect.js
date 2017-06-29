@@ -21,6 +21,21 @@
   var MATCHES_NAME_EQUALS = /.*?=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
+  function findArgOrKWarg (schema, tree, isAlias, kwargName) {
+    var matchingFlagOrKWArg = find(schema.children, function (node) {
+      return (node._type === 'flag' || node._type === 'kwarg') &&
+        (isAlias ? node.options.alias === kwargName : node.name === kwargName);
+    });
+
+    if (!matchingFlagOrKWArg) {
+      throw new Error(utils.createHelp(schema, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
+    } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
+      throw new Error(utils.createHelp(schema, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
+    }
+
+    return matchingFlagOrKWArg;
+  }
+
   function createTree (argv, schema, commands) {
     var tree = {
       command: null,
@@ -58,7 +73,7 @@
           });
 
           if (!matchingArg) {
-            utils.exitWithHelp(utils.createHelp(schema, 'Unknown argument: ' + arg));
+            throw new Error(utils.createHelp(schema, 'Unknown argument: ' + arg));
           } else {
             tree.args[matchingArg.name] = arg;
           }
@@ -69,20 +84,42 @@
         var kwargName = arg.replace(MATCHES_LEADING_HYPHENS, '').replace(MATCHES_EQUALS_VALUE, '');
         var kwargValue = arg.replace(MATCHES_NAME_EQUALS, '');
 
-        var matchingFlagOrKWArg = find(schema.children, function (node) {
-          return (node._type === 'flag' || node._type === 'kwarg') &&
-            (isAlias ? node.options.alias === kwargName : node.name === kwargName);
-        });
+        var matchingFlagOrKWArg;
 
-        if (!matchingFlagOrKWArg) {
-          utils.exitWithHelp(utils.createHelp(schema, 'Unknown argument: ' + kwargName));
-        } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
-          utils.exitWithHelp(utils.createHelp(schema, 'Duplicate argument: ' + kwargName));
+        if (isAlias && containsEquals) {
+          throw new Error(utils.createHelp(schema, 'Invalid argument syntax: -' + kwargName + '='));
+        } else if (isAlias && kwargName.length > 1) {
+          var flagNames = kwargName.split('');
+          var firstName = flagNames.shift();
+
+          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, firstName);
+
+          if (matchingFlagOrKWArg._type === 'flag') {
+            kwargValue = true;
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
+
+            utils.each(flagNames, function (flagName) {
+              matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, flagName);
+
+              if (matchingFlagOrKWArg._type !== 'flag') {
+                throw new Error(utils.createHelp(schema, 'Invalid argument: -' + kwargName));
+              } else {
+                tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
+              }
+            });
+          } else if (containsEquals && !kwargValue) {
+            throw new Error(utils.createHelp(schema, 'No value for argument: -' + kwargName));
+          } else if (!containsEquals) {
+            kwargValue = argv.shift();
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
+          }
         } else {
+          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, kwargName);
+
           if (matchingFlagOrKWArg._type === 'flag') {
             kwargValue = true;
           } else if (containsEquals && !kwargValue) {
-            utils.exitWithHelp(utils.createHelp(schema, 'No value for argument: ' + kwargName));
+            throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
           } else if (!containsEquals) {
             kwargValue = argv.shift();
           }
@@ -115,7 +152,11 @@
       throw new Error('Root node must be a Program');
     }
 
-    return createTree(argv, rootNode, commands);
+    try {
+      return createTree(argv, rootNode, commands);
+    } catch (error) {
+      utils.exitWithHelp(error.message);
+    }
   }
 
   module.exports = collect;

@@ -323,7 +323,7 @@
 
     it('should return an arg tree from aliases', function () {
       var boundCollect = collect.bind(null, 'node', 'browserify',
-        ['b', '-t', 'babelify', '-v', '-o=build/index.js', 'src/index.js']);
+        ['b', '-t', 'babelify', '-v', '-o', 'build/index.js', 'src/index.js']);
 
       // With nested nodes
       var result = boundCollect(
@@ -390,6 +390,36 @@
           ),
           KWArg(
             'kwarg'
+          )
+        )
+      );
+
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
+
+      strerrStub.restore();
+      exitStub.restore();
+    });
+
+    it('should exit with help for invalid alias syntax', function () {
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /syntax.*\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['-k=invalid']);
+
+      // With nested nodes
+      boundCollect(
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          KWArg(
+            'kwarg',
+            {
+              alias: 'k'
+            }
           )
         )
       );
