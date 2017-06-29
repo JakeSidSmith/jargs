@@ -584,6 +584,58 @@
       expect(boundCollect).to.throw(anError);
     });
 
+    it('should return an arg tree with kwarg aliases', function () {
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['-kthing']);
+
+      var tree = boundCollect(
+        Program(
+          'program',
+          null,
+          KWArg(
+            'kwarg',
+            {
+              alias: 'k'
+            }
+          )
+        )
+      );
+
+      expect(tree).to.eql({
+        command: null,
+        kwargs: {
+          kwarg: 'thing'
+        },
+        flags: {},
+        args: {}
+      });
+
+      boundCollect = collect.bind(null, 'node', 'test',
+        ['-k', 'thing']);
+
+      tree = boundCollect(
+        Program(
+          'program',
+          null,
+          KWArg(
+            'kwarg',
+            {
+              alias: 'k'
+            }
+          )
+        )
+      );
+
+      expect(tree).to.eql({
+        command: null,
+        kwargs: {
+          kwarg: 'thing'
+        },
+        flags: {},
+        args: {}
+      });
+    });
+
   });
 
 })();

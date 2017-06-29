@@ -106,12 +106,8 @@
                 tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
               }
             });
-          } else if (containsEquals && !kwargValue) {
-            throw new Error(utils.createHelp(schema, 'No value for argument: -' + kwargName));
-          } else if (!containsEquals) {
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
           } else {
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargName.substring(1);
           }
         } else {
           matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, kwargName);
