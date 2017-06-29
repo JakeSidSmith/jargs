@@ -586,7 +586,7 @@
 
     it('should return an arg tree with kwarg aliases', function () {
       var boundCollect = collect.bind(null, 'node', 'test',
-        ['-kthing']);
+        ['-kthing', '-athing']);
 
       var tree = boundCollect(
         Program(
@@ -597,6 +597,12 @@
             {
               alias: 'k'
             }
+          ),
+          KWArg(
+            'another-kwarg',
+            {
+              alias: 'a'
+            }
           )
         )
       );
@@ -604,14 +610,15 @@
       expect(tree).to.eql({
         command: null,
         kwargs: {
-          kwarg: 'thing'
+          kwarg: 'thing',
+          'another-kwarg': 'thing'
         },
         flags: {},
         args: {}
       });
 
       boundCollect = collect.bind(null, 'node', 'test',
-        ['-k', 'thing']);
+        ['-k', 'thing', '-a', 'thing']);
 
       tree = boundCollect(
         Program(
@@ -622,6 +629,12 @@
             {
               alias: 'k'
             }
+          ),
+          KWArg(
+            'another-kwarg',
+            {
+              alias: 'a'
+            }
           )
         )
       );
@@ -629,7 +642,8 @@
       expect(tree).to.eql({
         command: null,
         kwargs: {
-          kwarg: 'thing'
+          kwarg: 'thing',
+          'another-kwarg': 'thing'
         },
         flags: {},
         args: {}
