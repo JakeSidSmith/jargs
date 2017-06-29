@@ -18,7 +18,7 @@
 
   var MATCHES_LEADING_HYPHENS = /^-+/;
   var MATCHES_EQUALS_VALUE = /=.*/;
-  var MATCHES_NAME_EQUALS = /.*=/;
+  var MATCHES_NAME_EQUALS = /.*?=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
   function createTree (argv, schema, commands) {
