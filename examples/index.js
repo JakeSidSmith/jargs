@@ -37,7 +37,18 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
         usage: 'npm command <library> [--flag]',
         examples: [
           'npm run jargs --save --save-exact'
-        ]
+        ],
+        callback: function (tree) {
+          if (tree.flags.version) {
+            console.log('1.0.0');
+            process.exit(0);
+          }
+
+          if (tree.flags.help) {
+            console.log('Some help stuff');
+            process.exit(0);
+          }
+        }
       },
       Command(
         'init',
