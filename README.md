@@ -213,7 +213,7 @@ Takes the following options.
 KWArg(
   'kwarg-name'
   {
-    alias: 'kwarg-alias', // default: undefined
+    alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
     options: ['option1', 'option2'], // default: undefined
     type: 'string'
@@ -234,7 +234,7 @@ Takes the following options.
 Flag(
   'flag-name'
   {
-    alias: 'flag-alias', // default: undefined
+    alias: 'f', // default: undefined
     description: 'A flag', // default: empty string
     options: ['option1', 'option2'] // default: undefined
   }
@@ -252,7 +252,6 @@ Takes the following options.
 Arg(
   'arg-name'
   {
-    alias: 'arg-alias', // default: undefined
     description: 'An arg', // default: empty string
     type: 'string'
   }
@@ -295,7 +294,7 @@ const root = collect(
     'naval_fate',
     null,
     Command(
-      'ship', null,    
+      'ship', null,
       Arg(
         'shipName'
       ),
