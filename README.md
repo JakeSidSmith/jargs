@@ -194,6 +194,7 @@ Command(
     description: 'A command', // default: empty string
     usage: 'program-name sub-command --flag', // default: empty string
     examples: ['program command-name --flag'], // default: empty array
+    required: true, // default: false
     callback: function () {}
   },
   ...childNodes
@@ -215,6 +216,7 @@ KWArg(
   {
     alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
+    required: true, // default: false
   }
 )
 ```
@@ -234,6 +236,7 @@ Flag(
   {
     alias: 'f', // default: undefined
     description: 'A flag', // default: empty string
+    required: true, // default: false
   }
 )
 ```
@@ -250,6 +253,7 @@ Arg(
   'arg-name'
   {
     description: 'An arg', // default: empty string
+    required: true, // default: false
   }
 )
 ```
