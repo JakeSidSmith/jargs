@@ -95,8 +95,7 @@
           matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, firstName);
 
           if (matchingFlagOrKWArg._type === 'flag') {
-            kwargValue = true;
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
 
             utils.each(flagNames, function (flagName) {
               matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, flagName);
@@ -104,27 +103,28 @@
               if (matchingFlagOrKWArg._type !== 'flag') {
                 throw new Error(utils.createHelp(schema, 'Invalid argument: -' + kwargName));
               } else {
-                tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
+                tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
               }
             });
           } else if (containsEquals && !kwargValue) {
             throw new Error(utils.createHelp(schema, 'No value for argument: -' + kwargName));
           } else if (!containsEquals) {
-            kwargValue = argv.shift();
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
+          } else {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
           }
         } else {
           matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, kwargName);
 
           if (matchingFlagOrKWArg._type === 'flag') {
-            kwargValue = true;
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
           } else if (containsEquals && !kwargValue) {
             throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
           } else if (!containsEquals) {
-            kwargValue = argv.shift();
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
+          } else {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
           }
-
-          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
         }
       }
     }
