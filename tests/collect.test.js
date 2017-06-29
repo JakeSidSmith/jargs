@@ -373,6 +373,33 @@
       });
     });
 
+    it('should exit with help for no kwarg value', function () {
+      var strerrStub = stub(process.stderr, 'write');
+      var exitStub = stub(process, 'exit');
+      var anError = /value.*\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=', 'invalid']);
+
+      // With nested nodes
+      boundCollect(
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          KWArg(
+            'kwarg'
+          )
+        )
+      );
+
+      expect(strerrStub).to.have.been.calledWithMatch(anError);
+
+      strerrStub.restore();
+      exitStub.restore();
+    });
+
     it('should exit with help for duplicate kwargs', function () {
       var strerrStub = stub(process.stderr, 'write');
       var exitStub = stub(process, 'exit');

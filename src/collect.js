@@ -81,6 +81,8 @@
         } else {
           if (matchingFlagOrKWArg._type === 'flag') {
             kwargValue = true;
+          } else if (containsEquals && !kwargValue) {
+            utils.exitWithHelp(utils.createHelp(schema, 'No value for argument: ' + kwargName));
           } else if (!containsEquals) {
             kwargValue = argv.shift();
           }
