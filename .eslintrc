@@ -1,8 +1,5 @@
 {
   "extends": [
-    "./node_modules/eslintrc/.eslintrc-es5"
-  ],
-  "env": {
-    "node": true
-  }
+    "jakesidsmith/node"
+  ]
 }

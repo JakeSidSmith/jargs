@@ -92,7 +92,7 @@
 
     while (commands.length) {
       commands.shift()();
-    };
+    }
 
     return tree;
   }

@@ -28,7 +28,8 @@
   "homepage": "https://github.com/jakesidsmith/jargs#readme",
   "devDependencies": {
     "chai": "=3.5.0",
-    "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v0.0.2",
+    "eslint": "3.19.0",
+    "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v2.2.0",
     "mocha": "=3.2.0",
     "nyc": "=10.1.2",
     "sinon": "=1.17.7",
