@@ -172,7 +172,7 @@ Program(
   {
     description: 'A command', // default: empty string
     usage: 'program-name sub-command --flag', // default: empty string
-    examples: ['program command-name --falg'], // default: empty array
+    examples: ['program command-name --flag'], // default: empty array
     callback: function () {}
   },
   ...childNodes
@@ -193,7 +193,7 @@ Command(
     alias: 'command-alias', // default: undefined
     description: 'A command', // default: empty string
     usage: 'program-name sub-command --flag', // default: empty string
-    examples: ['program command-name --falg'], // default: empty array
+    examples: ['program command-name --flag'], // default: empty array
     callback: function () {}
   },
   ...childNodes
