@@ -28,7 +28,7 @@ Here's a cutdown example of how to create a schema for NPM.
 Note: you can nest nodes as many times as necessary.
 
 ```javascript
-const root = collect(
+const tree = collect(
   Program(
     'npm',
     null,
@@ -103,8 +103,8 @@ Each node always contains the keys `command`, `kwargs`, `flags`, and `args` so t
 #### Querying Commands
 
 ```javascript
-if (root.command) {
-  switch (root.command.name) {
+if (tree.command) {
+  switch (tree.command.name) {
     case 'install':
       // Install stuff
       break;
@@ -119,24 +119,24 @@ if (root.command) {
 ##### Flags
 
 ```javascript
-if (root.flags.verbose) {
-  doSomethingWithThisFlag(root.flags.verbose);
+if (tree.flags.verbose) {
+  doSomethingWithThisFlag(tree.flags.verbose);
 }
 ```
 
 ##### KWArgs
 
 ```javascript
-if ('lib' in root.kwargs) {
-  doSomethingWithThisKWArg(root.kwargs.lib);
+if ('lib' in tree.kwargs) {
+  doSomethingWithThisKWArg(tree.kwargs.lib);
 }
 ```
 
 ##### Args
 
 ```javascript
-if ('lib' in root.args) {
-  doSomethingWithThisArg(root.args.lib);
+if ('lib' in tree.args) {
+  doSomethingWithThisArg(tree.args.lib);
 }
 ```
 
@@ -173,7 +173,7 @@ Program(
     description: 'A command', // default: empty string
     usage: 'program-name sub-command --flag', // default: empty string
     examples: ['program command-name --flag'], // default: empty array
-    callback: function () {}
+    callback: function (tree) {}
   },
   ...childNodes
 )
@@ -195,7 +195,7 @@ Command(
     usage: 'program-name sub-command --flag', // default: empty string
     examples: ['program command-name --flag'], // default: empty array
     required: true, // default: false
-    callback: function () {}
+    callback: function (tree) {}
   },
   ...childNodes
 )
@@ -289,7 +289,7 @@ naval_fate ship shoot <x> <y>
 ### Schema
 
 ```javascript
-const root = collect(
+const tree = collect(
   Program(
     'naval_fate',
     null,
