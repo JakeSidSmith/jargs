@@ -129,6 +129,7 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
     )
   );
 
+  // Alternatively to callbacks you can inspect the tree yourself
   if (root.command) {
     switch (root.command.name) {
       case 'init':
