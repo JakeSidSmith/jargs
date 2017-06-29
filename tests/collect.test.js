@@ -650,6 +650,72 @@
       });
     });
 
+    it('should return an arg tree with flag aliases', function () {
+      var boundCollect = collect.bind(null, 'node', 'test',
+        ['-f', '-a']);
+
+      var tree = boundCollect(
+        Program(
+          'program',
+          null,
+          Flag(
+            'flag',
+            {
+              alias: 'f'
+            }
+          ),
+          Flag(
+            'another-flag',
+            {
+              alias: 'a'
+            }
+          )
+        )
+      );
+
+      expect(tree).to.eql({
+        command: null,
+        kwargs: {},
+        flags: {
+          flag: true,
+          'another-flag': true
+        },
+        args: {}
+      });
+
+      boundCollect = collect.bind(null, 'node', 'test',
+        ['-fa']);
+
+      tree = boundCollect(
+        Program(
+          'program',
+          null,
+          Flag(
+            'flag',
+            {
+              alias: 'f'
+            }
+          ),
+          Flag(
+            'another-flag',
+            {
+              alias: 'a'
+            }
+          )
+        )
+      );
+
+      expect(tree).to.eql({
+        command: null,
+        kwargs: {},
+        flags: {
+          flag: true,
+          'another-flag': true
+        },
+        args: {}
+      });
+    });
+
   });
 
 })();
