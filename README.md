@@ -217,6 +217,7 @@ KWArg(
     alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
     required: true, // default: false
+    type: 'string'
   }
 )
 ```
@@ -236,7 +237,7 @@ Flag(
   {
     alias: 'f', // default: undefined
     description: 'A flag', // default: empty string
-    required: true, // default: false
+    required: true // default: false
   }
 )
 ```
@@ -254,6 +255,7 @@ Arg(
   {
     description: 'An arg', // default: empty string
     required: true, // default: false
+    type: 'string'
   }
 )
 ```
