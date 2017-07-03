@@ -1,12 +1,12 @@
 {
   "name": "jargs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple node arg parser with explicit tree structure schema",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint -c .eslintrc src/ examples/ tests/",
-    "mocha": "nyc mocha --bail --recursive 'tests/**/*.test.js'",
-    "test": "npm run lint && npm run mocha"
+    "tests": "nyc mocha --bail --recursive 'tests/**/*.test.js'",
+    "test": "npm run lint && npm run tests"
   },
   "repository": {
     "type": "git",
@@ -28,11 +28,11 @@
   "homepage": "https://github.com/jakesidsmith/jargs#readme",
   "devDependencies": {
     "chai": "=3.5.0",
-    "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v0.0.2",
+    "eslint": "3.19.0",
+    "eslintrc": "git+https://github.com/JakeSidSmith/eslintrc.git#v2.2.0",
     "mocha": "=3.2.0",
-    "nyc": "=10.1.2"
-  },
-  "engines": {
-    "node": "6.9.4"
+    "nyc": "=10.1.2",
+    "sinon": "=1.17.7",
+    "sinon-chai": "=2.8.0"
   }
 }

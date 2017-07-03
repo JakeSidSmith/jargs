@@ -9,22 +9,34 @@
   Automatically removes quotes & splits by spaces (exclusive) and commas (inclusive)
 
            command       flag      kwarg \w value kwarg       value  arg
-  args: [ 'sub-command' '--flag', '--kwarg=foo', '--kwarg2', 'bar', 'baz' ]
+  argv: [ 'sub-command' '--flag', '--kwarg=foo', '--kwarg2', 'bar', 'baz' ]
   */
 
   var utils = require('./utils');
   var argsToArray = utils.argsToArray;
   var find = utils.find;
-  var each = utils.each;
 
   var MATCHES_LEADING_HYPHENS = /^-+/;
   var MATCHES_EQUALS_VALUE = /=.*/;
-  var MATCHES_NAME_EQUALS = /.*=/;
+  var MATCHES_NAME_EQUALS = /.*?=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-  function createTree (argv, schema, name, value) {
-    argv = [].concat(argv);
+  function findArgOrKWarg (schema, tree, isAlias, kwargName) {
+    var matchingFlagOrKWArg = find(schema.children, function (node) {
+      return (node._type === 'flag' || node._type === 'kwarg') &&
+        (isAlias ? node.options.alias === kwargName : node.name === kwargName);
+    });
 
+    if (!matchingFlagOrKWArg) {
+      throw new Error(utils.createHelp(schema, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
+    } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
+      throw new Error(utils.createHelp(schema, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
+    }
+
+    return matchingFlagOrKWArg;
+  }
+
+  function createTree (argv, schema, commands) {
     var tree = {
       command: null,
       kwargs: {},
@@ -32,12 +44,12 @@
       args: {}
     };
 
-    if (typeof name !== 'undefined') {
-      tree.name = name;
+    if (schema._type === 'command') {
+      tree.name = schema.name;
     }
 
-    if (typeof value !== 'undefined') {
-      tree.value = value;
+    if (typeof schema.options.callback === 'function') {
+      commands.push(schema.options.callback.bind(null, tree));
     }
 
     if (!argv.length) {
@@ -49,18 +61,22 @@
       var isPositional = arg.indexOf('-') !== 0; // command or arg
 
       if (isPositional) {
-        var matchingCommand = find(schema, function (node) {
+        var matchingCommand = find(schema.children, function (node) {
           return node._type === 'command' && (node.name === arg || node.options.alias === arg);
         });
 
         if (matchingCommand) {
-          tree.command = createTree(argv, matchingCommand.children, matchingCommand.name);
+          tree.command = createTree(argv, matchingCommand, commands);
         } else {
-          each(schema, function (node) {
-            if (node._type === 'arg' && !tree.args[node.name]) {
-              tree.args[node.name] = createTree(argv, node.children, undefined, arg);
-            }
+          var matchingArg = find(schema.children, function (node) {
+            return node._type === 'arg' && !(node.name in tree.args);
           });
+
+          if (!matchingArg) {
+            throw new Error(utils.createHelp(schema, 'Unknown argument: ' + arg));
+          } else {
+            tree.args[matchingArg.name] = arg;
+          }
         }
       } else {
         var containsEquals = arg.indexOf('=') >= 0;
@@ -68,35 +84,75 @@
         var kwargName = arg.replace(MATCHES_LEADING_HYPHENS, '').replace(MATCHES_EQUALS_VALUE, '');
         var kwargValue = arg.replace(MATCHES_NAME_EQUALS, '');
 
-        var matchingFlagOrKWArg = find(schema, function (node) {
-          return (node._type === 'flag' || node._type === 'kwarg') &&
-            (isAlias ? node.options.alias === kwargName : node.name === kwargName);
-        });
+        var matchingFlagOrKWArg;
 
-        if (matchingFlagOrKWArg && !tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name]) {
+        if (isAlias && containsEquals) {
+          throw new Error(utils.createHelp(schema, 'Invalid argument syntax: -' + kwargName + '='));
+        } else if (isAlias && kwargName.length > 1) {
+          var flagNames = kwargName.split('');
+          var firstName = flagNames.shift();
+
+          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, firstName);
+
           if (matchingFlagOrKWArg._type === 'flag') {
-            kwargValue = true;
-          } else if (!containsEquals) {
-            kwargValue = argv.shift();
-          }
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
 
-          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
-            createTree(argv, matchingFlagOrKWArg.children, undefined, kwargValue);
+            utils.each(flagNames, function (flagName) {
+              matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, flagName);
+
+              if (matchingFlagOrKWArg._type !== 'flag') {
+                throw new Error(utils.createHelp(schema, 'Invalid argument: -' + kwargName));
+              } else {
+                tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
+              }
+            });
+          } else {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargName.substring(1);
+          }
+        } else {
+          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, kwargName);
+
+          if (matchingFlagOrKWArg._type === 'flag') {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
+          } else if (containsEquals && !kwargValue) {
+            throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
+          } else if (!containsEquals) {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
+          } else {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
+          }
         }
       }
+    }
+
+    while (commands.length) {
+      commands.shift()();
     }
 
     return tree;
   }
 
-  function collect (/* program, command, argv, ...tree */) {
+  function collect (/* program, command, argv, ...rootNode */) {
     var args = argsToArray(arguments);
     /* var program = */ args.shift();
     /* var command = */ args.shift();
     var argv = args.shift();
-    var schema = args;
+    var rootNode = args.shift();
+    var commands = [];
 
-    return createTree(argv, schema);
+    if (!rootNode) {
+      throw new Error('No program defined');
+    }
+
+    if (rootNode._type !== 'program') {
+      throw new Error('Root node must be a Program');
+    }
+
+    try {
+      return createTree(argv, rootNode, commands);
+    } catch (error) {
+      utils.exitWithHelp(error.message);
+    }
   }
 
   module.exports = collect;

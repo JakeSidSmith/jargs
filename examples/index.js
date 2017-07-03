@@ -24,56 +24,112 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
 (function () {
 
   var jargs = require('../src/index');
+  var Program = jargs.Program;
   var Command = jargs.Command;
   // var KWArg = jargs.KWArg;
   var Flag = jargs.Flag;
   var Arg = jargs.Arg;
 
   var root = jargs.collect(
-    Command(
-      'init',
-      {description: 'Create npm package'}
-    ),
-    Command(
-      'install',
-      {alias: 'i', description: 'Install dependencies'},
-      Arg(
-        'lib'
+    Program(
+      'npm',
+      {
+        usage: 'npm command <library> [--flag]',
+        examples: [
+          'npm run jargs --save --save-exact'
+        ],
+        callback: function (tree) {
+          if (tree.flags.version) {
+            console.log('1.0.0');
+            process.exit(0);
+          }
+
+          if (tree.flags.help) {
+            console.log('Some help stuff');
+            process.exit(0);
+          }
+        }
+      },
+      Command(
+        'init',
+        {
+          description: 'Create npm package',
+          usage: 'npm init'
+        }
+      ),
+      Command(
+        'install',
+        {
+          alias: 'i',
+          description: 'Install dependencies',
+          usage: 'npm install <lib> [--flags]',
+          examples: [
+            'npm install jargs --save --save-exact'
+          ]
+        },
+        Arg(
+          'lib'
+        ),
+        Flag(
+          'save',
+          {
+            alias: 'S',
+            description: 'Add to package.json dependencies'
+          }
+        ),
+        Flag(
+          'save-dev',
+          {
+            alias: 'D',
+            description: 'Add to package.json dev-dependencies'
+          }
+        ),
+        Flag(
+          'save-exact',
+          {
+            alias: 'E',
+            description: 'Save exact latest version to package.json'
+          }
+        ),
+        Flag(
+          'save-optional',
+          {
+            alias: 'O',
+            description: 'Add to package.json optional-dependencies'
+          }
+        )
+      ),
+      Command(
+        'run',
+        {
+          alias: 'run-scripts',
+          description: 'Run a script in the package'
+        },
+        Arg(
+          'script',
+          {
+            description: 'Script from package.json to run'
+          }
+        )
       ),
       Flag(
-        'save',
-        {alias: 'S'}
+        'help',
+        {
+          alias: 'h',
+          description: 'Displays help & usage info'
+        }
       ),
       Flag(
-        'save-dev',
-        {alias: 'D'}
-      ),
-      Flag(
-        'save-exact',
-        {alias: 'E'}
-      ),
-      Flag(
-        'save-optional',
-        {alias: 'O'}
+        'version',
+        {
+          alias: 'v',
+          description: 'Displays version number'
+        }
       )
-    ),
-    Command(
-      'run',
-      {alias: 'run-scripts', description: 'Run a script in the package'},
-      Arg(
-        'command'
-      )
-    ),
-    Flag(
-      'help',
-      {alias: 'h', description: 'Displays help & usage info'}
-    ),
-    Flag(
-      'version',
-      {alias: 'v', description: 'Displays version number'}
     )
   );
 
+  // Alternatively to callbacks you can inspect the tree yourself
   if (root.command) {
     switch (root.command.name) {
       case 'init':

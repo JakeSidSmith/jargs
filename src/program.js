@@ -8,36 +8,33 @@
   var serializeOptions = utils.serializeOptions;
 
   var validOptions = {
-    alias: {
-      type: 'string',
-      length: 1
-    },
     description: {
       type: 'string',
       default: ''
     },
-    options: {
-      type: 'array'
+    usage: {
+      type: 'string',
+      default: ''
     },
-    required: {
-      type: 'boolean',
-      default: false
+    callback: {
+      type: 'function'
     },
-    type: {
-      type: 'string'
+    examples: {
+      type: 'array',
+      default: []
     }
   };
 
-  function KWArg () {
-    var properties = getNodeProperties(arguments);
+  function Program () {
+    var properties = getNodeProperties(arguments, true);
     validateName(properties.name);
     serializeOptions(properties.options, validOptions);
 
-    properties._type = 'kwarg';
+    properties._type = 'program';
 
     return properties;
   }
 
-  module.exports = KWArg;
+  module.exports = Program;
 
 })();

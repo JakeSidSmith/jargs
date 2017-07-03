@@ -18,7 +18,7 @@ npm install jargs --save
 ### Require jargs
 
 ```javascript
-import { collect, Command, KWArg, Flag, Arg } from 'jargs';
+import { collect, Program, Command, KWArg, Flag, Arg } from 'jargs';
 ```
 
 ### Create a schema
@@ -28,32 +28,36 @@ Here's a cutdown example of how to create a schema for NPM.
 Note: you can nest nodes as many times as necessary.
 
 ```javascript
-const root = collect(
-  Command(
-    'init'
-  ),
-  Command(
-    'install', {alias: 'i'},
-    Arg(
-      'lib'
+const tree = collect(
+  Program(
+    'npm',
+    null,
+    Command(
+      'init'
     ),
-    Flag(
-      'save', {alias: 'S'}
+    Command(
+      'install', {alias: 'i'},
+      Arg(
+        'lib'
+      ),
+      Flag(
+        'save', {alias: 'S'}
+      ),
+      Flag(
+        'save-dev', {alias: 'D'}
+      ),
+      Flag(
+        'save-exact', {alias: 'E'}
+      ),
+      Flag(
+        'save-optional', {alias: 'O'}
+      )
     ),
-    Flag(
-      'save-dev', {alias: 'D'}
-    ),
-    Flag(
-      'save-exact', {alias: 'E'}
-    ),
-    Flag(
-      'save-optional', {alias: 'O'}
-    )
-  ),
-  Command(
-    'run', {alias: 'run-scripts'},
-    Arg(
-      'command'
+    Command(
+      'run', {alias: 'run-scripts'},
+      Arg(
+        'command'
+      )
     )
   )
 );
@@ -80,22 +84,10 @@ Calling the command `npm install jargs --save` returns the following.
     name: 'install',
     kwargs: {},
     flags: {
-      save: {
-        value: true,
-        command: null,
-        kwargs: {},
-        flags: {},
-        args: {}
-      }
+      save: true
     },
     args: {
-      lib: {
-        value: 'jargs',
-        command: null,
-        kwargs: {},
-        flags: {},
-        args: {}
-      }
+      lib: 'jargs'
     }
   },
   kwargs: {},
@@ -111,49 +103,86 @@ Each node always contains the keys `command`, `kwargs`, `flags`, and `args` so t
 #### Querying Commands
 
 ```javascript
-if (root.command) {
-  switch (root.command.name) {
+if (tree.command) {
+  switch (tree.command.name) {
     case 'install':
       // Install stuff
       break;
     default:
-      // This will never be hit since we check for the command existence first
+      // This should never be hit since we check for the command existence first
   }
 }
 ```
 
 #### Querying Flags, KWArgs, and Args
 
+##### Flags
+
 ```javascript
-if ('verbose' in root.flags) {
-  // Do something flag related
+if (tree.flags.verbose) {
+  doSomethingWithThisFlag(tree.flags.verbose);
 }
 ```
 
+##### KWArgs
+
 ```javascript
-if ('lib' in root.args) {
-  install(root.args.lib.value);
+if ('lib' in tree.kwargs) {
+  doSomethingWithThisKWArg(tree.kwargs.lib);
+}
+```
+
+##### Args
+
+```javascript
+if ('lib' in tree.args) {
+  doSomethingWithThisArg(tree.args.lib);
 }
 ```
 
 ### Nodes
 
-All nodes take the following arguments. More info about individual nodes below.
+All nodes take the following arguments, though `Command` and `Program` take additional arguments (more info about individual nodes below).
 
 ```javascript
-Node(name, options, ...childNodes);
+Node(name, options);
+```
+
+`Command` and `Program` can take an infinite number or arguments. Any arguments after `name` & `options` become that node's child nodes e.g.
+
+```javascript
+Command(name, options, KWArg(), Flag(), Arg());
 ```
 
 Both `options` and `childNodes` are optional.
-All keys in `options` are optional.
-`childNodes` are any arguments following the name & options.
+All keys in `options` are optional and have defaults (more info below).
+`childNodes` are any arguments following the name & options (only valid for `Command` and `Program`).
 
-You can nest nodes as many times as necessary.
+You can nest `Commands` as many times as necessary.
+
+#### Program
+
+Program is the main command / name of your program. This should always be the root node in your schema.
+
+Takes the following options.
+
+```javascript
+Program(
+  'program-name'
+  {
+    description: 'A command', // default: empty string
+    usage: 'program-name sub-command --flag', // default: empty string
+    examples: ['program command-name --flag'], // default: empty array
+    callback: function (tree) {}
+  },
+  ...childNodes
+)
+```
 
 #### Command
 
 A sub-command of your command line interface.
-You do not need to define a Command for your command line interface itself.
+Program is the main command / name of your program.
 
 Takes the following options.
 
@@ -161,8 +190,12 @@ Takes the following options.
 Command(
   'command-name'
   {
-    alias: 'command-alias',
-    description: 'A command'
+    alias: 'command-alias', // default: undefined
+    description: 'A command', // default: empty string
+    usage: 'program-name sub-command --flag', // default: empty string
+    examples: ['program command-name --flag'], // default: empty array
+    required: true, // default: false
+    callback: function (tree) {}
   },
   ...childNodes
 )
@@ -181,11 +214,11 @@ Takes the following options.
 KWArg(
   'kwarg-name'
   {
-    alias: 'kwarg-alias',
-    description: 'A key word argument',
-    options: ['option1', 'option2']
-  },
-  ...childNodes
+    alias: 'k', // default: undefined
+    description: 'A key word argument', // default: empty string
+    required: true, // default: false
+    type: 'string'
+  }
 )
 ```
 
@@ -202,11 +235,10 @@ Takes the following options.
 Flag(
   'flag-name'
   {
-    alias: 'flag-alias',
-    description: 'A flag',
-    options: ['option1', 'option2']
-  },
-  ...childNodes
+    alias: 'f', // default: undefined
+    description: 'A flag', // default: empty string
+    required: true // default: false
+  }
 )
 ```
 
@@ -221,10 +253,10 @@ Takes the following options.
 Arg(
   'arg-name'
   {
-    alias: 'arg-alias',
-    description: 'An arg'
-  },
-  ...childNodes
+    description: 'An arg', // default: empty string
+    required: true, // default: false
+    type: 'string'
+  }
 )
 ```
 
@@ -259,26 +291,30 @@ naval_fate ship shoot <x> <y>
 ### Schema
 
 ```javascript
-const root = collect(
-  Command(
-    'ship', null,
+const tree = collect(
+  Program(
+    'naval_fate',
+    null,
     Command(
-      'new', null,
+      'ship', null,
       Arg(
-        'newShipName', {required: true}
-      )
-    ),
-    Command(
-      'shoot', null,
-      Arg(
-        'shootX', {required: true}
+        'shipName'
       ),
-      Arg(
-        'shootY', {required: true}
-      )
-    ),
-    Arg(
-      'shipName', null,
+      Command(
+        'new', null,
+        Arg(
+          'newShipName', {required: true}
+        )
+      ),
+      Command(
+        'shoot', null,
+        Arg(
+          'shootX', {required: true}
+        ),
+        Arg(
+          'shootY', {required: true}
+        )
+      ),
       Command(
         'move', null,
         Arg(

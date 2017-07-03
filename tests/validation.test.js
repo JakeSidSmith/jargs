@@ -38,13 +38,21 @@
         });
       });
 
-      it('should error if node names contain spaces', function () {
-        var anError = /spaces/i;
+      it('should error if node names contain anything but letters, numbers & hyphens', function () {
+        var anError = /letters.+numbers.+hyphens/i;
 
         utils.each(nodes, function (node) {
           expect(node.bind(null, ' test')).to.throw(anError);
           expect(node.bind(null, 'test ')).to.throw(anError);
           expect(node.bind(null, ' te st ')).to.throw(anError);
+
+          expect(node.bind(null, '_test')).to.throw(anError);
+          expect(node.bind(null, 'test_')).to.throw(anError);
+          expect(node.bind(null, '_te_st_')).to.throw(anError);
+
+          expect(node.bind(null, '+test')).to.throw(anError);
+          expect(node.bind(null, 'test=')).to.throw(anError);
+          expect(node.bind(null, 'te:st')).to.throw(anError);
         });
       });
 
@@ -62,6 +70,21 @@
     describe('serializeOptions', function () {
 
       var nodesWithAliases = [Command, KWArg, Flag];
+
+      it('should should throw an error if options is not an object', function () {
+        var anError = /object/i;
+
+        expect(Arg.bind(null, 'foo', 'test')).to.throw(anError);
+        expect(Arg.bind(null, 'foo', [])).to.throw(anError);
+        expect(Arg.bind(null, 'foo', 7)).to.throw(anError);
+        expect(Arg.bind(null, 'foo', undefined)).not.to.throw(anError);
+      });
+
+      it('should should throw an error if a node is passed as options', function () {
+        var anError = /node/i;
+
+        expect(Arg.bind(null, 'foo', Arg('test'))).to.throw(anError);
+      });
 
       it('should error if node aliases are not strings', function () {
         var anError = /string/i;
@@ -83,13 +106,21 @@
         });
       });
 
-      it('should error if node names contain spaces', function () {
-        var anError = /spaces/i;
+      it('should error if node aliases contain anything but letters, numbers, and hyphens', function () {
+        var anError = /letters.+numbers.+hyphens/i;
 
         utils.each(nodesWithAliases, function (node) {
-          expect(node.bind(null, 'name', {alias: ' test'})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: 'test '})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: ' te st '})).to.throw(anError);
+          expect(node.bind(null, ' test')).to.throw(anError);
+          expect(node.bind(null, 'test ')).to.throw(anError);
+          expect(node.bind(null, ' te st ')).to.throw(anError);
+
+          expect(node.bind(null, '_test')).to.throw(anError);
+          expect(node.bind(null, 'test_')).to.throw(anError);
+          expect(node.bind(null, '_te_st_')).to.throw(anError);
+
+          expect(node.bind(null, '+test')).to.throw(anError);
+          expect(node.bind(null, 'test=')).to.throw(anError);
+          expect(node.bind(null, 'te:st')).to.throw(anError);
         });
       });
 
@@ -124,6 +155,9 @@
           },
           boolean: {
             type: 'boolean'
+          },
+          func: {
+            type: 'function'
           }
         };
 
@@ -132,12 +166,14 @@
         var anObjectError = /type\sobject/i;
         var anArrayError = /type\sarray/i;
         var aBooleanError = /type\sboolean/i;
+        var aFuncError = /type\sfunction/i;
 
         expect(utils.serializeOptions.bind(null, {string: null}, validOptions)).to.throw(aStringError);
         expect(utils.serializeOptions.bind(null, {number: null}, validOptions)).to.throw(aNumberError);
         expect(utils.serializeOptions.bind(null, {object: null}, validOptions)).to.throw(anObjectError);
         expect(utils.serializeOptions.bind(null, {array: null}, validOptions)).to.throw(anArrayError);
         expect(utils.serializeOptions.bind(null, {boolean: null}, validOptions)).to.throw(aBooleanError);
+        expect(utils.serializeOptions.bind(null, {func: null}, validOptions)).to.throw(aFuncError);
       });
 
     });

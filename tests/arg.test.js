@@ -11,13 +11,19 @@
   describe('arg.js', function () {
 
     it('should construct an Arg', function () {
-      var node = Arg('foo', null, 'child1', 'child2');
+      var node = Arg('foo', null);
 
       expect(node).to.be.ok;
       expect(node.name).to.equal('foo');
-      expect(node.options).to.eql({});
-      expect(node.children).to.eql(['child1', 'child2']);
+      expect(node.options).to.eql({description: '', required: false});
+      expect(node.children).to.be.undefined;
       expect(node._type).to.equal('arg');
+    });
+
+    it('should throw an error if has children', function () {
+      var anError = /children/i;
+
+      expect(Arg.bind(null, 'foo', null, 'child')).to.throw(anError);
     });
 
   });

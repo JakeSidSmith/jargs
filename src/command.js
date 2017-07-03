@@ -12,18 +12,28 @@
       type: 'string'
     },
     description: {
-      type: 'string'
+      type: 'string',
+      default: ''
     },
     usage: {
-      type: 'string'
+      type: 'string',
+      default: ''
     },
     required: {
-      type: 'boolean'
+      type: 'boolean',
+      default: false
+    },
+    callback: {
+      type: 'function'
+    },
+    examples: {
+      type: 'array',
+      default: []
     }
   };
 
   function Command () {
-    var properties = getNodeProperties(arguments);
+    var properties = getNodeProperties(arguments, true);
     validateName(properties.name);
     serializeOptions(properties.options, validOptions);
 

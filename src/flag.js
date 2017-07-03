@@ -9,16 +9,16 @@
 
   var validOptions = {
     alias: {
-      type: 'string'
+      type: 'string',
+      length: 1
     },
     description: {
-      type: 'string'
-    },
-    usage: {
-      type: 'string'
+      type: 'string',
+      default: ''
     },
     required: {
-      type: 'boolean'
+      type: 'boolean',
+      default: false
     }
   };
 
