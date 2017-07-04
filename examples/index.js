@@ -54,7 +54,8 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
         'init',
         {
           description: 'Create npm package',
-          usage: 'npm init'
+          usage: 'npm init',
+          required: true
         }
       ),
       Command(
@@ -65,7 +66,8 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
           usage: 'npm install <lib> [--flags]',
           examples: [
             'npm install jargs --save --save-exact'
-          ]
+          ],
+          required: true
         },
         Arg(
           'lib'
@@ -103,7 +105,8 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
         'run',
         {
           alias: 'run-scripts',
-          description: 'Run a script in the package'
+          description: 'Run a script in the package',
+          required: true
         },
         Arg(
           'script',
@@ -116,14 +119,14 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
         'help',
         {
           alias: 'h',
-          description: 'Displays help & usage info'
+          description: 'Display help & usage info'
         }
       ),
       Flag(
         'version',
         {
           alias: 'v',
-          description: 'Displays version number'
+          description: 'Display version number'
         }
       )
     )
