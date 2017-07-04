@@ -58,6 +58,16 @@
 
     });
 
+    it('should throw an error if there is more than one root node', function () {
+      var anError = /single/i;
+
+      var boundCollect = collect.bind(null, 'node', 'npm', [], Program('test'), Program('test'));
+
+      // Without tree
+      expect(boundCollect).to.throw(anError);
+
+    });
+
     it('should return an arg tree when no args provided', function () {
       var boundCollect = collect.bind(null, 'node', 'npm', []);
 

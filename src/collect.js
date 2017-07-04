@@ -144,6 +144,10 @@
       throw new Error('Root node must be a Program');
     }
 
+    if (args.length) {
+      throw new Error('Too many root nodes. Collect takes only a single Program root node');
+    }
+
     try {
       return createTree(argv, rootNode, commands);
     } catch (error) {
