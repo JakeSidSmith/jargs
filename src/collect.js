@@ -52,10 +52,6 @@
       commands.push(schema.options.callback.bind(null, tree));
     }
 
-    if (!argv.length) {
-      return tree;
-    }
-
     while (argv.length) {
       var arg = argv.shift();
       var isPositional = arg.indexOf('-') !== 0; // command or arg
