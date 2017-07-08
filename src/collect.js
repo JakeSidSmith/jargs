@@ -156,6 +156,9 @@
           } else if (containsEquals && !kwargValue) {
             throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
           } else if (!containsEquals) {
+            if (!argv.length) {
+              throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
+            }
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
           } else {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
