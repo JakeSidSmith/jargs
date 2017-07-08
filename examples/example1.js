@@ -51,9 +51,9 @@
         }
       ),
       KWArg(
-        'kwarg1',
+        'kwarg2',
         {
-          alias: '1',
+          alias: '2',
           type: 'string',
           description: 'Another required key word argument'
         }
