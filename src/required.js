@@ -4,6 +4,13 @@
 
   var utils = require('./utils');
 
+  var VALID_CHILD_NODES = [
+    'arg',
+    'flag',
+    'kwarg',
+    'command'
+  ];
+
   function Required () {
     var children = utils.argsToArray(arguments);
 
@@ -12,10 +19,10 @@
     }
 
     if (children.length > 1) {
-      throw new Error('More than one child node supplied to Required node');
+      throw new Error('More than one child node supplied to Required node. Use RequireAll node');
     }
 
-    utils.validateChildren(children);
+    utils.validateChildren(children, VALID_CHILD_NODES);
 
     return {
       _type: 'required',

@@ -4,6 +4,13 @@
 
   var utils = require('./utils');
 
+  var VALID_CHILD_NODES = [
+    'arg',
+    'flag',
+    'kwarg',
+    'command'
+  ];
+
   function RequireAny () {
     var children = utils.argsToArray(arguments);
 
@@ -11,7 +18,7 @@
       throw new Error('No child nodes supplied to RequireAny node');
     }
 
-    utils.validateChildren(children);
+    utils.validateChildren(children, VALID_CHILD_NODES);
 
     return {
       _type: 'require-any',

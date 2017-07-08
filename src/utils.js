@@ -63,15 +63,15 @@
     return Array.prototype.slice.call(args);
   }
 
-  function validateChildren (children) {
+  function validateChildren (children, validTypes) {
     each(children, function (node) {
       if (typeof node !== 'object') {
         throw new Error('Invalid child node of type ' + (typeof node));
       }
 
-      if (VALID_CHILD_NODES.indexOf(node._type) < 0) {
+      if (validTypes.indexOf(node._type) < 0) {
         throw new Error('Invalid child node with type ' + node._type +
-          '. Child nodes may only be ' + VALID_CHILD_NODES.join(', '));
+          '. Child nodes may only be ' + validTypes.join(', '));
       }
     });
   }
@@ -87,7 +87,7 @@
     };
 
     if (getChildren) {
-      validateChildren(argsArray);
+      validateChildren(argsArray, VALID_CHILD_NODES);
       properties.children = argsArray;
     } else if (argsArray.length) {
       throw new Error('Only commands can have children');
