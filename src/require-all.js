@@ -24,6 +24,14 @@
 
     utils.validateChildren(children, VALID_CHILD_NODES);
 
+    var moreThanOneCommand = utils.several(children, function (child) {
+      return child._type === 'command';
+    });
+
+    if (moreThanOneCommand) {
+      throw new Error('More than one required Command at the same level');
+    }
+
     return {
       _type: 'require-all',
       children: children

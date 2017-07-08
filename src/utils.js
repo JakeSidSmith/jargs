@@ -49,6 +49,22 @@
     return false;
   }
 
+  function several (arr, fn) {
+    var count = 0;
+
+    for (var i = 0; i < arr.length; i += 1) {
+      if (fn(arr[i], i)) {
+        count += 1;
+      }
+
+      if (count > 1) {
+        return true;
+      }
+    }
+
+    return count > 1;
+  }
+
   function sum (arr) {
     var total = 0;
 
@@ -430,6 +446,7 @@
     find: find,
     each: each,
     any: any,
+    several: several,
     sum: sum,
     argsToArray: argsToArray,
     validateChildren: validateChildren,

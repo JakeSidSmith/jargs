@@ -7,6 +7,7 @@
   var expect = require('chai').expect;
 
   var RequireAll = require('../src/require-all');
+  var Command = require('../src/command');
   var Arg = require('../src/arg');
 
   describe('require-all.js', function () {
@@ -36,6 +37,15 @@
       var anError = /child/i;
       var child = Arg('foo');
       var boundRequired = RequireAll.bind(null, child);
+
+      expect(boundRequired).to.throw(anError);
+    });
+
+    it('should throw an error if more than 1 command is supplied', function () {
+      var anError = /required\scommand/i;
+      var child1 = Command('foo');
+      var child2 = Command('foo');
+      var boundRequired = RequireAll.bind(null, child1, child2);
 
       expect(boundRequired).to.throw(anError);
     });

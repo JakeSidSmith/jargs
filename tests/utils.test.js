@@ -87,13 +87,13 @@
       });
 
       it('should get a node\'s properties from the supplied arguments (with required children)', function () {
-        var child1 = Command('child1');
-        var child2 = Command('child2');
-        var child3 = Command('child3');
-        var child4 = Command('child4');
-        var child5 = Command('child5');
-        var child6 = Command('child6');
-        var child7 = Command('child7');
+        var child1 = Arg('child1');
+        var child2 = Arg('child2');
+        var child3 = Arg('child3');
+        var child4 = Arg('child4');
+        var child5 = Arg('child5');
+        var child6 = Arg('child6');
+        var child7 = Arg('child7');
 
         function fn () {
           var properties = utils.getNodeProperties(arguments, true);
@@ -203,6 +203,22 @@
 
         expect(utils.any(arr, function (value) {
           return value === 10;
+        })).to.be.false;
+      });
+
+    });
+
+    describe('several', function () {
+
+      var arr = [1, 2, 3, 4, 5];
+
+      it('should return true if several items match the predicate', function () {
+        expect(utils.several(arr, function (value) {
+          return value > 3;
+        })).to.be.true;
+
+        expect(utils.several(arr, function (value) {
+          return value === 1;
         })).to.be.false;
       });
 
