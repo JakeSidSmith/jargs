@@ -24,6 +24,21 @@
       expect(node.children[0]).to.equal(child);
     });
 
+    it('should throw an error if no children are supplied', function () {
+      var anError = /child/i;
+
+      expect(Required).to.throw(anError);
+    });
+
+    it('should throw an error if more than one children are supplied', function () {
+      var anError = /child/i;
+      var child1 = Arg('foo');
+      var child2 = Arg('bar');
+      var boundRequired = Required.bind(null, child1, child2);
+
+      expect(boundRequired).to.throw(anError);
+    });
+
   });
 
 })();
