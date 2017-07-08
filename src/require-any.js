@@ -18,6 +18,10 @@
       throw new Error('No child nodes supplied to RequireAny node');
     }
 
+    if (!children.length < 2) {
+      throw new Error('Only one child node supplied to RequireAny node. Use Require node');
+    }
+
     utils.validateChildren(children, VALID_CHILD_NODES);
 
     return {
