@@ -19,8 +19,8 @@
         Flag: 'function',
         Arg: 'function',
         Required: 'function',
-        RequireAny: 'function',
-        RequireAll: 'function'
+        RequireAll: 'function',
+        RequireAny: 'function'
       };
 
       expect(index).to.be.ok;
