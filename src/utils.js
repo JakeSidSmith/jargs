@@ -93,12 +93,20 @@
           '. Child nodes may only be ' + validTypes.join(', '));
       }
 
-      if (node.name && names.indexOf(node.name) >= 0) {
-        throw new Error('More than one node with the name ' + node.name + ' at the same level');
+      if (node.name) {
+        if (names.indexOf(node.name) >= 0) {
+          throw new Error('More than one node with the name "' + node.name + '" at the same level');
+        }
+
+        names.push(node.name);
       }
 
-      if (node.options && node.options.alias && aliases.indexOf(node.options.alias) >= 0) {
-        throw new Error('More than one node with the alias ' + node.options.alias + ' at the same level');
+      if (node.options && node.options.alias) {
+        if (aliases.indexOf(node.options.alias) >= 0) {
+          throw new Error('More than one node with the alias "' + node.options.alias + '" at the same level');
+        }
+
+        aliases.push(node.options.alias);
       }
     });
   }

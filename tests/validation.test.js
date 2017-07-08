@@ -200,6 +200,32 @@
       expect(utils.validateChildren.bind(null, [{_type: 'arg'}, {_type: 'kwarg'}], validTypes)).not.to.throw(anError);
     });
 
+    it('should throw an error for duplicate node names', function () {
+      var validTypes = ['command', 'arg', 'flag', 'kwarg'];
+      var anError = /name\s"foo"/i;
+
+      var children = [
+        Arg('foo'),
+        Command('bar'),
+        KWArg('foo')
+      ];
+
+      expect(utils.validateChildren.bind(null, children, validTypes)).to.throw(anError);
+    });
+
+    it('should throw an error for duplicate node aliases', function () {
+      var validTypes = ['command', 'arg', 'flag', 'kwarg'];
+      var anError = /alias\s"b"/i;
+
+      var children = [
+        Arg('foo'),
+        Command('bar', {alias: 'b'}),
+        KWArg('baz', {alias: 'b'})
+      ];
+
+      expect(utils.validateChildren.bind(null, children, validTypes)).to.throw(anError);
+    });
+
   });
 
 })();
