@@ -69,11 +69,15 @@
           var properties = utils.getNodeProperties(arguments, true);
 
           expect(properties).to.be.ok;
-          expect(properties.name).to.equal('foo');
-          expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.eql([child1, child2, child3]);
-          expect(properties.requireAll).to.eql([]);
-          expect(properties.requireAny).to.eql([]);
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar'
+            },
+            children: [child1, child2, child3],
+            requireAll: [],
+            requireAny: []
+          });
         }
 
         fn('foo', {alias: 'bar'}, child1, child2, child3);
@@ -84,11 +88,12 @@
           var properties = utils.getNodeProperties(arguments);
 
           expect(properties).to.be.ok;
-          expect(properties.name).to.equal('foo');
-          expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.be.undefined;
-          expect(properties.requireAll).to.be.undefined;
-          expect(properties.requireAny).to.be.undefined;
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar'
+            }
+          });
         }
 
         fn('foo', {alias: 'bar'});

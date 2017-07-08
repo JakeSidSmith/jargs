@@ -89,7 +89,6 @@
     if (getChildren) {
       validateChildren(children, VALID_CHILD_NODES);
 
-      properties.required = [];
       properties.requireAll = [];
       properties.requireAny = [];
       properties.children = [];
