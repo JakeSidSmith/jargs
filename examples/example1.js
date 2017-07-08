@@ -4,7 +4,6 @@
 
 (function () {
 
-
   var jargs = require('../src/index');
   var Program = jargs.Program;
   var Command = jargs.Command;
