@@ -143,6 +143,22 @@
 
     });
 
+    describe('any', function () {
+
+      var arr = [1, 2, 3, 4, 5];
+
+      it('should return true if any items match the predicate', function () {
+        expect(utils.any(arr, function (value) {
+          return value === 3;
+        })).to.be.true;
+
+        expect(utils.any(arr, function (value) {
+          return value === 10;
+        })).to.be.false;
+      });
+
+    });
+
     describe('sum', function () {
 
       it('should sum the values in an array', function () {
