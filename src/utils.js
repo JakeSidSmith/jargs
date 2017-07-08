@@ -101,7 +101,7 @@
             properties.children = properties.children.concat(child.children);
             break;
           case 'require-any':
-            properties.requireAny = properties.requireAny.concat(child.children);
+            properties.requireAny.push(child.children);
             properties.children = properties.children.concat(child.children);
             break;
           default:
