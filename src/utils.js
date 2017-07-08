@@ -97,8 +97,6 @@
       each(children, function (child) {
         switch (child._type) {
           case 'required':
-            properties.required = properties.required.concat(child.children);
-            break;
           case 'require-all':
             properties.requireAll = properties.requireAll.concat(child.children);
             break;
