@@ -29,7 +29,7 @@
     'second',
     {
       description: 'The second command',
-      usage: 'command second',
+      usage: 'command second [--kwarg1, --kwarg2] arg',
       examples: [
         'command --kwarg1=foo --kwarg2=bar arg'
       ]
