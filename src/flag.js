@@ -15,10 +15,6 @@
     description: {
       type: 'string',
       default: ''
-    },
-    required: {
-      type: 'boolean',
-      default: false
     }
   };
 
