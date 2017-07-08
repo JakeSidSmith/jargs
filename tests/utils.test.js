@@ -150,6 +150,19 @@
         expect(fn.bind(null, 'foo', {alias: 'bar'}, child)).to.throw(anError);
       });
 
+      it('should should throw an error if more than one command is required', function () {
+        var anError = /more\sthan\sone/i;
+        var child1 = Command('child1');
+        var child2 = Command('child2');
+
+        function fn () {
+          utils.getNodeProperties(arguments, true);
+        }
+
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, Required(child1), Required(child2))).to.throw(anError);
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, RequireAll(child1, child2))).to.throw(anError);
+      });
+
     });
 
     describe('find', function () {

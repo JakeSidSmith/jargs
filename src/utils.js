@@ -125,6 +125,14 @@
             break;
         }
       });
+
+      var moreThanOneCommand = several(properties.requireAll, function (child) {
+        return child._type === 'command';
+      });
+
+      if (moreThanOneCommand) {
+        throw new Error('More than one required Command at the same level');
+      }
     } else if (children.length) {
       throw new Error('Only commands can have children');
     }
