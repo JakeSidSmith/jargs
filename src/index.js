@@ -14,7 +14,10 @@
     Command: require('./command'),
     KWArg: require('./kwarg'),
     Flag: require('./flag'),
-    Arg: require('./arg')
+    Arg: require('./arg'),
+    Required: require('./required'),
+    RequireAny: require('./require-any'),
+    RequireAll: require('./require-all')
   };
 
 })();

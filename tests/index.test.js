@@ -17,7 +17,10 @@
         Command: 'function',
         KWArg: 'function',
         Flag: 'function',
-        Arg: 'function'
+        Arg: 'function',
+        Required: 'function',
+        RequireAny: 'function',
+        RequireAll: 'function'
       };
 
       expect(index).to.be.ok;
