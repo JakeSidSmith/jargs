@@ -108,6 +108,12 @@
             requireAll: [child2, child3, child4],
             requireAny: [child5, child6]
           });
+
+          expect(properties.children[0]).to.equal(child1);
+          expect(properties.children[3]).to.equal(child4);
+
+          expect(properties.requireAll[1]).to.equal(child3);
+          expect(properties.requireAny[0]).to.equal(child5);
         }
 
         fn(
