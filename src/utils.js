@@ -131,7 +131,7 @@
       });
 
       if (moreThanOneCommand) {
-        throw new Error('More than one required Command at the same level');
+        throw new Error('More than one required Command at the same level. Use RequireAny');
       }
     } else if (children.length) {
       throw new Error('Only commands can have children');
