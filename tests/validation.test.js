@@ -180,4 +180,26 @@
 
   });
 
+  describe('validateChildren', function () {
+
+    it('should throw an error if children are not nodes', function () {
+      var anError = /invalid/i;
+
+      expect(utils.validateChildren.bind(null, [1])).to.throw(anError);
+      expect(utils.validateChildren.bind(null, ['a'])).to.throw(anError);
+      expect(utils.validateChildren.bind(null, [undefined])).to.throw(anError);
+      expect(utils.validateChildren.bind(null, [{}])).not.to.throw(anError);
+    });
+
+    it('should throw an error if children are not the correct type', function () {
+      var validTypes = ['arg', 'kwarg'];
+      var anError = /invalid/i;
+
+      expect(utils.validateChildren.bind(null, [{_type: 'foo'}], validTypes)).to.throw(anError);
+      expect(utils.validateChildren.bind(null, [{_type: 'arg'}, {_type: 'bar'}], validTypes)).to.throw(anError);
+      expect(utils.validateChildren.bind(null, [{_type: 'arg'}, {_type: 'kwarg'}], validTypes)).not.to.throw(anError);
+    });
+
+  });
+
 })();
