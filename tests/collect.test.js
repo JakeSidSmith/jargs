@@ -398,10 +398,32 @@
       });
     });
 
-    it('should exit with help for no kwarg value', function () {
+    it('should exit with help for no kwarg value (equals)', function () {
       var anError = /value.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=', 'invalid']);
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          KWArg(
+            'kwarg'
+          )
+        )
+      );
+
+      // With nested nodes
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for no kwarg value (not equals)', function () {
+      var anError = /value.*\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg']);
       boundCollect = boundCollect.bind(
         null,
         Program(
