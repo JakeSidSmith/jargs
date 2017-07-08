@@ -29,6 +29,9 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
   // var KWArg = jargs.KWArg;
   var Flag = jargs.Flag;
   var Arg = jargs.Arg;
+  // var Required = jargs.Required;
+  // var RequireAll = jargs.RequireAll;
+  var RequireAny = jargs.RequireAny;
 
   var root = jargs.collect(
     Program(
@@ -50,69 +53,68 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
           }
         }
       },
-      Command(
-        'init',
-        {
-          description: 'Create npm package',
-          usage: 'npm init',
-          required: true
-        }
-      ),
-      Command(
-        'install',
-        {
-          alias: 'i',
-          description: 'Install dependencies',
-          usage: 'npm install <lib> [--flags]',
-          examples: [
-            'npm install jargs --save --save-exact'
-          ],
-          required: true
-        },
-        Arg(
-          'lib'
-        ),
-        Flag(
-          'save',
+      RequireAny(
+        Command(
+          'init',
           {
-            alias: 'S',
-            description: 'Add to package.json dependencies'
+            description: 'Create npm package',
+            usage: 'npm init'
           }
         ),
-        Flag(
-          'save-dev',
+        Command(
+          'install',
           {
-            alias: 'D',
-            description: 'Add to package.json dev-dependencies'
-          }
+            alias: 'i',
+            description: 'Install dependencies',
+            usage: 'npm install <lib> [--flags]',
+            examples: [
+              'npm install jargs --save --save-exact'
+            ]
+          },
+          Arg(
+            'lib'
+          ),
+          Flag(
+            'save',
+            {
+              alias: 'S',
+              description: 'Add to package.json dependencies'
+            }
+          ),
+          Flag(
+            'save-dev',
+            {
+              alias: 'D',
+              description: 'Add to package.json dev-dependencies'
+            }
+          ),
+          Flag(
+            'save-exact',
+            {
+              alias: 'E',
+              description: 'Save exact latest version to package.json'
+            }
+          ),
+          Flag(
+            'save-optional',
+            {
+              alias: 'O',
+              description: 'Add to package.json optional-dependencies'
+            }
+          )
         ),
-        Flag(
-          'save-exact',
+        Command(
+          'run',
           {
-            alias: 'E',
-            description: 'Save exact latest version to package.json'
-          }
-        ),
-        Flag(
-          'save-optional',
-          {
-            alias: 'O',
-            description: 'Add to package.json optional-dependencies'
-          }
-        )
-      ),
-      Command(
-        'run',
-        {
-          alias: 'run-scripts',
-          description: 'Run a script in the package',
-          required: true
-        },
-        Arg(
-          'script',
-          {
-            description: 'Script from package.json to run'
-          }
+            alias: 'run-scripts',
+            description: 'Run a script in the package'
+          },
+          Arg(
+            'script',
+            {
+              description: 'Script from package.json to run'
+            }
+          )
         )
       ),
       Flag(
