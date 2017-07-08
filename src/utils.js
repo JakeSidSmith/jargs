@@ -80,6 +80,9 @@
   }
 
   function validateChildren (children, validTypes) {
+    var names = [];
+    var aliases = [];
+
     each(children, function (node) {
       if (typeof node !== 'object') {
         throw new Error('Invalid child node of type ' + (typeof node));
@@ -88,6 +91,14 @@
       if (validTypes.indexOf(node._type) < 0) {
         throw new Error('Invalid child node with type ' + node._type +
           '. Child nodes may only be ' + validTypes.join(', '));
+      }
+
+      if (node.name && names.indexOf(node.name) >= 0) {
+        throw new Error('More than one node with the name ' + node.name + ' at the same level');
+      }
+
+      if (node.options && node.options.alias && aliases.indexOf(node.options.alias) >= 0) {
+        throw new Error('More than one node with the alias ' + node.options.alias + ' at the same level');
       }
     });
   }
