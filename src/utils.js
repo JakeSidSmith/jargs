@@ -7,6 +7,13 @@
   var MATCHES_SPACE = /\s/;
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
+  var VALID_CHILD_NODES = [
+    'arg',
+    'flag',
+    'kwarg',
+    'command'
+  ];
+
   var TABLE_OPTIONS = {
     indentation: '    ',
     margin: '  ',
@@ -27,6 +34,16 @@
     for (var i = 0; i < arr.length; i += 1) {
       fn(arr[i], i);
     }
+  }
+
+  function any (arr, fn) {
+    for (var i = 0; i < arr.length; i += 1) {
+      if (fn(arr[i], i)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   function sum (arr) {
@@ -54,6 +71,17 @@
     };
 
     if (getChildren) {
+      each(argsArray, function (node) {
+        if (!node) {
+          throw new Error('Invalid child node of type ' + (typeof node));
+        }
+
+        if (VALID_CHILD_NODES.indexOf(node._type) < 0) {
+          throw new Error('Invalid child node with type ' + node._type +
+            '. Child nodes may only be ' + VALID_CHILD_NODES.join(', '));
+        }
+      });
+
       properties.children = argsArray;
     } else if (argsArray.length) {
       throw new Error('Only commands can have children');
@@ -375,6 +403,7 @@
   module.exports = {
     find: find,
     each: each,
+    any: any,
     sum: sum,
     argsToArray: argsToArray,
     getNodeProperties: getNodeProperties,

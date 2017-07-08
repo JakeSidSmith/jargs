@@ -36,16 +36,20 @@
     describe('getNodeProperties', function () {
 
       it('should get a node\'s properties from the supplied arguments (with children)', function () {
+        var child1 = Command('child1');
+        var child2 = Command('child2');
+        var child3 = Command('child3');
+
         function fn () {
           var properties = utils.getNodeProperties(arguments, true);
 
           expect(properties).to.be.ok;
           expect(properties.name).to.equal('foo');
           expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.eql(['child1', 'child2', 'child3']);
+          expect(properties.children).to.eql([child1, child2, child3]);
         }
 
-        fn('foo', {alias: 'bar'}, 'child1', 'child2', 'child3');
+        fn('foo', {alias: 'bar'}, child1, child2, child3);
       });
 
       it('should get a node\'s properties from the supplied arguments (without children)', function () {
@@ -63,6 +67,7 @@
 
       it('should should throw an error if children are provided, but not welcome', function () {
         var anError = /children/i;
+        var child = Command('child');
 
         function fn () {
           var properties = utils.getNodeProperties(arguments);
@@ -73,7 +78,7 @@
           expect(properties.children).to.be.undefined;
         }
 
-        expect(fn.bind(null, 'foo', {alias: 'bar'}, 'child')).to.throw(anError);
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, child)).to.throw(anError);
       });
 
     });
