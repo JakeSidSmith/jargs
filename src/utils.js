@@ -77,9 +77,9 @@
   }
 
   function getNodeProperties (args, getChildren) {
-    var argsArray = argsToArray(args);
-    var name = argsArray.shift();
-    var options = argsArray.shift() || {};
+    var children = argsToArray(args);
+    var name = children.shift();
+    var options = children.shift() || {};
 
     var properties = {
       name: name,
@@ -87,9 +87,30 @@
     };
 
     if (getChildren) {
-      validateChildren(argsArray, VALID_CHILD_NODES);
-      properties.children = argsArray;
-    } else if (argsArray.length) {
+      validateChildren(children, VALID_CHILD_NODES);
+
+      properties.required = [];
+      properties.requireAll = [];
+      properties.requireAny = [];
+      properties.children = [];
+
+      each(children, function (child) {
+        switch (child._type) {
+          case 'required':
+            properties.required = properties.required.concat(child.children);
+            break;
+          case 'require-all':
+            properties.requireAll = properties.requireAll.concat(child.children);
+            break;
+          case 'require-any':
+            properties.requireAny = properties.requireAny.concat(child.children);
+            break;
+          default:
+            properties.children.push(child);
+            break;
+        }
+      });
+    } else if (children.length) {
       throw new Error('Only commands can have children');
     }
 
