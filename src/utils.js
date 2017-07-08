@@ -72,7 +72,7 @@
 
     if (getChildren) {
       each(argsArray, function (node) {
-        if (!node) {
+        if (typeof node !== 'object') {
           throw new Error('Invalid child node of type ' + (typeof node));
         }
 

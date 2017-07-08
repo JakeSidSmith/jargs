@@ -6,6 +6,7 @@
 
   var expect = require('chai').expect;
 
+  var Program = require('../src/program');
   var Command = require('../src/command');
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
@@ -34,6 +35,30 @@
     });
 
     describe('getNodeProperties', function () {
+
+      it('should throw an error for invalid children', function () {
+        var anError = /invalid/i;
+        var child1 = Command('child1');
+        var child2 = 'invalid';
+
+        function fn () {
+          utils.getNodeProperties(arguments, true);
+        }
+
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, child1, child2)).to.throw(anError);
+      });
+
+      it('should throw an error for invalid types of children', function () {
+        var anError = /invalid/i;
+        var child1 = Command('child1');
+        var child2 = Program('invalid');
+
+        function fn () {
+          utils.getNodeProperties(arguments, true);
+        }
+
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, child1, child2)).to.throw(anError);
+      });
 
       it('should get a node\'s properties from the supplied arguments (with children)', function () {
         var child1 = Command('child1');
@@ -70,12 +95,7 @@
         var child = Command('child');
 
         function fn () {
-          var properties = utils.getNodeProperties(arguments);
-
-          expect(properties).to.be.ok;
-          expect(properties.name).to.equal('foo');
-          expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.be.undefined;
+          utils.getNodeProperties(arguments);
         }
 
         expect(fn.bind(null, 'foo', {alias: 'bar'}, child)).to.throw(anError);
