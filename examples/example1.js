@@ -59,6 +59,11 @@
           description: 'Another required key word argument'
         }
       )
+    ),
+    Required(
+      Arg(
+        'arg'
+      )
     )
   );
 
@@ -75,11 +80,6 @@
       RequireAny(
         firstCommand,
         secondCommand
-      ),
-      Required(
-        Arg(
-          'arg'
-        )
       )
     )
   );

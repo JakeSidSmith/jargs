@@ -36,6 +36,49 @@
     return matchingFlagOrKWArg;
   }
 
+  function formatNodeName (node) {
+    var prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
+    return prefix + node.name;
+  }
+
+  function formatRequiredList (nodes) {
+    return nodes.map(formatNodeName).join(', ');
+  }
+
+  function checkRequiredArgs (schema, tree) {
+    if (schema.requireAll && schema.requireAll.length) {
+      utils.each(schema.requireAll, function (node) {
+        if (node._type === 'command') {
+          if (!tree.command || node.name !== tree.command.name) {
+            throw new Error(
+              utils.createHelp(schema, 'Required argument ' + formatNodeName(node) + ' was not supplied')
+            );
+          }
+        } else if (!(node.name in tree[node._type + 's'])) {
+          throw new Error(
+            utils.createHelp(schema, 'Required argument ' + formatNodeName(node) + ' was not supplied')
+          );
+        }
+      });
+    }
+
+    if (schema.requireAny && schema.requireAny.length) {
+      utils.each(schema.requireAny, function (anyRequired) {
+        var anyMatch = utils.any(anyRequired, function (node) {
+          if (node._type === 'command') {
+            return tree.command && node.name === tree.command.name;
+          }
+
+          return (node.name in tree[node._type + 's']);
+        });
+
+        if (!anyMatch) {
+          throw new Error(utils.createHelp(schema, 'Required one of: ' + formatRequiredList(anyRequired)));
+        }
+      });
+    }
+  }
+
   function createTree (argv, schema, commands) {
     var tree = {
       command: null,
@@ -120,6 +163,8 @@
         }
       }
     }
+
+    checkRequiredArgs(schema, tree);
 
     while (commands.length) {
       commands.shift()();
