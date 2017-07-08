@@ -12,6 +12,9 @@
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
   var utils = require('../src/utils');
+  var Required = require('../src/required');
+  var RequireAll = require('../src/require-all');
+  var RequireAny = require('../src/require-any');
 
   describe('utils.js', function () {
 
@@ -81,6 +84,37 @@
         }
 
         fn('foo', {alias: 'bar'}, child1, child2, child3);
+      });
+
+      it('should get a node\'s properties from the supplied arguments (with required children)', function () {
+        var child1 = Command('child1');
+        var child2 = Command('child2');
+        var child3 = Command('child3');
+        var child4 = Command('child4');
+        var child5 = Command('child5');
+        var child6 = Command('child6');
+        var child7 = Command('child7');
+
+        function fn () {
+          var properties = utils.getNodeProperties(arguments, true);
+
+          expect(properties).to.be.ok;
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar'
+            },
+            children: [child1, child2, child3, child4, child5, child6, child7],
+            requireAll: [child2, child3, child4],
+            requireAny: [child5, child6]
+          });
+        }
+
+        fn(
+          'foo',
+          {alias: 'bar'},
+          child1, Required(child2), RequireAll(child3, child4), RequireAny(child5, child6), child7
+        );
       });
 
       it('should get a node\'s properties from the supplied arguments (without children)', function () {

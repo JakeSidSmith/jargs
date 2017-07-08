@@ -98,12 +98,14 @@
           case 'required':
           case 'require-all':
             properties.requireAll = properties.requireAll.concat(child.children);
+            properties.children = properties.children.concat(child.children);
             break;
           case 'require-any':
             properties.requireAny = properties.requireAny.concat(child.children);
+            properties.children = properties.children.concat(child.children);
             break;
           default:
-            properties.children.push(child);
+            properties.children = properties.children.concat(child);
             break;
         }
       });

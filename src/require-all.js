@@ -18,7 +18,7 @@
       throw new Error('No child nodes supplied to RequireAll node');
     }
 
-    if (!children.length < 2) {
+    if (children.length < 2) {
       throw new Error('Only one child node supplied to RequireAll node. Use Require node');
     }
 
