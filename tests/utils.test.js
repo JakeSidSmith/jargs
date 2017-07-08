@@ -72,6 +72,9 @@
           expect(properties.name).to.equal('foo');
           expect(properties.options).to.eql({alias: 'bar'});
           expect(properties.children).to.eql([child1, child2, child3]);
+          expect(properties.required).to.eql([]);
+          expect(properties.requireAll).to.eql([]);
+          expect(properties.requireAny).to.eql([]);
         }
 
         fn('foo', {alias: 'bar'}, child1, child2, child3);
@@ -85,6 +88,9 @@
           expect(properties.name).to.equal('foo');
           expect(properties.options).to.eql({alias: 'bar'});
           expect(properties.children).to.be.undefined;
+          expect(properties.required).to.be.undefined;
+          expect(properties.requireAll).to.be.undefined;
+          expect(properties.requireAny).to.be.undefined;
         }
 
         fn('foo', {alias: 'bar'});
