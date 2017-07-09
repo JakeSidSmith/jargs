@@ -788,6 +788,28 @@
       expect(boundCollect).to.throw(anError);
     });
 
+    it('should exit with help for missing required Commands when other Command found', function () {
+      var anError = /required\swas\snot\ssupplied\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['not-required']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'not-required'
+          ),
+          Required(
+            Command('required')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
     it('should exit with help for missing required Args', function () {
       var anError = /arg\swas\snot\ssupplied\n\n/i;
 
@@ -824,6 +846,29 @@
           RequireAny(
             Command('command1'),
             Command('command2')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing require any Commands when other Command found', function () {
+      var anError = /required1,\srequired2\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['not-required']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'not-required'
+          ),
+          RequireAny(
+            Command('required1'),
+            Command('required2')
           )
         )
       );
