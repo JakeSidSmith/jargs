@@ -15,10 +15,6 @@
     options: {
       type: 'array'
     },
-    required: {
-      type: 'boolean',
-      default: false
-    },
     type: {
       type: 'string'
     }

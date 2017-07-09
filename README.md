@@ -18,7 +18,17 @@ npm install jargs --save
 ### Require jargs
 
 ```javascript
-import { collect, Program, Command, KWArg, Flag, Arg } from 'jargs';
+import {
+  collect,
+  Program,
+  Command,
+  KWArg,
+  Flag,
+  Arg,
+  Required,
+  RequireAll,
+  RequireAny
+} from 'jargs';
 ```
 
 ### Create a schema
@@ -32,31 +42,33 @@ const tree = collect(
   Program(
     'npm',
     null,
-    Command(
-      'init'
-    ),
-    Command(
-      'install', {alias: 'i'},
-      Arg(
-        'lib'
+    RequireAny(
+      Command(
+        'init'
       ),
-      Flag(
-        'save', {alias: 'S'}
+      Command(
+        'install', {alias: 'i'},
+        Arg(
+          'lib'
+        ),
+        Flag(
+          'save', {alias: 'S'}
+        ),
+        Flag(
+          'save-dev', {alias: 'D'}
+        ),
+        Flag(
+          'save-exact', {alias: 'E'}
+        ),
+        Flag(
+          'save-optional', {alias: 'O'}
+        )
       ),
-      Flag(
-        'save-dev', {alias: 'D'}
-      ),
-      Flag(
-        'save-exact', {alias: 'E'}
-      ),
-      Flag(
-        'save-optional', {alias: 'O'}
-      )
-    ),
-    Command(
-      'run', {alias: 'run-scripts'},
-      Arg(
-        'command'
+      Command(
+        'run', {alias: 'run-scripts'},
+        Arg(
+          'command'
+        )
       )
     )
   )
@@ -142,11 +154,13 @@ if ('lib' in tree.args) {
 
 ### Nodes
 
-All nodes take the following arguments, though `Command` and `Program` take additional arguments (more info about individual nodes below).
+All nodes (excluding require nodes, see blow for more info) take the following arguments, though `Command` and `Program` take additional arguments (more info about individual nodes below).
 
 ```javascript
 Node(name, options);
 ```
+
+Note: the available options vary per node.
 
 `Command` and `Program` can take an infinite number or arguments. Any arguments after `name` & `options` become that node's child nodes e.g.
 
@@ -183,6 +197,7 @@ Program(
 
 A sub-command of your command line interface.
 Program is the main command / name of your program.
+Commands form a fork in the tree - only one command at each level can be satisfied.
 
 Takes the following options.
 
@@ -194,7 +209,6 @@ Command(
     description: 'A command', // default: empty string
     usage: 'program-name sub-command --flag', // default: empty string
     examples: ['program command-name --flag'], // default: empty array
-    required: true, // default: false
     callback: function (tree) {}
   },
   ...childNodes
@@ -216,7 +230,6 @@ KWArg(
   {
     alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
-    required: true, // default: false
     type: 'string'
   }
 )
@@ -237,7 +250,6 @@ Flag(
   {
     alias: 'f', // default: undefined
     description: 'A flag', // default: empty string
-    required: true // default: false
   }
 )
 ```
@@ -254,9 +266,46 @@ Arg(
   'arg-name'
   {
     description: 'An arg', // default: empty string
-    required: true, // default: false
     type: 'string'
   }
+)
+```
+
+### Require Nodes
+
+There are 3 different types of require nodes that you can wrap your argument / command nodes in to ensure that they are supplied.
+
+Note: you cannot require more than one Command at the same level unless you use RequireAny, as Commands form a fork in the tree and only one at each level can be satisfied.
+
+#### Required
+
+Takes a single node as an argument and ensures it is supplied.
+
+```javascript
+Required(
+  Arg('arg-name')
+)
+```
+
+#### RequireAll
+
+Takes any number of nodes as arguments and ensures they are all supplied.
+
+```javascript
+RequireAll(
+  KWArg('kwarg-name'),
+  Arg('arg-name')
+)
+```
+
+#### RequireAny
+
+Takes any number of nodes as arguments, and ensures that one of them is supplied.
+
+```javascript
+RequireAny(
+  Command('command1'),
+  Command('command2')
 )
 ```
 
@@ -302,26 +351,32 @@ const tree = collect(
       ),
       Command(
         'new', null,
-        Arg(
-          'newShipName', {required: true}
+        Required(
+          Arg(
+            'newShipName'
+          )
         )
       ),
       Command(
         'shoot', null,
-        Arg(
-          'shootX', {required: true}
-        ),
-        Arg(
-          'shootY', {required: true}
+        RequireAll(
+          Arg(
+            'shootX'
+          ),
+          Arg(
+            'shootY'
+          )
         )
       ),
       Command(
         'move', null,
-        Arg(
-          'moveX', {required: true}
-        ),
-        Arg(
-          'moveY', {required: true}
+        RequireAll(
+          Arg(
+            'moveX'
+          ),
+          Arg(
+            'moveY'
+          )
         ),
         KWArg(
           'speed'

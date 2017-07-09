@@ -15,6 +15,9 @@
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
+  var Required = require('../src/required');
+  var RequireAll = require('../src/require-all');
+  var RequireAny = require('../src/require-any');
   var utils = require('../src/utils');
 
   describe('collect.js', function () {
@@ -52,6 +55,16 @@
       var anError = /program/i;
 
       var boundCollect = collect.bind(null, 'node', 'npm', [], Arg('test'));
+
+      // Without tree
+      expect(boundCollect).to.throw(anError);
+
+    });
+
+    it('should throw an error if there is more than one root node', function () {
+      var anError = /single/i;
+
+      var boundCollect = collect.bind(null, 'node', 'npm', [], Program('test'), Program('test'));
 
       // Without tree
       expect(boundCollect).to.throw(anError);
@@ -388,10 +401,32 @@
       });
     });
 
-    it('should exit with help for no kwarg value', function () {
+    it('should exit with help for no kwarg value (equals)', function () {
       var anError = /value.*\n\n/i;
 
       var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=', 'invalid']);
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Arg(
+            'arg'
+          ),
+          KWArg(
+            'kwarg'
+          )
+        )
+      );
+
+      // With nested nodes
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for no kwarg value (not equals)', function () {
+      var anError = /value.*\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg']);
       boundCollect = boundCollect.bind(
         null,
         Program(
@@ -437,8 +472,7 @@
     it('should exit with help for duplicate kwargs', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--kwarg=correct', '--kwarg=incorrect']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=correct', '--kwarg=incorrect']);
 
       var boundCollect = boundCollect.bind(
         null,
@@ -460,8 +494,7 @@
     it('should exit with help for duplicate flags', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--flag', '--flag']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--flag', '--flag']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -483,8 +516,7 @@
     it('should exit with help for duplicate flag aliases', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--flag', '-f']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--flag', '-f']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -509,8 +541,7 @@
     it('should exit with help for unknown flags / kwargs', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--version']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--version']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -535,8 +566,7 @@
     it('should exit with help for unknown flag / kwarg aliases', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-v']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-v']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -561,8 +591,7 @@
     it('should exit with help for unknown commands / args', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['another-command']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['another-command']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -585,8 +614,7 @@
     });
 
     it('should return an arg tree with kwarg aliases', function () {
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-kthing', '-athing']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-kthing', '-athing']);
 
       var tree = boundCollect(
         Program(
@@ -617,8 +645,7 @@
         args: {}
       });
 
-      boundCollect = collect.bind(null, 'node', 'test',
-        ['-k', 'thing', '-a', 'thing']);
+      boundCollect = collect.bind(null, 'node', 'test', ['-k', 'thing', '-a', 'thing']);
 
       tree = boundCollect(
         Program(
@@ -651,8 +678,7 @@
     });
 
     it('should return an arg tree with flag aliases', function () {
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-f', '-a']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-f', '-a']);
 
       var tree = boundCollect(
         Program(
@@ -683,8 +709,7 @@
         args: {}
       });
 
-      boundCollect = collect.bind(null, 'node', 'test',
-        ['-fa']);
+      boundCollect = collect.bind(null, 'node', 'test', ['-fa']);
 
       tree = boundCollect(
         Program(
@@ -719,8 +744,7 @@
     it('should exit with help for invalid chained flag aliases', function () {
       var anError = /invalid.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-fk']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-fk']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -743,6 +767,171 @@
       );
 
       expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing required Commands', function () {
+      var anError = /command\swas\snot\ssupplied\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', []);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Required(
+            Command('command')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing required Commands when other Command found', function () {
+      var anError = /required\swas\snot\ssupplied\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['not-required']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'not-required'
+          ),
+          Required(
+            Command('required')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing required Args', function () {
+      var anError = /arg\swas\snot\ssupplied\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'command',
+            null,
+            Required(
+              Arg('arg')
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing require any Commands', function () {
+      var anError = /command1,\scommand2\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', []);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          RequireAny(
+            Command('command1'),
+            Command('command2')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing require any Commands when other Command found', function () {
+      var anError = /required1,\srequired2\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['not-required']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'not-required'
+          ),
+          RequireAny(
+            Command('required1'),
+            Command('required2')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing require any Args', function () {
+      var anError = /arg1,\sarg2\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'command',
+            null,
+            RequireAny(
+              Arg('arg1'),
+              Arg('arg2')
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should not error when all required arguments are met', function () {
+      var anError = /required/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command', '--kwarg1=value', 'arg1', 'arg2']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Required(
+            Command(
+              'command',
+              null,
+              RequireAny(
+                KWArg(
+                  'kwarg1'
+                ),
+                KWArg(
+                  'kwarg2'
+                )
+              ),
+              RequireAll(
+                Arg('arg1'),
+                Arg('arg2')
+              )
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).not.to.throw(anError);
     });
 
   });

@@ -7,6 +7,16 @@
   var MATCHES_SPACE = /\s/;
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
+  var VALID_CHILD_NODES = [
+    'arg',
+    'flag',
+    'kwarg',
+    'command',
+    'require-any',
+    'require-all',
+    'required'
+  ];
+
   var TABLE_OPTIONS = {
     indentation: '    ',
     margin: '  ',
@@ -29,6 +39,32 @@
     }
   }
 
+  function any (arr, fn) {
+    for (var i = 0; i < arr.length; i += 1) {
+      if (fn(arr[i], i)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function several (arr, fn) {
+    var count = 0;
+
+    for (var i = 0; i < arr.length; i += 1) {
+      if (fn(arr[i], i)) {
+        count += 1;
+      }
+
+      if (count > 1) {
+        return true;
+      }
+    }
+
+    return count > 1;
+  }
+
   function sum (arr) {
     var total = 0;
 
@@ -43,10 +79,42 @@
     return Array.prototype.slice.call(args);
   }
 
+  function validateChildren (children, validTypes) {
+    var names = [];
+    var aliases = [];
+
+    each(children, function (node) {
+      if (typeof node !== 'object') {
+        throw new Error('Invalid child node of type ' + (typeof node));
+      }
+
+      if (validTypes.indexOf(node._type) < 0) {
+        throw new Error('Invalid child node with type ' + node._type +
+          '. Child nodes may only be ' + validTypes.join(', '));
+      }
+
+      if (node.name) {
+        if (names.indexOf(node.name) >= 0) {
+          throw new Error('More than one node with the name "' + node.name + '" at the same level');
+        }
+
+        names.push(node.name);
+      }
+
+      if (node.options && node.options.alias) {
+        if (aliases.indexOf(node.options.alias) >= 0) {
+          throw new Error('More than one node with the alias "' + node.options.alias + '" at the same level');
+        }
+
+        aliases.push(node.options.alias);
+      }
+    });
+  }
+
   function getNodeProperties (args, getChildren) {
-    var argsArray = argsToArray(args);
-    var name = argsArray.shift();
-    var options = argsArray.shift() || {};
+    var children = argsToArray(args);
+    var name = children.shift();
+    var options = children.shift() || {};
 
     var properties = {
       name: name,
@@ -54,8 +122,37 @@
     };
 
     if (getChildren) {
-      properties.children = argsArray;
-    } else if (argsArray.length) {
+      validateChildren(children, VALID_CHILD_NODES);
+
+      properties.requireAll = [];
+      properties.requireAny = [];
+      properties.children = [];
+
+      each(children, function (child) {
+        switch (child._type) {
+          case 'required':
+          case 'require-all':
+            properties.requireAll = properties.requireAll.concat(child.children);
+            properties.children = properties.children.concat(child.children);
+            break;
+          case 'require-any':
+            properties.requireAny.push(child.children);
+            properties.children = properties.children.concat(child.children);
+            break;
+          default:
+            properties.children = properties.children.concat(child);
+            break;
+        }
+      });
+
+      var moreThanOneCommand = several(properties.requireAll, function (child) {
+        return child._type === 'command';
+      });
+
+      if (moreThanOneCommand) {
+        throw new Error('More than one required Command at the same level. Use RequireAny');
+      }
+    } else if (children.length) {
       throw new Error('Only commands can have children');
     }
 
@@ -372,17 +469,31 @@
     process.exit(1);
   }
 
+  function formatNodeName (node) {
+    var prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
+    return prefix + node.name;
+  }
+
+  function formatRequiredList (nodes) {
+    return nodes.map(formatNodeName).join(', ');
+  }
+
   module.exports = {
     find: find,
     each: each,
+    any: any,
+    several: several,
     sum: sum,
     argsToArray: argsToArray,
+    validateChildren: validateChildren,
     getNodeProperties: getNodeProperties,
     validateName: validateName,
     serializeOptions: serializeOptions,
     formatTable: formatTable,
     createHelp: createHelp,
-    exitWithHelp: exitWithHelp
+    exitWithHelp: exitWithHelp,
+    formatNodeName: formatNodeName,
+    formatRequiredList: formatRequiredList
   };
 
 })();

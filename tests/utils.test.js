@@ -6,11 +6,15 @@
 
   var expect = require('chai').expect;
 
+  var Program = require('../src/program');
   var Command = require('../src/command');
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
   var utils = require('../src/utils');
+  var Required = require('../src/required');
+  var RequireAll = require('../src/require-all');
+  var RequireAny = require('../src/require-any');
 
   describe('utils.js', function () {
 
@@ -35,17 +39,88 @@
 
     describe('getNodeProperties', function () {
 
+      it('should throw an error for invalid children', function () {
+        var anError = /invalid/i;
+        var child1 = Command('child1');
+        var child2 = 'invalid';
+
+        function fn () {
+          utils.getNodeProperties(arguments, true);
+        }
+
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, child1, child2)).to.throw(anError);
+      });
+
+      it('should throw an error for invalid types of children', function () {
+        var anError = /invalid/i;
+        var child1 = Command('child1');
+        var child2 = Program('invalid');
+
+        function fn () {
+          utils.getNodeProperties(arguments, true);
+        }
+
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, child1, child2)).to.throw(anError);
+      });
+
       it('should get a node\'s properties from the supplied arguments (with children)', function () {
+        var child1 = Command('child1');
+        var child2 = Command('child2');
+        var child3 = Command('child3');
+
         function fn () {
           var properties = utils.getNodeProperties(arguments, true);
 
           expect(properties).to.be.ok;
-          expect(properties.name).to.equal('foo');
-          expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.eql(['child1', 'child2', 'child3']);
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar'
+            },
+            children: [child1, child2, child3],
+            requireAll: [],
+            requireAny: []
+          });
         }
 
-        fn('foo', {alias: 'bar'}, 'child1', 'child2', 'child3');
+        fn('foo', {alias: 'bar'}, child1, child2, child3);
+      });
+
+      it('should get a node\'s properties from the supplied arguments (with required children)', function () {
+        var child1 = Arg('child1');
+        var child2 = Arg('child2');
+        var child3 = Arg('child3');
+        var child4 = Arg('child4');
+        var child5 = Arg('child5');
+        var child6 = Arg('child6');
+        var child7 = Arg('child7');
+
+        function fn () {
+          var properties = utils.getNodeProperties(arguments, true);
+
+          expect(properties).to.be.ok;
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar'
+            },
+            children: [child1, child2, child3, child4, child5, child6, child7],
+            requireAll: [child2, child3, child4],
+            requireAny: [[child5, child6]]
+          });
+
+          expect(properties.children[0]).to.equal(child1);
+          expect(properties.children[3]).to.equal(child4);
+
+          expect(properties.requireAll[1]).to.equal(child3);
+          expect(properties.requireAny[0][0]).to.equal(child5);
+        }
+
+        fn(
+          'foo',
+          {alias: 'bar'},
+          child1, Required(child2), RequireAll(child3, child4), RequireAny(child5, child6), child7
+        );
       });
 
       it('should get a node\'s properties from the supplied arguments (without children)', function () {
@@ -53,9 +128,12 @@
           var properties = utils.getNodeProperties(arguments);
 
           expect(properties).to.be.ok;
-          expect(properties.name).to.equal('foo');
-          expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.be.undefined;
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar'
+            }
+          });
         }
 
         fn('foo', {alias: 'bar'});
@@ -63,17 +141,26 @@
 
       it('should should throw an error if children are provided, but not welcome', function () {
         var anError = /children/i;
+        var child = Command('child');
 
         function fn () {
-          var properties = utils.getNodeProperties(arguments);
-
-          expect(properties).to.be.ok;
-          expect(properties.name).to.equal('foo');
-          expect(properties.options).to.eql({alias: 'bar'});
-          expect(properties.children).to.be.undefined;
+          utils.getNodeProperties(arguments);
         }
 
-        expect(fn.bind(null, 'foo', {alias: 'bar'}, 'child')).to.throw(anError);
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, child)).to.throw(anError);
+      });
+
+      it('should should throw an error if more than one command is required', function () {
+        var anError = /more\sthan\sone/i;
+        var child1 = Command('child1');
+        var child2 = Command('child2');
+
+        function fn () {
+          utils.getNodeProperties(arguments, true);
+        }
+
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, Required(child1), Required(child2))).to.throw(anError);
+        expect(fn.bind(null, 'foo', {alias: 'bar'}, RequireAll(child1, child2))).to.throw(anError);
       });
 
     });
@@ -114,6 +201,38 @@
         });
 
         expect(count).to.equal(5);
+      });
+
+    });
+
+    describe('any', function () {
+
+      var arr = [1, 2, 3, 4, 5];
+
+      it('should return true if any items match the predicate', function () {
+        expect(utils.any(arr, function (value) {
+          return value === 3;
+        })).to.be.true;
+
+        expect(utils.any(arr, function (value) {
+          return value === 10;
+        })).to.be.false;
+      });
+
+    });
+
+    describe('several', function () {
+
+      var arr = [1, 2, 3, 4, 5];
+
+      it('should return true if several items match the predicate', function () {
+        expect(utils.several(arr, function (value) {
+          return value > 3;
+        })).to.be.true;
+
+        expect(utils.several(arr, function (value) {
+          return value === 1;
+        })).to.be.false;
       });
 
     });
@@ -413,6 +532,14 @@
         var result = utils.formatTable(table, {alignRight: [], wrap: [0, 1, 2]});
 
         expect(result).to.equal(expected);
+      });
+
+    });
+
+    describe('formatRequiredList', function () {
+
+      it('should format node names in a list', function () {
+        expect(utils.formatRequiredList([Arg('arg'), KWArg('kwarg')])).to.equal('arg, --kwarg');
       });
 
     });

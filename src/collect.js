@@ -36,6 +36,40 @@
     return matchingFlagOrKWArg;
   }
 
+  function checkRequiredArgs (schema, tree) {
+    if (schema.requireAll && schema.requireAll.length) {
+      utils.each(schema.requireAll, function (node) {
+        if (node._type === 'command') {
+          if (!tree.command || node.name !== tree.command.name) {
+            throw new Error(
+              utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
+            );
+          }
+        } else if (!(node.name in tree[node._type + 's'])) {
+          throw new Error(
+            utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
+          );
+        }
+      });
+    }
+
+    if (schema.requireAny && schema.requireAny.length) {
+      utils.each(schema.requireAny, function (anyRequired) {
+        var anyMatch = utils.any(anyRequired, function (node) {
+          if (node._type === 'command') {
+            return tree.command && node.name === tree.command.name;
+          }
+
+          return (node.name in tree[node._type + 's']);
+        });
+
+        if (!anyMatch) {
+          throw new Error(utils.createHelp(schema, 'Required one of: ' + utils.formatRequiredList(anyRequired)));
+        }
+      });
+    }
+  }
+
   function createTree (argv, schema, commands) {
     var tree = {
       command: null,
@@ -50,10 +84,6 @@
 
     if (typeof schema.options.callback === 'function') {
       commands.push(schema.options.callback.bind(null, tree));
-    }
-
-    if (!argv.length) {
-      return tree;
     }
 
     while (argv.length) {
@@ -117,6 +147,9 @@
           } else if (containsEquals && !kwargValue) {
             throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
           } else if (!containsEquals) {
+            if (!argv.length) {
+              throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
+            }
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
           } else {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
@@ -124,6 +157,8 @@
         }
       }
     }
+
+    checkRequiredArgs(schema, tree);
 
     while (commands.length) {
       commands.shift()();
@@ -146,6 +181,10 @@
 
     if (rootNode._type !== 'program') {
       throw new Error('Root node must be a Program');
+    }
+
+    if (args.length) {
+      throw new Error('Too many root nodes. Collect takes only a single Program root node');
     }
 
     try {

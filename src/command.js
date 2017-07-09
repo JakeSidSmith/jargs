@@ -19,10 +19,6 @@
       type: 'string',
       default: ''
     },
-    required: {
-      type: 'boolean',
-      default: false
-    },
     callback: {
       type: 'function'
     },
