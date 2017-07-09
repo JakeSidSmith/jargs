@@ -78,7 +78,7 @@
       args: {}
     };
 
-    if (schema._type === 'command') {
+    if (schema._type === 'command' || schema._type === 'program') {
       tree.name = schema.name;
     }
 
