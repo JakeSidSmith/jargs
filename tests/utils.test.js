@@ -536,6 +536,14 @@
 
     });
 
+    describe('formatRequiredList', function () {
+
+      it('should format node names in a list', function () {
+        expect(utils.formatRequiredList([Arg('arg'), KWArg('kwarg')])).to.equal('arg, --kwarg');
+      });
+
+    });
+
   });
 
 })();
