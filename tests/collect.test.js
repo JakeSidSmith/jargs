@@ -17,7 +17,7 @@
   var Arg = require('../src/arg');
   var Required = require('../src/required');
   // var RequireAll = require('../src/require-all');
-  // var RequireAny = require('../src/require-any');
+  var RequireAny = require('../src/require-any');
   var utils = require('../src/utils');
 
   describe('collect.js', function () {
@@ -803,6 +803,50 @@
             null,
             Required(
               Arg('arg')
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing require any Commands', function () {
+      var anError = /command1,\scommand2\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', []);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          RequireAny(
+            Command('command1'),
+            Command('command2')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing require any Args', function () {
+      var anError = /arg1,\sarg2\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'command',
+            null,
+            RequireAny(
+              Arg('arg1'),
+              Arg('arg2')
             )
           )
         )
