@@ -18,7 +18,17 @@ npm install jargs --save
 ### Require jargs
 
 ```javascript
-import { collect, Program, Command, KWArg, Flag, Arg } from 'jargs';
+import {
+  collect,
+  Program,
+  Command,
+  KWArg,
+  Flag,
+  Arg,
+  Required,
+  RequireAll,
+  RequireAny
+} from 'jargs';
 ```
 
 ### Create a schema
