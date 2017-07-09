@@ -311,7 +311,7 @@ RequireAny(
 
 ### Callbacks
 
-The Program and Command nodes can take a callback. If satisfied, these callbacks will be called with the `tree` at that level, the `parentTree`, and anything returned from the previous callbacks.
+The Program and Command nodes can take a callback. If satisfied, these callbacks will be called with the `tree` at that level, the `parentTree`, and anything returned from the previous callback.
 
 ```shell
 program --kwarg=value command
