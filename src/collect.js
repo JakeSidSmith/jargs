@@ -70,7 +70,7 @@
     }
   }
 
-  function createTree (argv, schema, commands) {
+  function createTree (argv, schema, commands, parentTree) {
     var tree = {
       command: null,
       kwargs: {},
@@ -83,7 +83,7 @@
     }
 
     if (typeof schema.options.callback === 'function') {
-      commands.push(schema.options.callback.bind(null, tree));
+      commands.push(schema.options.callback.bind(null, tree, parentTree));
     }
 
     while (argv.length) {
@@ -96,7 +96,7 @@
         });
 
         if (matchingCommand) {
-          tree.command = createTree(argv, matchingCommand, commands);
+          tree.command = createTree(argv, matchingCommand, commands, tree);
         } else {
           var matchingArg = find(schema.children, function (node) {
             return node._type === 'arg' && !(node.name in tree.args);
