@@ -21,8 +21,29 @@
       usage: 'command first',
       examples: [
         'command first'
-      ]
-    }
+      ],
+      callback: function (tree) {
+        return tree.args.data;
+      }
+    },
+    RequireAll(
+      Arg(
+        'data',
+        {
+          description: 'Some data to be passed to the sub command'
+        }
+      ),
+      Command(
+        'sub',
+        {
+          description: 'A sub command',
+          usage: 'command first sub',
+          callback: function (tree, parentTree, data) {
+            console.log(data);
+          }
+        }
+      )
+    )
   );
 
   var secondCommand = Command(
@@ -83,6 +104,7 @@
     )
   );
 
+  console.log('Full tree:\n');
   console.log(tree);
 
 })();
