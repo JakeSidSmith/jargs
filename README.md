@@ -32,31 +32,33 @@ const tree = collect(
   Program(
     'npm',
     null,
-    Command(
-      'init'
-    ),
-    Command(
-      'install', {alias: 'i'},
-      Arg(
-        'lib'
+    RequireAny(
+      Command(
+        'init'
       ),
-      Flag(
-        'save', {alias: 'S'}
+      Command(
+        'install', {alias: 'i'},
+        Arg(
+          'lib'
+        ),
+        Flag(
+          'save', {alias: 'S'}
+        ),
+        Flag(
+          'save-dev', {alias: 'D'}
+        ),
+        Flag(
+          'save-exact', {alias: 'E'}
+        ),
+        Flag(
+          'save-optional', {alias: 'O'}
+        )
       ),
-      Flag(
-        'save-dev', {alias: 'D'}
-      ),
-      Flag(
-        'save-exact', {alias: 'E'}
-      ),
-      Flag(
-        'save-optional', {alias: 'O'}
-      )
-    ),
-    Command(
-      'run', {alias: 'run-scripts'},
-      Arg(
-        'command'
+      Command(
+        'run', {alias: 'run-scripts'},
+        Arg(
+          'command'
+        )
       )
     )
   )
@@ -194,7 +196,6 @@ Command(
     description: 'A command', // default: empty string
     usage: 'program-name sub-command --flag', // default: empty string
     examples: ['program command-name --flag'], // default: empty array
-    required: true, // default: false
     callback: function (tree) {}
   },
   ...childNodes
@@ -216,7 +217,6 @@ KWArg(
   {
     alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
-    required: true, // default: false
     type: 'string'
   }
 )
@@ -237,7 +237,6 @@ Flag(
   {
     alias: 'f', // default: undefined
     description: 'A flag', // default: empty string
-    required: true // default: false
   }
 )
 ```
@@ -254,7 +253,6 @@ Arg(
   'arg-name'
   {
     description: 'An arg', // default: empty string
-    required: true, // default: false
     type: 'string'
   }
 )
@@ -302,26 +300,32 @@ const tree = collect(
       ),
       Command(
         'new', null,
-        Arg(
-          'newShipName', {required: true}
+        Required(
+          Arg(
+            'newShipName'
+          )
         )
       ),
       Command(
         'shoot', null,
-        Arg(
-          'shootX', {required: true}
-        ),
-        Arg(
-          'shootY', {required: true}
+        RequireAll(
+          Arg(
+            'shootX'
+          ),
+          Arg(
+            'shootY'
+          )
         )
       ),
       Command(
         'move', null,
-        Arg(
-          'moveX', {required: true}
-        ),
-        Arg(
-          'moveY', {required: true}
+        RequireAll(
+          Arg(
+            'moveX'
+          ),
+          Arg(
+            'moveY'
+          )
         ),
         KWArg(
           'speed'
