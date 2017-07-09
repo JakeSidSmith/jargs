@@ -160,8 +160,10 @@
 
     checkRequiredArgs(schema, tree);
 
+    var returned;
+
     while (commands.length) {
-      commands.shift()();
+      returned = commands.shift()(returned);
     }
 
     return tree;
