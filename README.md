@@ -309,6 +309,72 @@ RequireAny(
 )
 ```
 
+### Callbacks
+
+The Program and Command nodes can take a callback. If satisfied, these callbacks will be called with the `tree` at that level, the `parentTree`, and anything returned from the previous callbacks.
+
+```shell
+program --kwarg=value command
+```
+
+```javascript
+Program(
+  'program',
+  {
+    callback: function (tree) {
+      /*
+
+      tree = {
+        name: 'program',
+        command: {name: 'command', ...etc},
+        args: {},
+        flags: {},
+        kwargs: {
+          kwarg: 'value'
+        }
+      };
+
+      */
+
+      return 'Hello, World!';
+    }
+  },
+  KWArg(
+    'kwarg'
+  ),
+  Command(
+    'command',
+    {
+      callback: function (tree, parentTree, data) {
+        /*
+
+      tree = {
+        name: 'command',
+        command: null,
+        args: {},
+        flags: {},
+        kwargs: {}
+      };
+
+      parentTree = {
+        name: 'program',
+        command: {name: 'command', ...etc},
+        args: {},
+        flags: {},
+        kwargs: {
+          kwarg: 'value'
+        }
+      };
+
+      data = 'Hello, World!';
+
+      */
+      }
+    }
+  )
+)
+```
+
 ## Command examples
 
 ```shell
