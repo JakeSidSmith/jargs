@@ -154,7 +154,7 @@ if ('lib' in tree.args) {
 
 ### Nodes
 
-All nodes take the following arguments, though `Command` and `Program` take additional arguments (more info about individual nodes below).
+All nodes (excluding require nodes, see blow for more info) take the following arguments, though `Command` and `Program` take additional arguments (more info about individual nodes below).
 
 ```javascript
 Node(name, options);
@@ -267,6 +267,44 @@ Arg(
     description: 'An arg', // default: empty string
     type: 'string'
   }
+)
+```
+
+### Require Nodes
+
+There are 3 different types of required nodes that you can wrap your argument / command nodes in to ensure that they are supplied.
+
+Note: you cannot require more than one Command at the same level unless you use RequireAny, as Commands form a fork in the tree and only one at each level can be satisfied.
+
+#### Required
+
+Takes a single node as an argument and ensures it is supplied.
+
+```javascript
+Required(
+  Arg('arg-name)
+)
+```
+
+#### RequireAll
+
+Takes any number of nodes as arguments and ensures they are all supplied.
+
+```javascript
+RequireAll(
+  KWArg('kwarg-name),
+  Arg('arg-name)
+)
+```
+
+#### RequireAny
+
+Takes any number of nodes as arguments, and ensures that one of them is supplied.
+
+```javascript
+RequireAny(
+  Command('command1'),
+  Command('command2')
 )
 ```
 
