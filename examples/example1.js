@@ -66,7 +66,7 @@
     )
   );
 
-  jargs.collect(
+  var tree = jargs.collect(
     Program(
       'command',
       {
@@ -82,5 +82,7 @@
       )
     )
   );
+
+  console.log(tree);
 
 })();
