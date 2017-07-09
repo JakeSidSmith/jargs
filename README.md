@@ -283,7 +283,7 @@ Takes a single node as an argument and ensures it is supplied.
 
 ```javascript
 Required(
-  Arg('arg-name)
+  Arg('arg-name')
 )
 ```
 
@@ -293,8 +293,8 @@ Takes any number of nodes as arguments and ensures they are all supplied.
 
 ```javascript
 RequireAll(
-  KWArg('kwarg-name),
-  Arg('arg-name)
+  KWArg('kwarg-name'),
+  Arg('arg-name')
 )
 ```
 
