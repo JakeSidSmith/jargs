@@ -197,6 +197,7 @@ Program(
 
 A sub-command of your command line interface.
 Program is the main command / name of your program.
+Commands form a fork in the tree - only one command at each level can be satisfied.
 
 Takes the following options.
 
