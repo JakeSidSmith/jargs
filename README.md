@@ -436,7 +436,7 @@ const tree = collect(
               'shootY'
             )
           )
-        ),
+        )
       ),
       Command(
         'move', null,
