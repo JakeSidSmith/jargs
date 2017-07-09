@@ -21,8 +21,31 @@
       usage: 'command first',
       examples: [
         'command first'
-      ]
-    }
+      ],
+      callback: function (tree) {
+        console.log('Command: ' + tree.name);
+        return tree.args.data;
+      }
+    },
+    RequireAll(
+      Arg(
+        'data',
+        {
+          description: 'Some data to be passed to the sub command'
+        }
+      ),
+      Command(
+        'sub',
+        {
+          description: 'A sub command',
+          usage: 'command first sub',
+          callback: function (tree, parentTree, data) {
+            console.log('Command: ' + tree.name);
+            console.log(data);
+          }
+        }
+      )
+    )
   );
 
   var secondCommand = Command(
@@ -66,7 +89,7 @@
     )
   );
 
-  jargs.collect(
+  var fullTree = jargs.collect(
     Program(
       'command',
       {
@@ -74,7 +97,10 @@
         examples: [
           'command first arg',
           'command second --flag --kwarg1=foo --kwarg2=bar arg'
-        ]
+        ],
+        callback: function (tree) {
+          console.log('Program: ' + tree.name);
+        }
       },
       RequireAny(
         firstCommand,
@@ -82,5 +108,8 @@
       )
     )
   );
+
+  console.log('Full tree:\n');
+  console.log(fullTree);
 
 })();

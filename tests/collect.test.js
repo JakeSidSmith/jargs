@@ -86,6 +86,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {},
@@ -109,6 +110,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'install',
           command: null,
@@ -142,6 +144,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'install',
           command: null,
@@ -179,6 +182,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'install',
           command: null,
@@ -221,6 +225,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: null,
         kwargs: {
           transform: 'babelify',
@@ -256,6 +261,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'command',
           command: null,
@@ -292,6 +298,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {},
@@ -349,6 +356,51 @@
       expect(result.command.args.arg2).to.equal('argygain');
     });
 
+    it('should pass parent tree & returned value to subsequent callbacks', function () {
+      var boundCollect = collect.bind(null, 'node', 'browserify', ['argy', 'command2', 'argygain', 'command3']);
+
+      var programSpy = stub().returns(1);
+      var command1Spy = stub().returns(2);
+      var command2Spy = stub().returns(3);
+      var command3Spy = stub().returns(4);
+
+      var result = boundCollect(
+        Program(
+          'program',
+          {callback: programSpy},
+          Arg(
+            'arg1'
+          ),
+          Command(
+            'command1',
+            {callback: command1Spy},
+            Arg(
+              'arg3'
+            )
+          ),
+          Command(
+            'command2',
+            {callback: command2Spy},
+            Arg(
+              'arg2'
+            ),
+            Command(
+              'command3',
+              {callback: command3Spy}
+            )
+          )
+        )
+      );
+
+      expect(programSpy).to.have.been.calledOnce;
+      expect(programSpy).to.have.been.calledWith(result, undefined, undefined);
+      expect(command2Spy).to.have.been.calledOnce;
+      expect(command2Spy).to.have.been.calledWith(result.command, result, 1);
+      expect(command3Spy).to.have.been.calledOnce;
+      expect(command3Spy).to.have.been.calledWith(result.command.command, result.command, 3);
+      expect(command1Spy).not.to.have.been.called;
+    });
+
     it('should return an arg tree from aliases', function () {
       var boundCollect = collect.bind(null, 'node', 'browserify',
         ['b', '-t', 'babelify', '-v', '-o', 'build/index.js', 'src/index.js']);
@@ -381,6 +433,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'build',
           command: null,
@@ -636,6 +689,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {
           kwarg: 'thing',
@@ -667,6 +721,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {
           kwarg: 'thing',
@@ -700,6 +755,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {
@@ -731,6 +787,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {
