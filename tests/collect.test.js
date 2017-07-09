@@ -16,7 +16,7 @@
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
   var Required = require('../src/required');
-  // var RequireAll = require('../src/require-all');
+  var RequireAll = require('../src/require-all');
   var RequireAny = require('../src/require-any');
   var utils = require('../src/utils');
 
@@ -898,6 +898,40 @@
       );
 
       expect(boundCollect).to.throw(anError);
+    });
+
+    it('should not error when all required arguments are met', function () {
+      var anError = /required/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command', '--kwarg1=value', 'arg1', 'arg2']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Required(
+            Command(
+              'command',
+              null,
+              RequireAny(
+                KWArg(
+                  'kwarg1'
+                ),
+                KWArg(
+                  'kwarg2'
+                )
+              ),
+              RequireAll(
+                Arg('arg1'),
+                Arg('arg2')
+              )
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).not.to.throw(anError);
     });
 
   });
