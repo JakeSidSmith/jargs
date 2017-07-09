@@ -272,7 +272,7 @@ Arg(
 
 ### Require Nodes
 
-There are 3 different types of required nodes that you can wrap your argument / command nodes in to ensure that they are supplied.
+There are 3 different types of require nodes that you can wrap your argument / command nodes in to ensure that they are supplied.
 
 Note: you cannot require more than one Command at the same level unless you use RequireAny, as Commands form a fork in the tree and only one at each level can be satisfied.
 
