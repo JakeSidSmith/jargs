@@ -81,6 +81,7 @@ Calling the command `npm` returns the following.
 
 ```javascript
 {
+  name: 'npm',
   command: null,
   kwargs: {},
   flags: {},
@@ -92,6 +93,7 @@ Calling the command `npm install jargs --save` returns the following.
 
 ```javascript
 {
+  name: 'npm',
   command: {
     name: 'install',
     kwargs: {},
@@ -412,25 +414,27 @@ const tree = collect(
     null,
     Command(
       'ship', null,
-      Arg(
-        'shipName'
-      ),
-      Command(
-        'new', null,
-        Required(
-          Arg(
-            'newShipName'
+      RequireAny(
+        Arg(
+          'shipName'
+        ),
+        Command(
+          'new', null,
+          Required(
+            Arg(
+              'shipName'
+            )
           )
-        )
-      ),
-      Command(
-        'shoot', null,
-        RequireAll(
-          Arg(
-            'shootX'
-          ),
-          Arg(
-            'shootY'
+        ),
+        Command(
+          'shoot', null,
+          RequireAll(
+            Arg(
+              'shootX'
+            ),
+            Arg(
+              'shootY'
+            )
           )
         )
       ),
