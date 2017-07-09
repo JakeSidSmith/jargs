@@ -23,6 +23,7 @@
         'command first'
       ],
       callback: function (tree) {
+        console.log('Command: ' + tree.name);
         return tree.args.data;
       }
     },
@@ -39,6 +40,7 @@
           description: 'A sub command',
           usage: 'command first sub',
           callback: function (tree, parentTree, data) {
+            console.log('Command: ' + tree.name);
             console.log(data);
           }
         }
@@ -87,7 +89,7 @@
     )
   );
 
-  var tree = jargs.collect(
+  var fullTree = jargs.collect(
     Program(
       'command',
       {
@@ -95,7 +97,10 @@
         examples: [
           'command first arg',
           'command second --flag --kwarg1=foo --kwarg2=bar arg'
-        ]
+        ],
+        callback: function (tree) {
+          console.log('Program: ' + tree.name);
+        }
       },
       RequireAny(
         firstCommand,
@@ -105,6 +110,6 @@
   );
 
   console.log('Full tree:\n');
-  console.log(tree);
+  console.log(fullTree);
 
 })();
