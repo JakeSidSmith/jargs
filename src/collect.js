@@ -72,15 +72,12 @@
 
   function createTree (argv, schema, commands, parentTree) {
     var tree = {
+      name: schema.name,
       command: null,
       kwargs: {},
       flags: {},
       args: {}
     };
-
-    if (schema._type === 'command' || schema._type === 'program') {
-      tree.name = schema.name;
-    }
 
     if (typeof schema.options.callback === 'function') {
       commands.push(schema.options.callback.bind(null, tree, parentTree));
