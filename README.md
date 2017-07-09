@@ -414,27 +414,29 @@ const tree = collect(
     null,
     Command(
       'ship', null,
-      Arg(
-        'shipName'
-      ),
-      Command(
-        'new', null,
-        Required(
-          Arg(
-            'newShipName'
+      RequireAny(
+        Arg(
+          'shipName'
+        ),
+        Command(
+          'new', null,
+          Required(
+            Arg(
+              'shipName'
+            )
           )
-        )
-      ),
-      Command(
-        'shoot', null,
-        RequireAll(
-          Arg(
-            'shootX'
-          ),
-          Arg(
-            'shootY'
+        ),
+        Command(
+          'shoot', null,
+          RequireAll(
+            Arg(
+              'shootX'
+            ),
+            Arg(
+              'shootY'
+            )
           )
-        )
+        ),
       ),
       Command(
         'move', null,
