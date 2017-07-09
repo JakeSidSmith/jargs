@@ -86,6 +86,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {},
@@ -109,6 +110,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'install',
           command: null,
@@ -142,6 +144,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'install',
           command: null,
@@ -179,6 +182,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'install',
           command: null,
@@ -221,6 +225,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: null,
         kwargs: {
           transform: 'babelify',
@@ -256,6 +261,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'command',
           command: null,
@@ -292,6 +298,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {},
@@ -426,6 +433,7 @@
       );
 
       expect(result).to.eql({
+        name: 'program',
         command: {
           name: 'build',
           command: null,
@@ -681,6 +689,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {
           kwarg: 'thing',
@@ -712,6 +721,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {
           kwarg: 'thing',
@@ -745,6 +755,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {
@@ -776,6 +787,7 @@
       );
 
       expect(tree).to.eql({
+        name: 'program',
         command: null,
         kwargs: {},
         flags: {
