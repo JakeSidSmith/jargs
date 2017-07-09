@@ -81,6 +81,7 @@ Calling the command `npm` returns the following.
 
 ```javascript
 {
+  name: 'npm',
   command: null,
   kwargs: {},
   flags: {},
@@ -92,6 +93,7 @@ Calling the command `npm install jargs --save` returns the following.
 
 ```javascript
 {
+  name: 'npm',
   command: {
     name: 'install',
     kwargs: {},
