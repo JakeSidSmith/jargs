@@ -18,9 +18,9 @@
     'first',
     {
       description: 'The first command',
-      usage: 'command first',
+      usage: 'command first arg sub',
       examples: [
-        'command first'
+        'command first arg sub'
       ],
       callback: function (tree) {
         console.log('Command: ' + tree.name);
@@ -95,7 +95,7 @@
       {
         description: 'An example command line interface',
         examples: [
-          'command first arg',
+          'command first arg sub',
           'command second --flag --kwarg1=foo --kwarg2=bar arg'
         ],
         callback: function (tree) {
