@@ -469,8 +469,7 @@
     it('should exit with help for duplicate kwargs', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--kwarg=correct', '--kwarg=incorrect']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=correct', '--kwarg=incorrect']);
 
       var boundCollect = boundCollect.bind(
         null,
@@ -492,8 +491,7 @@
     it('should exit with help for duplicate flags', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--flag', '--flag']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--flag', '--flag']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -515,8 +513,7 @@
     it('should exit with help for duplicate flag aliases', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--flag', '-f']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--flag', '-f']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -541,8 +538,7 @@
     it('should exit with help for unknown flags / kwargs', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['--version']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['--version']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -567,8 +563,7 @@
     it('should exit with help for unknown flag / kwarg aliases', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-v']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-v']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -593,8 +588,7 @@
     it('should exit with help for unknown commands / args', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['another-command']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['another-command']);
 
       boundCollect = boundCollect.bind(
         null,
@@ -617,8 +611,7 @@
     });
 
     it('should return an arg tree with kwarg aliases', function () {
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-kthing', '-athing']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-kthing', '-athing']);
 
       var tree = boundCollect(
         Program(
@@ -649,8 +642,7 @@
         args: {}
       });
 
-      boundCollect = collect.bind(null, 'node', 'test',
-        ['-k', 'thing', '-a', 'thing']);
+      boundCollect = collect.bind(null, 'node', 'test', ['-k', 'thing', '-a', 'thing']);
 
       tree = boundCollect(
         Program(
@@ -683,8 +675,7 @@
     });
 
     it('should return an arg tree with flag aliases', function () {
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-f', '-a']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-f', '-a']);
 
       var tree = boundCollect(
         Program(
@@ -715,8 +706,7 @@
         args: {}
       });
 
-      boundCollect = collect.bind(null, 'node', 'test',
-        ['-fa']);
+      boundCollect = collect.bind(null, 'node', 'test', ['-fa']);
 
       tree = boundCollect(
         Program(
@@ -751,8 +741,7 @@
     it('should exit with help for invalid chained flag aliases', function () {
       var anError = /invalid.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test',
-        ['-fk']);
+      var boundCollect = collect.bind(null, 'node', 'test', ['-fk']);
 
       boundCollect = boundCollect.bind(
         null,
