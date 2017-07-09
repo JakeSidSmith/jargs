@@ -160,6 +160,8 @@ All nodes take the following arguments, though `Command` and `Program` take addi
 Node(name, options);
 ```
 
+Note: the available options vary per node.
+
 `Command` and `Program` can take an infinite number or arguments. Any arguments after `name` & `options` become that node's child nodes e.g.
 
 ```javascript
