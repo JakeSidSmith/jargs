@@ -15,6 +15,9 @@
   var KWArg = require('../src/kwarg');
   var Flag = require('../src/flag');
   var Arg = require('../src/arg');
+  var Required = require('../src/required');
+  // var RequireAll = require('../src/require-all');
+  // var RequireAny = require('../src/require-any');
   var utils = require('../src/utils');
 
   describe('collect.js', function () {
@@ -759,6 +762,48 @@
             {
               alias: 'k'
             }
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing required Commands', function () {
+      var anError = /command\swas\snot\ssupplied\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', []);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Required(
+            Command('command')
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should exit with help for missing required Args', function () {
+      var anError = /arg\swas\snot\ssupplied\n\n/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'command',
+            null,
+            Required(
+              Arg('arg')
+            )
           )
         )
       );
