@@ -36,27 +36,18 @@
     return matchingFlagOrKWArg;
   }
 
-  function formatNodeName (node) {
-    var prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
-    return prefix + node.name;
-  }
-
-  function formatRequiredList (nodes) {
-    return nodes.map(formatNodeName).join(', ');
-  }
-
   function checkRequiredArgs (schema, tree) {
     if (schema.requireAll && schema.requireAll.length) {
       utils.each(schema.requireAll, function (node) {
         if (node._type === 'command') {
           if (!tree.command || node.name !== tree.command.name) {
             throw new Error(
-              utils.createHelp(schema, 'Required argument ' + formatNodeName(node) + ' was not supplied')
+              utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
             );
           }
         } else if (!(node.name in tree[node._type + 's'])) {
           throw new Error(
-            utils.createHelp(schema, 'Required argument ' + formatNodeName(node) + ' was not supplied')
+            utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
           );
         }
       });
@@ -73,7 +64,7 @@
         });
 
         if (!anyMatch) {
-          throw new Error(utils.createHelp(schema, 'Required one of: ' + formatRequiredList(anyRequired)));
+          throw new Error(utils.createHelp(schema, 'Required one of: ' + utils.formatRequiredList(anyRequired)));
         }
       });
     }

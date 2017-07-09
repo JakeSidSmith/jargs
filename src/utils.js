@@ -469,6 +469,15 @@
     process.exit(1);
   }
 
+  function formatNodeName (node) {
+    var prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
+    return prefix + node.name;
+  }
+
+  function formatRequiredList (nodes) {
+    return nodes.map(formatNodeName).join(', ');
+  }
+
   module.exports = {
     find: find,
     each: each,
@@ -482,7 +491,9 @@
     serializeOptions: serializeOptions,
     formatTable: formatTable,
     createHelp: createHelp,
-    exitWithHelp: exitWithHelp
+    exitWithHelp: exitWithHelp,
+    formatNodeName: formatNodeName,
+    formatRequiredList: formatRequiredList
   };
 
 })();
