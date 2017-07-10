@@ -13,19 +13,21 @@
   describe('help.js', function () {
 
     it('should construct a Help', function () {
-      var node = Help('help', {alias: 'h'}, Program('program'));
+      var node = Help('help', {alias: 'h'}, Program('foo'));
 
       expect(node).to.be.ok;
       expect(node).to.eql({
-        _help: {
-          name: 'help',
-          options: {
-            alias: 'h',
-            description: ''
+        _global: {
+          help: {
+            name: 'help',
+            options: {
+              alias: 'h',
+              description: ''
+            }
           }
         },
         _type: 'program',
-        name: 'program',
+        name: 'foo',
         options: {
           description: '',
           usage: '',
