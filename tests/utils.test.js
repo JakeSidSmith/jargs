@@ -78,8 +78,8 @@
               alias: 'bar'
             },
             children: [child1, child2, child3],
-            requireAll: [],
-            requireAny: []
+            _requireAll: [],
+            _requireAny: []
           });
         }
 
@@ -105,15 +105,15 @@
               alias: 'bar'
             },
             children: [child1, child2, child3, child4, child5, child6, child7],
-            requireAll: [child2, child3, child4],
-            requireAny: [[child5, child6]]
+            _requireAll: [child2, child3, child4],
+            _requireAny: [[child5, child6]]
           });
 
           expect(properties.children[0]).to.equal(child1);
           expect(properties.children[3]).to.equal(child4);
 
-          expect(properties.requireAll[1]).to.equal(child3);
-          expect(properties.requireAny[0][0]).to.equal(child5);
+          expect(properties._requireAll[1]).to.equal(child3);
+          expect(properties._requireAny[0][0]).to.equal(child5);
         }
 
         fn(

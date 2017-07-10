@@ -37,8 +37,8 @@
   }
 
   function checkRequiredArgs (schema, tree) {
-    if (schema.requireAll && schema.requireAll.length) {
-      utils.each(schema.requireAll, function (node) {
+    if (schema._requireAll && schema._requireAll.length) {
+      utils.each(schema._requireAll, function (node) {
         if (node._type === 'command') {
           if (!tree.command || node.name !== tree.command.name) {
             throw new Error(
@@ -53,8 +53,8 @@
       });
     }
 
-    if (schema.requireAny && schema.requireAny.length) {
-      utils.each(schema.requireAny, function (anyRequired) {
+    if (schema._requireAny && schema._requireAny.length) {
+      utils.each(schema._requireAny, function (anyRequired) {
         var anyMatch = utils.any(anyRequired, function (node) {
           if (node._type === 'command') {
             return tree.command && node.name === tree.command.name;

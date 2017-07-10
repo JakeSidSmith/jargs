@@ -27,8 +27,8 @@
           examples: []
         },
         children: [child1, child2],
-        requireAll: [],
-        requireAny: []
+        _requireAll: [],
+        _requireAny: []
       });
     });
 

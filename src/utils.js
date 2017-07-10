@@ -124,19 +124,19 @@
     if (getChildren) {
       validateChildren(children, VALID_CHILD_NODES);
 
-      properties.requireAll = [];
-      properties.requireAny = [];
+      properties._requireAll = [];
+      properties._requireAny = [];
       properties.children = [];
 
       each(children, function (child) {
         switch (child._type) {
           case 'required':
           case 'require-all':
-            properties.requireAll = properties.requireAll.concat(child.children);
+            properties._requireAll = properties._requireAll.concat(child.children);
             properties.children = properties.children.concat(child.children);
             break;
           case 'require-any':
-            properties.requireAny.push(child.children);
+            properties._requireAny.push(child.children);
             properties.children = properties.children.concat(child.children);
             break;
           default:
@@ -145,7 +145,7 @@
         }
       });
 
-      var moreThanOneCommand = several(properties.requireAll, function (child) {
+      var moreThanOneCommand = several(properties._requireAll, function (child) {
         return child._type === 'command';
       });
 

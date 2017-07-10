@@ -34,8 +34,8 @@
           examples: []
         },
         children: [],
-        requireAll: [],
-        requireAny: []
+        _requireAll: [],
+        _requireAny: []
       });
     });
 
