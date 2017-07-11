@@ -94,7 +94,8 @@
     Help(
       'help',
       {
-        alias: 'h'
+        alias: 'h',
+        description: 'Display help and usage'
       },
       Program(
         'command',
