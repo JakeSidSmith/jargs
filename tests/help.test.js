@@ -19,6 +19,7 @@
       expect(node).to.eql({
         _globals: {
           help: {
+            _type: 'flag',
             name: 'help',
             options: {
               alias: 'h',
