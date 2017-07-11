@@ -32,29 +32,29 @@
         (globals.help && isAlias && ('alias' in globals.help.options) && kwargName === globals.help.options.alias) ||
         (globals.help && !isAlias && kwargName === globals.help.name)
       ) {
-        throw new Error(utils.createHelp(schema));
+        throw new Error(utils.createHelp(schema, globals));
       } else {
-        throw new Error(utils.createHelp(schema, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
+        throw new Error(utils.createHelp(schema, globals, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
       }
     } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
-      throw new Error(utils.createHelp(schema, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
+      throw new Error(utils.createHelp(schema, globals, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
     }
 
     return matchingFlagOrKWArg;
   }
 
-  function checkRequiredArgs (schema, tree) {
+  function checkRequiredArgs (schema, globals, tree) {
     if (schema._requireAll && schema._requireAll.length) {
       utils.each(schema._requireAll, function (node) {
         if (node._type === 'command') {
           if (!tree.command || node.name !== tree.command.name) {
             throw new Error(
-              utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
+              utils.createHelp(schema, globals, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
             );
           }
         } else if (!(node.name in tree[node._type + 's'])) {
           throw new Error(
-            utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
+            utils.createHelp(schema, globals, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
           );
         }
       });
@@ -71,7 +71,9 @@
         });
 
         if (!anyMatch) {
-          throw new Error(utils.createHelp(schema, 'Required one of: ' + utils.formatRequiredList(anyRequired)));
+          throw new Error(
+            utils.createHelp(schema, globals, 'Required one of: ' + utils.formatRequiredList(anyRequired))
+          );
         }
       });
     }
@@ -107,7 +109,7 @@
           });
 
           if (!matchingArg) {
-            throw new Error(utils.createHelp(schema, 'Unknown argument: ' + arg));
+            throw new Error(utils.createHelp(schema, globals, 'Unknown argument: ' + arg));
           } else {
             tree.args[matchingArg.name] = arg;
           }
@@ -121,7 +123,7 @@
         var matchingFlagOrKWArg;
 
         if (isAlias && containsEquals) {
-          throw new Error(utils.createHelp(schema, 'Invalid argument syntax: -' + kwargName + '='));
+          throw new Error(utils.createHelp(schema, globals, 'Invalid argument syntax: -' + kwargName + '='));
         } else if (isAlias && kwargName.length > 1) {
           var flagNames = kwargName.split('');
           var firstName = flagNames.shift();
@@ -135,7 +137,7 @@
               matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, flagName);
 
               if (matchingFlagOrKWArg._type !== 'flag') {
-                throw new Error(utils.createHelp(schema, 'Invalid argument: -' + kwargName));
+                throw new Error(utils.createHelp(schema, globals, 'Invalid argument: -' + kwargName));
               } else {
                 tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
               }
@@ -149,10 +151,10 @@
           if (matchingFlagOrKWArg._type === 'flag') {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
           } else if (containsEquals && !kwargValue) {
-            throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
+            throw new Error(utils.createHelp(schema, globals, 'No value for argument: --' + kwargName));
           } else if (!containsEquals) {
             if (!argv.length) {
-              throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
+              throw new Error(utils.createHelp(schema, globals, 'No value for argument: --' + kwargName));
             }
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
           } else {
@@ -162,7 +164,7 @@
       }
     }
 
-    checkRequiredArgs(schema, tree);
+    checkRequiredArgs(schema, globals, tree);
 
     var returned;
 

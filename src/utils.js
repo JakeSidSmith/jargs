@@ -443,9 +443,13 @@
       (examples.length ? '\n\n' : '');
   }
 
-  function createHelp (schema, error) {
+  function createHelp (schema, globals, error) {
     var commands = [];
     var options = [];
+
+    if (globals.help) {
+      options.push(globals.help);
+    }
 
     each(schema.children, function (node) {
       if (node._type === 'command') {
