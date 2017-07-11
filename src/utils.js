@@ -460,7 +460,7 @@
       createCommandsText(commands) +
       createOptionsText(options) +
       createExamplesText(schema.options.examples) +
-      '  ' + error + '\n\n';
+      (error ? ('  ' + error + '\n\n') : '');
   }
 
   /* istanbul ignore next */
