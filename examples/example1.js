@@ -5,6 +5,7 @@
 (function () {
 
   var jargs = require('../src/index');
+  var Help = jargs.Help;
   var Program = jargs.Program;
   var Command = jargs.Command;
   var KWArg = jargs.KWArg;
@@ -90,21 +91,27 @@
   );
 
   var fullTree = jargs.collect(
-    Program(
-      'command',
+    Help(
+      'help',
       {
-        description: 'An example command line interface',
-        examples: [
-          'command first arg sub',
-          'command second --flag --kwarg1=foo --kwarg2=bar arg'
-        ],
-        callback: function (tree) {
-          console.log('Program: ' + tree.name);
-        }
+        alias: 'h'
       },
-      RequireAny(
-        firstCommand,
-        secondCommand
+      Program(
+        'command',
+        {
+          description: 'An example command line interface',
+          examples: [
+            'command first arg sub',
+            'command second --flag --kwarg1=foo --kwarg2=bar arg'
+          ],
+          callback: function (tree) {
+            console.log('Program: ' + tree.name);
+          }
+        },
+        RequireAny(
+          firstCommand,
+          secondCommand
+        )
       )
     )
   );
