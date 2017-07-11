@@ -31,7 +31,7 @@
     serializeOptions(properties.options, validOptions);
 
     properties._type = 'program';
-    properties._global = {};
+    properties._globals = {};
 
     return properties;
   }

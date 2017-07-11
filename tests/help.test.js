@@ -17,7 +17,7 @@
 
       expect(node).to.be.ok;
       expect(node).to.eql({
-        _global: {
+        _globals: {
           help: {
             name: 'help',
             options: {
@@ -27,15 +27,15 @@
           }
         },
         _type: 'program',
+        _requireAll: [],
+        _requireAny: [],
         name: 'foo',
         options: {
           description: '',
           usage: '',
           examples: []
         },
-        children: [],
-        _requireAll: [],
-        _requireAny: []
+        children: []
       });
     });
 

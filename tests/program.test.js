@@ -18,17 +18,17 @@
 
       expect(node).to.be.ok;
       expect(node).to.eql({
-        _global: {},
+        _globals: {},
         _type: 'program',
+        _requireAll: [],
+        _requireAny: [],
         name: 'foo',
         options: {
           description: '',
           usage: '',
           examples: []
         },
-        children: [child1, child2],
-        _requireAll: [],
-        _requireAny: []
+        children: [child1, child2]
       });
     });
 

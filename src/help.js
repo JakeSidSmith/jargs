@@ -38,7 +38,7 @@
     utils.validateChildren(children, VALID_CHILD_NODES);
     validateName(name);
 
-    children[0]._global.help = {
+    children[0]._globals.help = {
       name: name,
       options: options
     };
