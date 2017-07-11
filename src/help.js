@@ -39,6 +39,7 @@
     validateName(name);
 
     children[0]._globals.help = {
+      _type: 'flag',
       name: name,
       options: options
     };
