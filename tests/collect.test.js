@@ -10,6 +10,7 @@
   var spy = sinon.spy;
 
   var collect = require('../src/collect');
+  var Help = require('../src/help');
   var Program = require('../src/program');
   var Command = require('../src/command');
   var KWArg = require('../src/kwarg');
@@ -982,6 +983,170 @@
               RequireAll(
                 Arg('arg1'),
                 Arg('arg2')
+              )
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).not.to.throw(anError);
+    });
+
+    it('should display help info if a global help node is present (root)', function () {
+      var anError = /Usage:\sprogram(.|\n)*description\n\n/;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['--help']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'description'
+          },
+          Program(
+            'program',
+            {
+              usage: 'program'
+            },
+            Required(
+              Command(
+                'command',
+                {
+                  usage: 'command'
+                }
+              )
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should display help info if a global help node is present (nested)', function () {
+      var anError = /Usage:\scommand(.|\n)*description\n\n/;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command', '--help']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'description'
+          },
+          Program(
+            'program',
+            {
+              usage: 'program'
+            },
+            Required(
+              Command(
+                'command',
+                {
+                  usage: 'command'
+                }
+              )
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should display help info if a global help node is present (alias)', function () {
+      var anError = /description\n\n$/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command', '-h']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'description'
+          },
+          Program(
+            'program',
+            null,
+            Required(
+              Command(
+                'command'
+              )
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should not display help info if a global help node is present but another node is matched', function () {
+      var anError = /description\n\n$/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command', '--help']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'description'
+          },
+          Program(
+            'program',
+            null,
+            Required(
+              Command(
+                'command',
+                null,
+                Flag(
+                  'help',
+                  {
+                    alias: 'h'
+                  }
+                )
+              )
+            )
+          )
+        )
+      );
+
+      expect(boundCollect).not.to.throw(anError);
+    });
+
+    it('should not display help info if a global help node is present but another node is matched (alias', function () {
+      var anError = /description\n\n$/i;
+
+      var boundCollect = collect.bind(null, 'node', 'test', ['command', '-h']);
+
+      boundCollect = boundCollect.bind(
+        null,
+        Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'description'
+          },
+          Program(
+            'program',
+            null,
+            Required(
+              Command(
+                'command',
+                null,
+                Flag(
+                  'help',
+                  {
+                    alias: 'h'
+                  }
+                )
               )
             )
           )
