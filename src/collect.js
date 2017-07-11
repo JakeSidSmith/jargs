@@ -21,14 +21,21 @@
   var MATCHES_NAME_EQUALS = /.*?=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-  function findArgOrKWarg (schema, tree, isAlias, kwargName) {
+  function findArgOrKWarg (schema, globals, tree, isAlias, kwargName) {
     var matchingFlagOrKWArg = find(schema.children, function (node) {
       return (node._type === 'flag' || node._type === 'kwarg') &&
         (isAlias ? node.options.alias === kwargName : node.name === kwargName);
     });
 
     if (!matchingFlagOrKWArg) {
-      throw new Error(utils.createHelp(schema, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
+      if (
+        (globals.help && isAlias && ('alias' in globals.help.options) && kwargName === globals.help.options.alias) ||
+        (globals.help && !isAlias && kwargName === globals.help.name)
+      ) {
+        throw new Error(utils.createHelp(schema));
+      } else {
+        throw new Error(utils.createHelp(schema, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
+      }
     } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
       throw new Error(utils.createHelp(schema, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
     }
@@ -119,13 +126,13 @@
           var flagNames = kwargName.split('');
           var firstName = flagNames.shift();
 
-          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, firstName);
+          matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, firstName);
 
           if (matchingFlagOrKWArg._type === 'flag') {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
 
             utils.each(flagNames, function (flagName) {
-              matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, flagName);
+              matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, flagName);
 
               if (matchingFlagOrKWArg._type !== 'flag') {
                 throw new Error(utils.createHelp(schema, 'Invalid argument: -' + kwargName));
@@ -137,7 +144,7 @@
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargName.substring(1);
           }
         } else {
-          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, kwargName);
+          matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, kwargName);
 
           if (matchingFlagOrKWArg._type === 'flag') {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
