@@ -39,35 +39,39 @@ Note: you can nest nodes as many times as necessary.
 
 ```javascript
 const tree = collect(
-  Program(
-    'npm',
+  Help(
+    'help',
     null,
-    RequireAny(
-      Command(
-        'init'
-      ),
-      Command(
-        'install', {alias: 'i'},
-        Arg(
-          'lib'
+    Program(
+      'npm',
+      null,
+      RequireAny(
+        Command(
+          'init'
         ),
-        Flag(
-          'save', {alias: 'S'}
+        Command(
+          'install', {alias: 'i'},
+          Arg(
+            'lib'
+          ),
+          Flag(
+            'save', {alias: 'S'}
+          ),
+          Flag(
+            'save-dev', {alias: 'D'}
+          ),
+          Flag(
+            'save-exact', {alias: 'E'}
+          ),
+          Flag(
+            'save-optional', {alias: 'O'}
+          )
         ),
-        Flag(
-          'save-dev', {alias: 'D'}
-        ),
-        Flag(
-          'save-exact', {alias: 'E'}
-        ),
-        Flag(
-          'save-optional', {alias: 'O'}
-        )
-      ),
-      Command(
-        'run', {alias: 'run-scripts'},
-        Arg(
-          'command'
+        Command(
+          'run', {alias: 'run-scripts'},
+          Arg(
+            'command'
+          )
         )
       )
     )
