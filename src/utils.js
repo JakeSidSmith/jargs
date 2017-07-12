@@ -471,7 +471,7 @@
       } else if (node._type === 'kwarg') {
         kwargs.push(node);
         flagAndKwargNames.push(node.name);
-      } else if (node._type === 'arg') {
+      } else {
         args.push(node);
       }
     });
