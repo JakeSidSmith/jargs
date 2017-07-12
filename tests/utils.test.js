@@ -248,6 +248,30 @@
 
     });
 
+    describe('sortByName', function () {
+
+      it('should sort some nodes by name', function () {
+        var nodes = [
+          {name: 'c'},
+          {name: 'a'},
+          {name: 'b'},
+          {name: 'd'},
+          {name: 'a'},
+          {name: 'e'}
+        ];
+
+        expect(nodes.sort(utils.sortByName)).to.eql([
+          {name: 'a'},
+          {name: 'a'},
+          {name: 'b'},
+          {name: 'c'},
+          {name: 'd'},
+          {name: 'e'}
+        ]);
+      });
+
+    });
+
     describe('createHelp', function () {
 
       it('should create a basic error message', function () {

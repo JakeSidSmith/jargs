@@ -522,6 +522,7 @@
     validateName: validateName,
     serializeOptions: serializeOptions,
     formatTable: formatTable,
+    sortByName: sortByName,
     createHelp: createHelp,
     exitWithHelp: exitWithHelp,
     formatNodeName: formatNodeName,
