@@ -317,8 +317,8 @@
         var expected = [
           '',
           '  Options:',
-          '    <arg>       Desc 1',
           '    --flag, -f  Desc 2',
+          '    <arg>       Desc 1',
           '',
           '  An error',
           '',
@@ -357,9 +357,57 @@
         var expected = [
           '',
           '  Options:',
+          '    --flag, -f  Desc 2',
           '    --help, -h  Display help and usage',
           '    <arg>       Desc 1',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema.children[0], schema._globals, error)).to.equal(expected);
+      });
+
+      it('should create help with global help option (overridden)', function () {
+        var schema = Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'Display help and usage'
+          },
+          Program(
+            'program',
+            null,
+            Command(
+              'test',
+              null,
+              Flag(
+                'help',
+                {
+                  alias: 'h',
+                  description: 'Display help and usage (overridden)'
+                }
+              ),
+              Arg(
+                'arg',
+                {description: 'Desc 1'}
+              ),
+              Flag(
+                'flag',
+                {alias: 'f', description: 'Desc 2'}
+              )
+            )
+          )
+        );
+        var error = 'An error';
+
+        var expected = [
+          '',
+          '  Options:',
           '    --flag, -f  Desc 2',
+          '    --help, -h  Display help and usage (overridden)',
+          '    <arg>       Desc 1',
           '',
           '  An error',
           '',

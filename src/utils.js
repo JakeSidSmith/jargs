@@ -443,21 +443,46 @@
       (examples.length ? '\n\n' : '');
   }
 
+  function sortByName (a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+
+    if (b.name < a.name) {
+      return 1;
+    }
+
+    return 0;
+  }
+
   function createHelp (schema, globals, error) {
     var commands = [];
-    var options = [];
-
-    if (globals.help) {
-      options.push(globals.help);
-    }
+    var flags = [];
+    var kwargs = [];
+    var args = [];
 
     each(schema.children, function (node) {
       if (node._type === 'command') {
         commands.push(node);
-      } else {
-        options.push(node);
+      } else if (node._type === 'flag') {
+        flags.push(node);
+      } else if (node._type === 'kwarg') {
+        kwargs.push(node);
+      } else if (node._type === 'arg') {
+        args.push(node);
       }
     });
+
+    if (globals.help) {
+      flags.unshift(globals.help);
+    }
+
+    commands.sort(sortByName);
+    flags.sort(sortByName);
+    kwargs.sort(sortByName);
+    args.sort(sortByName);
+
+    var options = flags.concat(kwargs).concat(args);
 
     return '\n' +
       (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '') +
