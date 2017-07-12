@@ -277,6 +277,23 @@ Arg(
 )
 ```
 
+### Help
+
+By wrapping your Program node in the Help node users can get nicely formatted help & usage output about any part of your schema by passing the `--help` flag (you can change the help node name & alias).
+
+Note: if you provide another flag / kwarg node with the same name or alias as the help node, no help will be output.
+This allows you to override the help output, and output some custom usage info.
+
+```javascript
+Help(
+  'help',
+  {
+    alias: 'h', // default: undefined
+    description: 'Display help & usage' // default: empty string
+  }
+)
+```
+
 ### Require Nodes
 
 There are 3 different types of require nodes that you can wrap your argument / command nodes in to ensure that they are supplied.
