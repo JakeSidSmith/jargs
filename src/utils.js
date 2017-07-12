@@ -460,20 +460,23 @@
     var flags = [];
     var kwargs = [];
     var args = [];
+    var flagAndKwargNames = [];
 
     each(schema.children, function (node) {
       if (node._type === 'command') {
         commands.push(node);
       } else if (node._type === 'flag') {
         flags.push(node);
+        flagAndKwargNames.push(node.name);
       } else if (node._type === 'kwarg') {
         kwargs.push(node);
+        flagAndKwargNames.push(node.name);
       } else if (node._type === 'arg') {
         args.push(node);
       }
     });
 
-    if (globals.help) {
+    if (globals.help && flagAndKwargNames.indexOf(globals.help.name) < 0) {
       flags.unshift(globals.help);
     }
 
