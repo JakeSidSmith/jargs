@@ -6,6 +6,7 @@
 
   var expect = require('chai').expect;
 
+  var Help = require('../src/help');
   var Program = require('../src/program');
   var Command = require('../src/command');
   var KWArg = require('../src/kwarg');
@@ -78,8 +79,8 @@
               alias: 'bar'
             },
             children: [child1, child2, child3],
-            requireAll: [],
-            requireAny: []
+            _requireAll: [],
+            _requireAny: []
           });
         }
 
@@ -105,15 +106,15 @@
               alias: 'bar'
             },
             children: [child1, child2, child3, child4, child5, child6, child7],
-            requireAll: [child2, child3, child4],
-            requireAny: [[child5, child6]]
+            _requireAll: [child2, child3, child4],
+            _requireAny: [[child5, child6]]
           });
 
           expect(properties.children[0]).to.equal(child1);
           expect(properties.children[3]).to.equal(child4);
 
-          expect(properties.requireAll[1]).to.equal(child3);
-          expect(properties.requireAny[0][0]).to.equal(child5);
+          expect(properties._requireAll[1]).to.equal(child3);
+          expect(properties._requireAny[0][0]).to.equal(child5);
         }
 
         fn(
@@ -247,6 +248,30 @@
 
     });
 
+    describe('sortByName', function () {
+
+      it('should sort some nodes by name', function () {
+        var nodes = [
+          {name: 'c'},
+          {name: 'a'},
+          {name: 'b'},
+          {name: 'd'},
+          {name: 'a'},
+          {name: 'e'}
+        ];
+
+        expect(nodes.sort(utils.sortByName)).to.eql([
+          {name: 'a'},
+          {name: 'a'},
+          {name: 'b'},
+          {name: 'c'},
+          {name: 'd'},
+          {name: 'e'}
+        ]);
+      });
+
+    });
+
     describe('createHelp', function () {
 
       it('should create a basic error message', function () {
@@ -260,7 +285,7 @@
           ''
         ].join('\n');
 
-        expect(utils.createHelp(schema, error)).to.equal(expected);
+        expect(utils.createHelp(schema, {}, error)).to.equal(expected);
       });
 
       it('should create help with usage text', function () {
@@ -276,7 +301,7 @@
           ''
         ].join('\n');
 
-        expect(utils.createHelp(schema, error)).to.equal(expected);
+        expect(utils.createHelp(schema, {}, error)).to.equal(expected);
       });
 
       it('should create help with commands text', function () {
@@ -293,7 +318,7 @@
           ''
         ].join('\n');
 
-        var result = utils.createHelp(schema, error);
+        var result = utils.createHelp(schema, {}, error);
 
         expect(result).to.equal(expected);
       });
@@ -316,15 +341,104 @@
         var expected = [
           '',
           '  Options:',
-          '    <arg>       Desc 1',
           '    --flag, -f  Desc 2',
+          '    <arg>       Desc 1',
           '',
           '  An error',
           '',
           ''
         ].join('\n');
 
-        expect(utils.createHelp(schema, error)).to.equal(expected);
+        expect(utils.createHelp(schema, {}, error)).to.equal(expected);
+      });
+
+      it('should create help with global help option', function () {
+        var schema = Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'Display help and usage'
+          },
+          Program(
+            'program',
+            null,
+            Command(
+              'test',
+              null,
+              Arg(
+                'arg',
+                {description: 'Desc 1'}
+              ),
+              Flag(
+                'flag',
+                {alias: 'f', description: 'Desc 2'}
+              )
+            )
+          )
+        );
+        var error = 'An error';
+
+        var expected = [
+          '',
+          '  Options:',
+          '    --flag, -f  Desc 2',
+          '    --help, -h  Display help and usage',
+          '    <arg>       Desc 1',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema.children[0], schema._globals, error)).to.equal(expected);
+      });
+
+      it('should create help with global help option (overridden)', function () {
+        var schema = Help(
+          'help',
+          {
+            alias: 'h',
+            description: 'Display help and usage'
+          },
+          Program(
+            'program',
+            null,
+            Command(
+              'test',
+              null,
+              Flag(
+                'help',
+                {
+                  alias: 'h',
+                  description: 'Display help and usage (overridden)'
+                }
+              ),
+              Arg(
+                'arg',
+                {description: 'Desc 1'}
+              ),
+              Flag(
+                'flag',
+                {alias: 'f', description: 'Desc 2'}
+              )
+            )
+          )
+        );
+        var error = 'An error';
+
+        var expected = [
+          '',
+          '  Options:',
+          '    --flag, -f  Desc 2',
+          '    --help, -h  Display help and usage (overridden)',
+          '    <arg>       Desc 1',
+          '',
+          '  An error',
+          '',
+          ''
+        ].join('\n');
+
+        expect(utils.createHelp(schema.children[0], schema._globals, error)).to.equal(expected);
       });
 
       it('should create help with options text with types', function () {
@@ -345,15 +459,15 @@
         var expected = [
           '',
           '  Options:',
-          '    <arg>        Desc 1                                                 [string]',
           '    --kwarg, -k  Desc 2                                                 [number]',
+          '    <arg>        Desc 1                                                 [string]',
           '',
           '  An error',
           '',
           ''
         ].join('\n');
 
-        expect(utils.createHelp(schema, error)).to.equal(expected);
+        expect(utils.createHelp(schema, {}, error)).to.equal(expected);
       });
 
       it('should create help with examples text', function () {
@@ -373,7 +487,7 @@
           ''
         ].join('\n');
 
-        expect(utils.createHelp(schema, error)).to.equal(expected);
+        expect(utils.createHelp(schema, {}, error)).to.equal(expected);
       });
 
       it('should create some complex help text', function () {
@@ -407,9 +521,9 @@
           '    sub  A sub command',
           '',
           '  Options:',
-          '    <arg>        Desc 1                                                 [string]',
           '    --flag, -f   Desc 2',
           '    --kwarg, -k  Desc 3                                                [boolean]',
+          '    <arg>        Desc 1                                                 [string]',
           '',
           '  Examples:',
           '    Example 1',
@@ -420,7 +534,7 @@
           ''
         ].join('\n');
 
-        expect(utils.createHelp(schema, error)).to.equal(expected);
+        expect(utils.createHelp(schema, {}, error)).to.equal(expected);
       });
 
     });

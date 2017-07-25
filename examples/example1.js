@@ -5,6 +5,7 @@
 (function () {
 
   var jargs = require('../src/index');
+  var Help = jargs.Help;
   var Program = jargs.Program;
   var Command = jargs.Command;
   var KWArg = jargs.KWArg;
@@ -18,9 +19,9 @@
     'first',
     {
       description: 'The first command',
-      usage: 'command first',
+      usage: 'command first arg sub',
       examples: [
-        'command first'
+        'command first arg sub'
       ],
       callback: function (tree) {
         console.log('Command: ' + tree.name);
@@ -90,21 +91,28 @@
   );
 
   var fullTree = jargs.collect(
-    Program(
-      'command',
+    Help(
+      'help',
       {
-        description: 'An example command line interface',
-        examples: [
-          'command first arg',
-          'command second --flag --kwarg1=foo --kwarg2=bar arg'
-        ],
-        callback: function (tree) {
-          console.log('Program: ' + tree.name);
-        }
+        alias: 'h',
+        description: 'Display help and usage'
       },
-      RequireAny(
-        firstCommand,
-        secondCommand
+      Program(
+        'command',
+        {
+          description: 'An example command line interface',
+          examples: [
+            'command first arg sub',
+            'command second --flag --kwarg1=foo --kwarg2=bar arg'
+          ],
+          callback: function (tree) {
+            console.log('Program: ' + tree.name);
+          }
+        },
+        RequireAny(
+          firstCommand,
+          secondCommand
+        )
       )
     )
   );

@@ -124,19 +124,19 @@
     if (getChildren) {
       validateChildren(children, VALID_CHILD_NODES);
 
-      properties.requireAll = [];
-      properties.requireAny = [];
+      properties._requireAll = [];
+      properties._requireAny = [];
       properties.children = [];
 
       each(children, function (child) {
         switch (child._type) {
           case 'required':
           case 'require-all':
-            properties.requireAll = properties.requireAll.concat(child.children);
+            properties._requireAll = properties._requireAll.concat(child.children);
             properties.children = properties.children.concat(child.children);
             break;
           case 'require-any':
-            properties.requireAny.push(child.children);
+            properties._requireAny.push(child.children);
             properties.children = properties.children.concat(child.children);
             break;
           default:
@@ -145,7 +145,7 @@
         }
       });
 
-      var moreThanOneCommand = several(properties.requireAll, function (child) {
+      var moreThanOneCommand = several(properties._requireAll, function (child) {
         return child._type === 'command';
       });
 
@@ -443,24 +443,56 @@
       (examples.length ? '\n\n' : '');
   }
 
-  function createHelp (schema, error) {
+  function sortByName (a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+
+    if (b.name < a.name) {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  function createHelp (schema, globals, error) {
     var commands = [];
-    var options = [];
+    var flags = [];
+    var kwargs = [];
+    var args = [];
+    var flagAndKwargNames = [];
 
     each(schema.children, function (node) {
       if (node._type === 'command') {
         commands.push(node);
+      } else if (node._type === 'flag') {
+        flags.push(node);
+        flagAndKwargNames.push(node.name);
+      } else if (node._type === 'kwarg') {
+        kwargs.push(node);
+        flagAndKwargNames.push(node.name);
       } else {
-        options.push(node);
+        args.push(node);
       }
     });
+
+    if (globals.help && flagAndKwargNames.indexOf(globals.help.name) < 0) {
+      flags.unshift(globals.help);
+    }
+
+    commands.sort(sortByName);
+    flags.sort(sortByName);
+    kwargs.sort(sortByName);
+    args.sort(sortByName);
+
+    var options = flags.concat(kwargs).concat(args);
 
     return '\n' +
       (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '') +
       createCommandsText(commands) +
       createOptionsText(options) +
       createExamplesText(schema.options.examples) +
-      '  ' + error + '\n\n';
+      (error ? ('  ' + error + '\n\n') : '');
   }
 
   /* istanbul ignore next */
@@ -490,6 +522,7 @@
     validateName: validateName,
     serializeOptions: serializeOptions,
     formatTable: formatTable,
+    sortByName: sortByName,
     createHelp: createHelp,
     exitWithHelp: exitWithHelp,
     formatNodeName: formatNodeName,

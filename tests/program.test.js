@@ -17,10 +17,19 @@
       var node = Program('foo', null, child1, child2);
 
       expect(node).to.be.ok;
-      expect(node.name).to.equal('foo');
-      expect(node.options).to.eql({description: '', usage: '', examples: []});
-      expect(node.children).to.eql([child1, child2]);
-      expect(node._type).to.equal('program');
+      expect(node).to.eql({
+        _globals: {},
+        _type: 'program',
+        _requireAll: [],
+        _requireAny: [],
+        name: 'foo',
+        options: {
+          description: '',
+          usage: '',
+          examples: []
+        },
+        children: [child1, child2]
+      });
     });
 
   });

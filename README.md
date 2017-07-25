@@ -39,35 +39,39 @@ Note: you can nest nodes as many times as necessary.
 
 ```javascript
 const tree = collect(
-  Program(
-    'npm',
+  Help(
+    'help',
     null,
-    RequireAny(
-      Command(
-        'init'
-      ),
-      Command(
-        'install', {alias: 'i'},
-        Arg(
-          'lib'
+    Program(
+      'npm',
+      null,
+      RequireAny(
+        Command(
+          'init'
         ),
-        Flag(
-          'save', {alias: 'S'}
+        Command(
+          'install', {alias: 'i'},
+          Arg(
+            'lib'
+          ),
+          Flag(
+            'save', {alias: 'S'}
+          ),
+          Flag(
+            'save-dev', {alias: 'D'}
+          ),
+          Flag(
+            'save-exact', {alias: 'E'}
+          ),
+          Flag(
+            'save-optional', {alias: 'O'}
+          )
         ),
-        Flag(
-          'save-dev', {alias: 'D'}
-        ),
-        Flag(
-          'save-exact', {alias: 'E'}
-        ),
-        Flag(
-          'save-optional', {alias: 'O'}
-        )
-      ),
-      Command(
-        'run', {alias: 'run-scripts'},
-        Arg(
-          'command'
+        Command(
+          'run', {alias: 'run-scripts'},
+          Arg(
+            'command'
+          )
         )
       )
     )
@@ -269,6 +273,23 @@ Arg(
   {
     description: 'An arg', // default: empty string
     type: 'string'
+  }
+)
+```
+
+### Help
+
+By wrapping your Program node in the Help node users can get nicely formatted help & usage output about any part of your schema by passing the `--help` flag (you can change the help node name & alias).
+
+Note: if you provide another flag / kwarg node with the same name or alias as the help node, no help will be output.
+This allows you to override the help output, and output some custom usage info.
+
+```javascript
+Help(
+  'help',
+  {
+    alias: 'h', // default: undefined
+    description: 'Display help & usage' // default: empty string
   }
 )
 ```

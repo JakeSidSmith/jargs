@@ -21,40 +21,47 @@
   var MATCHES_NAME_EQUALS = /.*?=/;
   var MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-  function findArgOrKWarg (schema, tree, isAlias, kwargName) {
+  function findArgOrKWarg (schema, globals, tree, isAlias, kwargName) {
     var matchingFlagOrKWArg = find(schema.children, function (node) {
       return (node._type === 'flag' || node._type === 'kwarg') &&
         (isAlias ? node.options.alias === kwargName : node.name === kwargName);
     });
 
     if (!matchingFlagOrKWArg) {
-      throw new Error(utils.createHelp(schema, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
+      if (
+        (globals.help && isAlias && ('alias' in globals.help.options) && kwargName === globals.help.options.alias) ||
+        (globals.help && !isAlias && kwargName === globals.help.name)
+      ) {
+        throw new Error(utils.createHelp(schema, globals));
+      } else {
+        throw new Error(utils.createHelp(schema, globals, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
+      }
     } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
-      throw new Error(utils.createHelp(schema, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
+      throw new Error(utils.createHelp(schema, globals, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
     }
 
     return matchingFlagOrKWArg;
   }
 
-  function checkRequiredArgs (schema, tree) {
-    if (schema.requireAll && schema.requireAll.length) {
-      utils.each(schema.requireAll, function (node) {
+  function checkRequiredArgs (schema, globals, tree) {
+    if (schema._requireAll && schema._requireAll.length) {
+      utils.each(schema._requireAll, function (node) {
         if (node._type === 'command') {
           if (!tree.command || node.name !== tree.command.name) {
             throw new Error(
-              utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
+              utils.createHelp(schema, globals, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
             );
           }
         } else if (!(node.name in tree[node._type + 's'])) {
           throw new Error(
-            utils.createHelp(schema, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
+            utils.createHelp(schema, globals, 'Required argument ' + utils.formatNodeName(node) + ' was not supplied')
           );
         }
       });
     }
 
-    if (schema.requireAny && schema.requireAny.length) {
-      utils.each(schema.requireAny, function (anyRequired) {
+    if (schema._requireAny && schema._requireAny.length) {
+      utils.each(schema._requireAny, function (anyRequired) {
         var anyMatch = utils.any(anyRequired, function (node) {
           if (node._type === 'command') {
             return tree.command && node.name === tree.command.name;
@@ -64,13 +71,15 @@
         });
 
         if (!anyMatch) {
-          throw new Error(utils.createHelp(schema, 'Required one of: ' + utils.formatRequiredList(anyRequired)));
+          throw new Error(
+            utils.createHelp(schema, globals, 'Required one of: ' + utils.formatRequiredList(anyRequired))
+          );
         }
       });
     }
   }
 
-  function createTree (argv, schema, commands, parentTree) {
+  function createTree (argv, schema, globals, commands, parentTree) {
     var tree = {
       name: schema.name,
       command: null,
@@ -93,14 +102,14 @@
         });
 
         if (matchingCommand) {
-          tree.command = createTree(argv, matchingCommand, commands, tree);
+          tree.command = createTree(argv, matchingCommand, globals, commands, tree);
         } else {
           var matchingArg = find(schema.children, function (node) {
             return node._type === 'arg' && !(node.name in tree.args);
           });
 
           if (!matchingArg) {
-            throw new Error(utils.createHelp(schema, 'Unknown argument: ' + arg));
+            throw new Error(utils.createHelp(schema, globals, 'Unknown argument: ' + arg));
           } else {
             tree.args[matchingArg.name] = arg;
           }
@@ -114,21 +123,21 @@
         var matchingFlagOrKWArg;
 
         if (isAlias && containsEquals) {
-          throw new Error(utils.createHelp(schema, 'Invalid argument syntax: -' + kwargName + '='));
+          throw new Error(utils.createHelp(schema, globals, 'Invalid argument syntax: -' + kwargName + '='));
         } else if (isAlias && kwargName.length > 1) {
           var flagNames = kwargName.split('');
           var firstName = flagNames.shift();
 
-          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, firstName);
+          matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, firstName);
 
           if (matchingFlagOrKWArg._type === 'flag') {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
 
             utils.each(flagNames, function (flagName) {
-              matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, flagName);
+              matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, flagName);
 
               if (matchingFlagOrKWArg._type !== 'flag') {
-                throw new Error(utils.createHelp(schema, 'Invalid argument: -' + kwargName));
+                throw new Error(utils.createHelp(schema, globals, 'Invalid argument: -' + kwargName));
               } else {
                 tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
               }
@@ -137,15 +146,15 @@
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargName.substring(1);
           }
         } else {
-          matchingFlagOrKWArg = findArgOrKWarg(schema, tree, isAlias, kwargName);
+          matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, kwargName);
 
           if (matchingFlagOrKWArg._type === 'flag') {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
           } else if (containsEquals && !kwargValue) {
-            throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
+            throw new Error(utils.createHelp(schema, globals, 'No value for argument: --' + kwargName));
           } else if (!containsEquals) {
             if (!argv.length) {
-              throw new Error(utils.createHelp(schema, 'No value for argument: --' + kwargName));
+              throw new Error(utils.createHelp(schema, globals, 'No value for argument: --' + kwargName));
             }
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
           } else {
@@ -155,7 +164,7 @@
       }
     }
 
-    checkRequiredArgs(schema, tree);
+    checkRequiredArgs(schema, globals, tree);
 
     var returned;
 
@@ -187,7 +196,7 @@
     }
 
     try {
-      return createTree(argv, rootNode, commands);
+      return createTree(argv, rootNode, rootNode._globals, commands);
     } catch (error) {
       utils.exitWithHelp(error.message);
     }
