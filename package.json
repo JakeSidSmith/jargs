@@ -1,8 +1,9 @@
 {
   "name": "jargs",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Simple node arg parser with explicit tree structure schema",
   "main": "src/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "lint": "eslint -c .eslintrc src/ examples/ tests/",
     "tests": "nyc mocha --bail --recursive 'tests/**/*.test.js'",
