@@ -204,26 +204,58 @@
       var validTypes = ['command', 'arg', 'flag', 'kwarg'];
       var anError = /name\s"foo"/i;
 
-      var children = [
+      var goodChildren = [
         Arg('foo'),
+        KWArg('foo'),
         Command('bar'),
-        KWArg('foo')
+        Flag('bar')
       ];
 
-      expect(utils.validateChildren.bind(null, children, validTypes)).to.throw(anError);
+      var badArgChildren = [
+        Arg('foo'),
+        Arg('foo')
+      ];
+
+      var badKWArgChildren = [
+        KWArg('foo'),
+        Flag('foo')
+      ];
+
+      var badOtherChildren = [
+        Command('foo'),
+        Command('foo')
+      ];
+
+      expect(utils.validateChildren.bind(null, goodChildren, validTypes)).not.to.throw();
+      expect(utils.validateChildren.bind(null, badArgChildren, validTypes)).to.throw(anError);
+      expect(utils.validateChildren.bind(null, badKWArgChildren, validTypes)).to.throw(anError);
+      expect(utils.validateChildren.bind(null, badOtherChildren, validTypes)).to.throw(anError);
     });
 
     it('should throw an error for duplicate node aliases', function () {
       var validTypes = ['command', 'arg', 'flag', 'kwarg'];
-      var anError = /alias\s"b"/i;
+      var anError = /alias\s"f"/i;
 
-      var children = [
+      var goodChildren = [
         Arg('foo'),
+        KWArg('foo', {alias: 'f'}),
         Command('bar', {alias: 'b'}),
-        KWArg('baz', {alias: 'b'})
+        Flag('bar', {alias: 'b'})
       ];
 
-      expect(utils.validateChildren.bind(null, children, validTypes)).to.throw(anError);
+      var badKWArgChildren = [
+        KWArg('foo', {alias: 'f'}),
+        Flag('bar', {alias: 'f'})
+      ];
+
+      var badOtherChildren = [
+        Command('foo', {alias: 'f'}),
+        Command('bar', {alias: 'f'})
+      ];
+
+      expect(utils.validateChildren.bind(null, goodChildren, validTypes)).not.to.throw();
+      expect(utils.validateChildren.bind(null, badKWArgChildren, validTypes)).to.throw(anError);
+      expect(utils.validateChildren.bind(null, badOtherChildren, validTypes)).to.throw(anError);
     });
 
   });
