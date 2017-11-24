@@ -7,6 +7,9 @@
   var MATCHES_SPACE = /\s/;
   var MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
+  var MATCHES_ARG_TYPE = /\b(?:arg)\b/i;
+  var MATCHES_KWARG_TYPE = /\b(kwarg|flag)\b/i;
+
   var VALID_CHILD_NODES = [
     'arg',
     'flag',
@@ -80,8 +83,11 @@
   }
 
   function validateChildren (children, validTypes) {
-    var names = [];
-    var aliases = [];
+    var argNames = [];
+    var kwargNames = [];
+    var kwargAliases = [];
+    var otherNames = [];
+    var otherAliases = [];
 
     each(children, function (node) {
       if (typeof node !== 'object') {
@@ -94,19 +100,41 @@
       }
 
       if (node.name) {
-        if (names.indexOf(node.name) >= 0) {
-          throw new Error('More than one node with the name "' + node.name + '" at the same level');
-        }
+        if (MATCHES_ARG_TYPE.test(node._type)) {
+          if (argNames.indexOf(node.name) >= 0) {
+            throw new Error('More than one node with the name "' + node.name + '" at the same level');
+          }
 
-        names.push(node.name);
+          argNames.push(node.name);
+        } else if (MATCHES_KWARG_TYPE.test(node._type)) {
+          if (kwargNames.indexOf(node.name) >= 0) {
+            throw new Error('More than one node with the name "' + node.name + '" at the same level');
+          }
+
+          kwargNames.push(node.name);
+        } else {
+          if (otherNames.indexOf(node.name) >= 0) {
+            throw new Error('More than one node with the name "' + node.name + '" at the same level');
+          }
+
+          otherNames.push(node.name);
+        }
       }
 
       if (node.options && node.options.alias) {
-        if (aliases.indexOf(node.options.alias) >= 0) {
-          throw new Error('More than one node with the alias "' + node.options.alias + '" at the same level');
-        }
+        if (MATCHES_KWARG_TYPE.test(node._type)) {
+          if (kwargAliases.indexOf(node.options.alias) >= 0) {
+            throw new Error('More than one node with the alias "' + node.options.alias + '" at the same level');
+          }
 
-        aliases.push(node.options.alias);
+          kwargAliases.push(node.options.alias);
+        } else {
+          if (otherAliases.indexOf(node.options.alias) >= 0) {
+            throw new Error('More than one node with the alias "' + node.options.alias + '" at the same level');
+          }
+
+          otherAliases.push(node.options.alias);
+        }
       }
     });
   }
