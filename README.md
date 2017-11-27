@@ -147,6 +147,14 @@ Calling the command `npm install jargs another-lib --save` with `mutli` returns 
 }
 ```
 
+### Collecting arguments
+
+The `collect` function is provided with your program and `argv` (from process), and returns a tree that represents the matched arguments, and handles calling the callbacks of any commands that were matched.
+
+```javascript
+collect(Program('my-command'), process.argv);
+```
+
 ### Querying the tree
 
 Each node always contains the keys `command`, `kwargs`, `flags`, and `args` so that you can easily query them.
