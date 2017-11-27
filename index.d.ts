@@ -5,7 +5,7 @@ declare module 'jargs' {
   export function collect (rootNode: HelpOrProgram): Tree;
 
   export interface ArgsOrKWArgs {
-    [index: string]: string | undefined;
+    [index: string]: string | undefined | Array<string | undefined>;
   }
 
   export interface Flags {
