@@ -87,7 +87,10 @@
     ),
     Required(
       Arg(
-        'arg'
+        'arg',
+        {
+          multi: true
+        }
       )
     )
   );
@@ -121,5 +124,7 @@
 
   console.log('Full tree:\n');
   console.log(fullTree);
+  console.log(fullTree.command.kwargs);
+  console.log(fullTree.command.args);
 
 })();
