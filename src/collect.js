@@ -129,7 +129,11 @@
 
         var matchingFlagOrKWArg;
 
-        if (isAlias && containsEquals) {
+        // Rest --
+        if (!kwargName.length) {
+          tree.rest = argv.splice(0);
+        // Invalid alias -a=
+        } else if (isAlias && containsEquals) {
           throw new Error(utils.createHelp(schema, globals, 'Invalid argument syntax: -' + kwargName + '='));
         // Valid multiple alias -abc or flag --flag
         } else if (isAlias && kwargName.length > 1) {

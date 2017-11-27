@@ -1277,8 +1277,7 @@
         },
         kwargs: {},
         flags: {},
-        args: {},
-        rest: null
+        args: {}
       });
 
     });

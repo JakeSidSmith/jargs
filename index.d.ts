@@ -18,7 +18,7 @@ declare module 'jargs' {
     kwargs: ArgsOrKWArgs;
     flags: Flags;
     args: ArgsOrKWArgs;
-    rest: Array<string | undefined> | null;
+    rest?: Array<string | undefined>;
   }
 
   export interface HelpProps {
