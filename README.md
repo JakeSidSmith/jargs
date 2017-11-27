@@ -121,7 +121,7 @@ If we set the `lib` `Arg` to `multi: true`, then we can supply multiple args and
 
 ```javascript
 Arg(
-  'lib,
+  'lib',
   {
     multi: true
   }
