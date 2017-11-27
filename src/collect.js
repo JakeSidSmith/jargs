@@ -36,7 +36,10 @@
       } else {
         throw new Error(utils.createHelp(schema, globals, 'Unknown argument: ' + (isAlias ? '-' : '--') + kwargName));
       }
-    } else if (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) {
+    } else if (
+      (matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's']) &&
+      !matchingFlagOrKWArg.options.multi
+    ) {
       throw new Error(utils.createHelp(schema, globals, 'Duplicate argument: ' + (isAlias ? '-' : '--') + kwargName));
     }
 
@@ -105,11 +108,13 @@
           tree.command = createTree(argv, matchingCommand, globals, commands, tree);
         } else {
           var matchingArg = find(schema.children, function (node) {
-            return node._type === 'arg' && !(node.name in tree.args);
+            return node._type === 'arg' && (node.options.multi || !(node.name in tree.args));
           });
 
           if (!matchingArg) {
             throw new Error(utils.createHelp(schema, globals, 'Unknown argument: ' + arg));
+          } else if (matchingArg.options.multi) {
+            tree.args[matchingArg.name] = (tree.args[matchingArg.name] || []).concat(arg);
           } else {
             tree.args[matchingArg.name] = arg;
           }
@@ -156,7 +161,16 @@
             if (!argv.length) {
               throw new Error(utils.createHelp(schema, globals, 'No value for argument: --' + kwargName));
             }
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
+
+            if (matchingFlagOrKWArg.options.multi) {
+              tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
+              (tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] || []).concat(argv.shift());
+            } else {
+              tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
+            }
+          } else if (matchingFlagOrKWArg.options.multi) {
+            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
+            (tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] || []).concat(kwargValue);
           } else {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargValue;
           }
