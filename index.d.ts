@@ -2,10 +2,10 @@ declare module 'jargs' {
 
   export type HelpOrProgram = Help | Program;
 
-  export function collect (rootNode: HelpOrProgram): Tree;
+  export function collect (rootNode: HelpOrProgram, argv: string[]): Tree;
 
   export interface ArgsOrKWArgs {
-    [index: string]: string | undefined;
+    [index: string]: string | undefined | Array<string | undefined>;
   }
 
   export interface Flags {
@@ -14,10 +14,11 @@ declare module 'jargs' {
 
   export interface Tree {
     name: string;
-    command: Tree | null;
+    command?: Tree;
     kwargs: ArgsOrKWArgs;
     flags: Flags;
     args: ArgsOrKWArgs;
+    rest?: Array<string | undefined>;
   }
 
   export interface HelpProps {
@@ -45,6 +46,7 @@ declare module 'jargs' {
     alias?: string;
     options?: string[];
     type?: string;
+    multi?: boolean;
   }
 
   export interface FlagProps {
@@ -56,6 +58,7 @@ declare module 'jargs' {
     description?: string;
     options?: string[];
     type?: string;
+    multi?: boolean;
   }
 
   export interface Help {

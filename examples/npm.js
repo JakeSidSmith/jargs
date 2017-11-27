@@ -52,7 +52,10 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
       ]
     },
     Arg(
-      'lib'
+      'lib',
+      {
+        multi: true
+      }
     ),
     Flag(
       'save',
@@ -133,8 +136,11 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
           description: 'Display version number'
         }
       )
-    )
+    ),
+    process.argv
   );
+
+  console.log(root);
 
   // Alternatively to callbacks you can inspect the tree yourself
   if (root.command) {

@@ -71,7 +71,8 @@
         {
           alias: '1',
           type: 'string',
-          description: 'A required key word argument'
+          description: 'A required key word argument',
+          multi: true
         }
       ),
       KWArg(
@@ -79,13 +80,17 @@
         {
           alias: '2',
           type: 'string',
-          description: 'Another required key word argument'
+          description: 'Another required key word argument',
+          multi: true
         }
       )
     ),
     Required(
       Arg(
-        'arg'
+        'arg',
+        {
+          multi: true
+        }
       )
     )
   );
@@ -114,10 +119,13 @@
           secondCommand
         )
       )
-    )
+    ),
+    process.argv
   );
 
   console.log('Full tree:\n');
   console.log(fullTree);
+  console.log(fullTree.command.kwargs);
+  console.log(fullTree.command.args);
 
 })();

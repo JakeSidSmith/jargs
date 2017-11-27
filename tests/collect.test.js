@@ -45,50 +45,70 @@
     it('should throw an error if no Program provided', function () {
       var anError = /program/i;
 
-      var boundCollect = collect.bind(null, 'node', 'npm', []);
-
       // Without tree
-      expect(boundCollect).to.throw(anError);
+      expect(collect).to.throw(anError);
 
     });
 
     it('should throw an error if root node is not a Program', function () {
       var anError = /program/i;
 
-      var boundCollect = collect.bind(null, 'node', 'npm', [], Arg('test'));
+      var boundCollect = collect.bind(null, Arg('test'));
 
       // Without tree
       expect(boundCollect).to.throw(anError);
 
     });
 
-    it('should throw an error if there is more than one root node', function () {
-      var anError = /single/i;
+    it('should throw an error if there are too many arguments', function () {
+      var anError = /too many arguments/i;
 
-      var boundCollect = collect.bind(null, 'node', 'npm', [], Program('test'), Program('test'));
+      var boundCollect = collect.bind(null, Program('test'), [], 'too many');
 
       // Without tree
       expect(boundCollect).to.throw(anError);
 
+    });
+
+    it('should throw an error if the argv is undefined', function () {
+      var anError = /no argv supplied/i;
+
+      var boundCollect = collect.bind(null, Program('test'));
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should throw an error if the second argument is not an argv', function () {
+      var anError = /argv must be an array of strings/i;
+
+      var boundCollect = collect.bind(null, Program('test'), 'nope');
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should throw an error if the argv has been modified', function () {
+      var anError = /argv has been tampered with/i;
+
+      var boundCollect = collect.bind(null, Program('test'), ['invalid']);
+
+      expect(boundCollect).to.throw(anError);
     });
 
     it('should return an arg tree when no args provided', function () {
-      var boundCollect = collect.bind(null, 'node', 'npm', []);
-
-      // Without tree
-      var result = boundCollect(
+      // With tree
+      var result = collect(
         Program(
           'program',
           null,
           Command(
             'install'
           )
-        )
+        ),
+        ['node', 'program']
       );
 
       expect(result).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {},
         args: {}
@@ -97,24 +117,22 @@
     });
 
     it('should return an arg tree for single command schema', function () {
-      var boundCollect = collect.bind(null, 'node', 'npm', ['install']);
-
       // With single node
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           null,
           Command(
             'install'
           )
-        )
+        ),
+        ['node', 'program', 'install']
       );
 
       expect(result).to.eql({
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {},
           flags: {},
           args: {}
@@ -127,10 +145,8 @@
     });
 
     it('should return an arg tree with nested schema', function () {
-      var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs']);
-
       // With nested nodes
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           null,
@@ -141,14 +157,14 @@
               'lib'
             )
           )
-        )
+        ),
+        ['node', 'program', 'install', 'jargs']
       );
 
       expect(result).to.eql({
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {},
           flags: {},
           args: {
@@ -162,10 +178,8 @@
     });
 
     it('should return an arg tree with nested schema and flags', function () {
-      var boundCollect = collect.bind(null, 'node', 'npm', ['install', 'jargs', '--save']);
-
       // With nested nodes
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           null,
@@ -179,14 +193,14 @@
               'save'
             )
           )
-        )
+        ),
+        ['node', 'program', 'install', 'jargs', '--save']
       );
 
       expect(result).to.eql({
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {},
           flags: {
             save: true
@@ -202,11 +216,8 @@
     });
 
     it('should return an arg tree with kwargs, flags, and args', function () {
-      var boundCollect = collect.bind(null, 'node', 'browserify',
-        ['--transform', 'babelify', '--verbose', '--outfile=build/index.js', 'src/index.js']);
-
       // With nested nodes
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           null,
@@ -222,12 +233,12 @@
           KWArg(
             'transform'
           )
-        )
+        ),
+        ['node', 'program', '--transform', 'babelify', '--verbose', '--outfile=build/index.js', 'src/index.js']
       );
 
       expect(result).to.eql({
         name: 'program',
-        command: null,
         kwargs: {
           transform: 'babelify',
           outfile: 'build/index.js'
@@ -242,9 +253,7 @@
     });
 
     it('should prioritize commands and traverse their children (test 1)', function () {
-      var boundCollect = collect.bind(null, 'node', 'browserify', ['command', 'command']);
-
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           null,
@@ -258,14 +267,14 @@
               'arg2'
             )
           )
-        )
+        ),
+        ['node', 'program', 'command', 'command']
       );
 
       expect(result).to.eql({
         name: 'program',
         command: {
           name: 'command',
-          command: null,
           kwargs: {},
           flags: {},
           args: {
@@ -279,9 +288,7 @@
     });
 
     it('should prioritize commands and traverse their children (test 2)', function () {
-      var boundCollect = collect.bind(null, 'node', 'browserify', ['not-a-command']);
-
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           null,
@@ -295,12 +302,12 @@
               'arg2'
             )
           )
-        )
+        ),
+        ['node', 'program', 'not-a-command']
       );
 
       expect(result).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {},
         args: {
@@ -310,14 +317,12 @@
     });
 
     it('should call program and command callbacks if matched', function () {
-      var boundCollect = collect.bind(null, 'node', 'browserify', ['argy', 'command2', 'argygain', 'command3']);
-
       var programSpy = spy();
       var command1Spy = spy();
       var command2Spy = spy();
       var command3Spy = spy();
 
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           {callback: programSpy},
@@ -342,7 +347,8 @@
               {callback: command3Spy}
             )
           )
-        )
+        ),
+        ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
       );
 
       expect(programSpy).to.have.been.calledOnce;
@@ -358,14 +364,12 @@
     });
 
     it('should pass parent tree & returned value to subsequent callbacks', function () {
-      var boundCollect = collect.bind(null, 'node', 'browserify', ['argy', 'command2', 'argygain', 'command3']);
-
       var programSpy = stub().returns(1);
       var command1Spy = stub().returns(2);
       var command2Spy = stub().returns(3);
       var command3Spy = stub().returns(4);
 
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           {callback: programSpy},
@@ -390,7 +394,8 @@
               {callback: command3Spy}
             )
           )
-        )
+        ),
+        ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
       );
 
       expect(programSpy).to.have.been.calledOnce;
@@ -403,11 +408,8 @@
     });
 
     it('should return an arg tree from aliases', function () {
-      var boundCollect = collect.bind(null, 'node', 'browserify',
-        ['b', '-t', 'babelify', '-v', '-o', 'build/index.js', 'src/index.js']);
-
       // With nested nodes
-      var result = boundCollect(
+      var result = collect(
         Program(
           'program',
           null,
@@ -430,14 +432,14 @@
               {alias: 't'}
             )
           )
-        )
+        ),
+        ['node', 'program', 'b', '-t', 'babelify', '-v', '-o', 'build/index.js', 'src/index.js']
       );
 
       expect(result).to.eql({
         name: 'program',
         command: {
           name: 'build',
-          command: null,
           kwargs: {
             transform: 'babelify',
             outfile: 'build/index.js'
@@ -458,8 +460,7 @@
     it('should exit with help for no kwarg value (equals)', function () {
       var anError = /value.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=', 'invalid']);
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -470,7 +471,8 @@
           KWArg(
             'kwarg'
           )
-        )
+        ),
+        ['node', 'program', '--kwarg=', 'invalid']
       );
 
       // With nested nodes
@@ -480,8 +482,7 @@
     it('should exit with help for no kwarg value (not equals)', function () {
       var anError = /value.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg']);
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -492,7 +493,8 @@
           KWArg(
             'kwarg'
           )
-        )
+        ),
+        ['node', 'program', '--kwarg']
       );
 
       // With nested nodes
@@ -502,8 +504,7 @@
     it('should exit with help for invalid alias syntax', function () {
       var anError = /syntax.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['-k=invalid']);
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -517,7 +518,8 @@
               alias: 'k'
             }
           )
-        )
+        ),
+        ['node', 'program', '-k=invalid']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -526,9 +528,7 @@
     it('should exit with help for duplicate kwargs', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['--kwarg=correct', '--kwarg=incorrect']);
-
-      var boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -539,7 +539,8 @@
           KWArg(
             'kwarg'
           )
-        )
+        ),
+        ['node', 'program', '--kwarg=correct', '--kwarg=incorrect']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -548,9 +549,7 @@
     it('should exit with help for duplicate flags', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['--flag', '--flag']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -561,7 +560,8 @@
           Flag(
             'flag'
           )
-        )
+        ),
+        ['node', 'program', '--flag', '--flag']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -570,9 +570,7 @@
     it('should exit with help for duplicate flag aliases', function () {
       var anError = /duplicate.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['--flag', '-f']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -586,7 +584,8 @@
               alias: 'f'
             }
           )
-        )
+        ),
+        ['node', 'program', '--flag', '-f']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -595,9 +594,7 @@
     it('should exit with help for unknown flags / kwargs', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['--version']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -611,7 +608,8 @@
           KWArg(
             'kwarg'
           )
-        )
+        ),
+        ['node', 'program', '--version']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -620,9 +618,7 @@
     it('should exit with help for unknown flag / kwarg aliases', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['-v']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -636,7 +632,8 @@
           KWArg(
             'kwarg'
           )
-        )
+        ),
+        ['node', 'program', '-v']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -645,9 +642,7 @@
     it('should exit with help for unknown commands / args', function () {
       var anError = /unknown.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['another-command']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -661,16 +656,15 @@
           KWArg(
             'kwarg'
           )
-        )
+        ),
+        ['node', 'program', 'another-command']
       );
 
       expect(boundCollect).to.throw(anError);
     });
 
     it('should return an arg tree with kwarg aliases', function () {
-      var boundCollect = collect.bind(null, 'node', 'test', ['-kthing', '-athing']);
-
-      var tree = boundCollect(
+      var tree = collect(
         Program(
           'program',
           null,
@@ -686,12 +680,12 @@
               alias: 'a'
             }
           )
-        )
+        ),
+        ['node', 'program', '-kthing', '-athing']
       );
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {
           kwarg: 'thing',
           'another-kwarg': 'thing'
@@ -700,9 +694,7 @@
         args: {}
       });
 
-      boundCollect = collect.bind(null, 'node', 'test', ['-k', 'thing', '-a', 'thing']);
-
-      tree = boundCollect(
+      tree = collect(
         Program(
           'program',
           null,
@@ -718,12 +710,12 @@
               alias: 'a'
             }
           )
-        )
+        ),
+        ['node', 'program', '-k', 'thing', '-a', 'thing']
       );
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {
           kwarg: 'thing',
           'another-kwarg': 'thing'
@@ -734,9 +726,7 @@
     });
 
     it('should return an arg tree with flag aliases', function () {
-      var boundCollect = collect.bind(null, 'node', 'test', ['-f', '-a']);
-
-      var tree = boundCollect(
+      var tree = collect(
         Program(
           'program',
           null,
@@ -752,12 +742,12 @@
               alias: 'a'
             }
           )
-        )
+        ),
+        ['node', 'program', '-f', '-a']
       );
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {
           flag: true,
@@ -766,9 +756,7 @@
         args: {}
       });
 
-      boundCollect = collect.bind(null, 'node', 'test', ['-fa']);
-
-      tree = boundCollect(
+      tree = collect(
         Program(
           'program',
           null,
@@ -784,12 +772,12 @@
               alias: 'a'
             }
           )
-        )
+        ),
+        ['node', 'program', '-fa']
       );
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {
           flag: true,
@@ -802,9 +790,7 @@
     it('should exit with help for invalid chained flag aliases', function () {
       var anError = /invalid.*\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['-fk']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -821,7 +807,8 @@
               alias: 'k'
             }
           )
-        )
+        ),
+        ['node', 'program', '-fk']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -830,9 +817,7 @@
     it('should exit with help for missing required Commands', function () {
       var anError = /command\swas\snot\ssupplied\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', []);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -840,7 +825,8 @@
           Required(
             Command('command')
           )
-        )
+        ),
+        ['node', 'program']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -849,9 +835,7 @@
     it('should exit with help for missing required Commands when other Command found', function () {
       var anError = /required\swas\snot\ssupplied\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['not-required']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -862,7 +846,8 @@
           Required(
             Command('required')
           )
-        )
+        ),
+        ['node', 'program', 'not-required']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -871,9 +856,7 @@
     it('should exit with help for missing required Args', function () {
       var anError = /arg\swas\snot\ssupplied\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['command']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -885,7 +868,8 @@
               Arg('arg')
             )
           )
-        )
+        ),
+        ['node', 'program', 'command']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -894,9 +878,7 @@
     it('should exit with help for missing require any Commands', function () {
       var anError = /command1,\scommand2\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', []);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -905,7 +887,8 @@
             Command('command1'),
             Command('command2')
           )
-        )
+        ),
+        ['node', 'program']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -914,9 +897,7 @@
     it('should exit with help for missing require any Commands when other Command found', function () {
       var anError = /required1,\srequired2\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['not-required']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -928,7 +909,8 @@
             Command('required1'),
             Command('required2')
           )
-        )
+        ),
+        ['node', 'program', 'not-required']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -937,9 +919,7 @@
     it('should exit with help for missing require any Args', function () {
       var anError = /arg1,\sarg2\n\n/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['command']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -952,7 +932,8 @@
               Arg('arg2')
             )
           )
-        )
+        ),
+        ['node', 'program', 'command']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -961,9 +942,7 @@
     it('should not error when all required arguments are met', function () {
       var anError = /required/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['command', '--kwarg1=value', 'arg1', 'arg2']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Program(
           'program',
@@ -986,7 +965,8 @@
               )
             )
           )
-        )
+        ),
+        ['node', 'program', 'command', '--kwarg1=value', 'arg1', 'arg2']
       );
 
       expect(boundCollect).not.to.throw(anError);
@@ -995,9 +975,7 @@
     it('should display help info if a global help node is present (root)', function () {
       var anError = /Usage:\sprogram(.|\n)*description\n\n/;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['--help']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Help(
           'help',
@@ -1019,7 +997,8 @@
               )
             )
           )
-        )
+        ),
+        ['node', 'program', '--help']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -1028,9 +1007,7 @@
     it('should display help info if a global help node is present (nested)', function () {
       var anError = /Usage:\scommand(.|\n)*description\n\n/;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['command', '--help']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Help(
           'help',
@@ -1052,7 +1029,8 @@
               )
             )
           )
-        )
+        ),
+        ['node', 'program', 'command', '--help']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -1061,9 +1039,7 @@
     it('should display help info if a global help node is present (alias)', function () {
       var anError = /description\n\n$/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['command', '-h']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Help(
           'help',
@@ -1080,7 +1056,8 @@
               )
             )
           )
-        )
+        ),
+        ['node', 'program', 'command', '-h']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -1089,9 +1066,7 @@
     it('should not display help info if a global help node is present but another node is matched', function () {
       var anError = /description\n\n$/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['command', '--help']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Help(
           'help',
@@ -1115,7 +1090,8 @@
               )
             )
           )
-        )
+        ),
+        ['node', 'program', 'command', '--help']
       );
 
       expect(boundCollect).not.to.throw(anError);
@@ -1124,9 +1100,7 @@
     it('should not display help info if a global help node is present but another node is matched (alias', function () {
       var anError = /description\n\n$/i;
 
-      var boundCollect = collect.bind(null, 'node', 'test', ['command', '-h']);
-
-      boundCollect = boundCollect.bind(
+      var boundCollect = collect.bind(
         null,
         Help(
           'help',
@@ -1150,10 +1124,192 @@
               )
             )
           )
-        )
+        ),
+        ['node', 'program', 'command', '-h']
       );
 
       expect(boundCollect).not.to.throw(anError);
+    });
+
+    it('should collect multiple Arg values', function () {
+      // With nested nodes
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'install',
+            null,
+            Arg(
+              'lib',
+              {
+                multi: true
+              }
+            )
+          )
+        ),
+        ['node', 'program', 'install', 'jargs', 'awesome']
+      );
+
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'install',
+          kwargs: {},
+          flags: {},
+          args: {
+            lib: ['jargs', 'awesome']
+          }
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+    });
+
+    it('should collect multiple KWArg values', function () {
+      // With nested nodes
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'install',
+            null,
+            KWArg(
+              'input',
+              {
+                multi: true
+              }
+            )
+          )
+        ),
+        ['node', 'program', 'install', '--input', 'jargs', '--input=awesome']
+      );
+
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'install',
+          kwargs: {
+            input: ['jargs', 'awesome']
+          },
+          flags: {},
+          args: {}
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+
+      // With nested nodes
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'install',
+            null,
+            KWArg(
+              'input',
+              {
+                alias: 'i',
+                multi: true
+              }
+            )
+          )
+        ),
+        ['node', 'program', 'install', '--input=jargs', '-i', 'awesome']
+      );
+
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'install',
+          kwargs: {
+            input: ['jargs', 'awesome']
+          },
+          flags: {},
+          args: {}
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+    });
+
+    it('should collect rest arguments', function () {
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'run',
+            null,
+            Required(
+              Arg(
+                'command'
+              )
+            ),
+            KWArg(
+              'env',
+              {
+                alias: 'e'
+              }
+            )
+          )
+        ),
+        ['node', 'npm', 'run', '--env=development', 'manage.py', '--', 'command', '--flag']
+      );
+
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'run',
+          kwargs: {
+            env: 'development'
+          },
+          flags: {},
+          args: {
+            command: 'manage.py'
+          },
+          rest: ['command', '--flag']
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+
+    });
+
+    it('should error if required args are interrupted by --', function () {
+      var anError = /required/i;
+
+      var boundCollect = collect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'run',
+            null,
+            Required(
+              Arg(
+                'command'
+              )
+            ),
+            KWArg(
+              'env',
+              {
+                alias: 'e'
+              }
+            )
+          )
+        ),
+        ['node', 'npm', 'run', '--', '--env=development', 'manage.py', 'command', '--flag']
+      );
+
+      expect(boundCollect).to.throw(anError);
     });
 
   });

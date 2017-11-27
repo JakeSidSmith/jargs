@@ -1,5 +1,8 @@
-# jargs [![CircleCI](https://circleci.com/gh/JakeSidSmith/jargs.svg?style=svg)](https://circleci.com/gh/JakeSidSmith/jargs)
+# jargs
+
 **Simple node arg parser with explicit tree structure schema**
+
+[![CircleCI](https://circleci.com/gh/JakeSidSmith/jargs/tree/master.svg?style=svg)](https://circleci.com/gh/JakeSidSmith/jargs/tree/master)
 
 ## About
 
@@ -75,7 +78,8 @@ const tree = collect(
         )
       )
     )
-  )
+  ),
+  process.argv
 );
 ```
 
@@ -86,7 +90,6 @@ Calling the command `npm` returns the following.
 ```javascript
 {
   name: 'npm',
-  command: null,
   kwargs: {},
   flags: {},
   args: {}
@@ -114,9 +117,49 @@ Calling the command `npm install jargs --save` returns the following.
 }
 ```
 
+If we set the `lib` `Arg` to `multi: true`, then we can supply multiple args and they will be added to an array.
+
+```javascript
+Arg(
+  'lib',
+  {
+    multi: true
+  }
+)
+```
+
+Calling the command `npm install jargs another-lib --save` with `mutli` returns the following.
+
+```javascript
+{
+  name: 'npm',
+  command: {
+    name: 'install',
+    kwargs: {},
+    flags: {
+      save: true
+    },
+    args: {
+      lib: ['jargs', 'another-lib']
+    }
+  },
+  kwargs: {},
+  flags: {},
+  args: {}
+}
+```
+
+### Collecting arguments
+
+The `collect` function is provided with your program and `argv` (from process). Collect returns a tree that represents the matched arguments, and handles calling the callbacks of any commands that were matched with the relevant part of the tree.
+
+```javascript
+collect(Program('my-command'), process.argv);
+```
+
 ### Querying the tree
 
-Each node always contains the keys `command`, `kwargs`, `flags`, and `args` so that you can easily query them.
+Each node always contains the keys `command`, `kwargs`, `flags`, `args` and `rest` so that you can easily query them.
 
 #### Querying Commands
 
@@ -129,6 +172,30 @@ if (tree.command) {
     default:
       // This should never be hit since we check for the command existence first
   }
+}
+```
+
+#### Rest
+
+Rest is a key that is populated with all remaining arguments when the user provides `--` in their command. This is often used to pass all remaining arguments to a sub-process.
+
+Running `npm test -- --coverage` would return something like
+
+```javascript
+{
+  name: 'npm',
+  command: {
+    {
+      name: 'test',
+      kwargs: {},
+      flags: {},
+      args: {},
+      rest: ['--coverage']
+    }
+  },
+  kwargs: {},
+  flags: {},
+  args: {}
 }
 ```
 
@@ -236,7 +303,8 @@ KWArg(
   {
     alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
-    type: 'string'
+    type: 'string',
+    multi: false // default: false
   }
 )
 ```
@@ -272,7 +340,8 @@ Arg(
   'arg-name'
   {
     description: 'An arg', // default: empty string
-    type: 'string'
+    type: 'string',
+    multi: false // default: false
   }
 )
 ```
@@ -373,7 +442,6 @@ Program(
 
       tree = {
         name: 'command',
-        command: null,
         args: {},
         flags: {},
         kwargs: {}
@@ -474,6 +542,7 @@ const tree = collect(
         )
       )
     )
-  )
+  ),
+  process.argv
 );
 ```
