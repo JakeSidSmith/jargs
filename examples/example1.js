@@ -71,7 +71,8 @@
         {
           alias: '1',
           type: 'string',
-          description: 'A required key word argument'
+          description: 'A required key word argument',
+          multi: true
         }
       ),
       KWArg(
@@ -79,7 +80,8 @@
         {
           alias: '2',
           type: 'string',
-          description: 'Another required key word argument'
+          description: 'Another required key word argument',
+          multi: true
         }
       )
     ),

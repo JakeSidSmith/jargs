@@ -52,7 +52,10 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
       ]
     },
     Arg(
-      'lib'
+      'lib',
+      {
+        multi: true
+      }
     ),
     Flag(
       'save',
