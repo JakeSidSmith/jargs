@@ -104,6 +104,7 @@
           return node._type === 'command' && (node.name === arg || node.options.alias === arg);
         });
 
+        // Valid command
         if (matchingCommand) {
           tree.command = createTree(argv, matchingCommand, globals, commands, tree);
         } else {
@@ -111,8 +112,10 @@
             return node._type === 'arg' && (node.options.multi || !(node.name in tree.args));
           });
 
+          // Unknown command
           if (!matchingArg) {
             throw new Error(utils.createHelp(schema, globals, 'Unknown argument: ' + arg));
+          // Known command
           } else if (matchingArg.options.multi) {
             tree.args[matchingArg.name] = (tree.args[matchingArg.name] || []).concat(arg);
           } else {
@@ -129,7 +132,7 @@
 
         if (isAlias && containsEquals) {
           throw new Error(utils.createHelp(schema, globals, 'Invalid argument syntax: -' + kwargName + '='));
-        // Valid multiple alias -abc
+        // Valid multiple alias -abc or flag --flag
         } else if (isAlias && kwargName.length > 1) {
           var flagNames = kwargName.split('');
           var firstName = flagNames.shift();
@@ -151,6 +154,7 @@
                 tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
               }
             });
+          // Valid flag --flag
           } else {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = kwargName.substring(1);
           }
