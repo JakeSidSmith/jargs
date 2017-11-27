@@ -60,10 +60,10 @@
 
     });
 
-    it('should throw an error if there is more than one root node', function () {
+    it('should throw an error if there are too many arguments', function () {
       var anError = /too many arguments/i;
 
-      var boundCollect = collect.bind(null, Program('test'), [], Program('test'));
+      var boundCollect = collect.bind(null, Program('test'), [], 'too many');
 
       // Without tree
       expect(boundCollect).to.throw(anError);
@@ -82,6 +82,14 @@
       var anError = /argv must be an array of strings/i;
 
       var boundCollect = collect.bind(null, Program('test'), 'nope');
+
+      expect(boundCollect).to.throw(anError);
+    });
+
+    it('should throw an error if the argv has been modified', function () {
+      var anError = /argv has been tampered with/i;
+
+      var boundCollect = collect.bind(null, Program('test'), ['invalid']);
 
       expect(boundCollect).to.throw(anError);
     });

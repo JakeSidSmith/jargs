@@ -192,6 +192,10 @@
   function collect (rootNode, argv) {
     var allArgs = argsToArray(arguments);
 
+    if (allArgs.length > 2) {
+      throw new Error('Too many arguments: collect takes only a single root node and argv');
+    }
+
     if (!rootNode) {
       throw new Error('No program defined');
     }
@@ -209,11 +213,7 @@
     }
 
     if (argv.length < 2) {
-      throw new Error('argv has been tempered with');
-    }
-
-    if (allArgs.length > 2) {
-      throw new Error('Too many arguments: collect takes only a single root node and argv');
+      throw new Error('argv has been tampered with');
     }
 
     // Remove program & command info & copy argv
