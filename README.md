@@ -75,7 +75,9 @@ const tree = collect(
         )
       )
     )
-  )
+  ),
+  // We remove the first 2 arguments as these are not needed
+  process.argv.slice(2)
 );
 ```
 
@@ -106,6 +108,38 @@ Calling the command `npm install jargs --save` returns the following.
     },
     args: {
       lib: 'jargs'
+    }
+  },
+  kwargs: {},
+  flags: {},
+  args: {}
+}
+```
+
+If we set the `lib` `Arg` to `multi: true`, then we can supply multiple args and they will be added to an array.
+
+```javascript
+Arg(
+  'lib,
+  {
+    multi: true
+  }
+)
+```
+
+Calling the command `npm install jargs another-lib --save` with `mutli` returns the following.
+
+```javascript
+{
+  name: 'npm',
+  command: {
+    name: 'install',
+    kwargs: {},
+    flags: {
+      save: true
+    },
+    args: {
+      lib: ['jargs', 'another-lib']
     }
   },
   kwargs: {},
@@ -236,7 +270,8 @@ KWArg(
   {
     alias: 'k', // default: undefined
     description: 'A key word argument', // default: empty string
-    type: 'string'
+    type: 'string',
+    multi: false // default: false
   }
 )
 ```
@@ -272,7 +307,8 @@ Arg(
   'arg-name'
   {
     description: 'An arg', // default: empty string
-    type: 'string'
+    type: 'string',
+    multi: false // default: false
   }
 )
 ```
@@ -474,6 +510,8 @@ const tree = collect(
         )
       )
     )
-  )
+  ),
+  // We remove the first 2 arguments as these are not needed
+  process.argv.slice(2)
 );
 ```
