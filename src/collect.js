@@ -129,20 +129,24 @@
 
         if (isAlias && containsEquals) {
           throw new Error(utils.createHelp(schema, globals, 'Invalid argument syntax: -' + kwargName + '='));
+        // Valid multiple alias -abc
         } else if (isAlias && kwargName.length > 1) {
           var flagNames = kwargName.split('');
           var firstName = flagNames.shift();
 
           matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, firstName);
 
+          // Valid multiple flag alias --abc
           if (matchingFlagOrKWArg._type === 'flag') {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
 
             utils.each(flagNames, function (flagName) {
               matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, flagName);
 
+              // Unknown flag alias -x
               if (matchingFlagOrKWArg._type !== 'flag') {
                 throw new Error(utils.createHelp(schema, globals, 'Invalid argument: -' + kwargName));
+              // Known flag alias -a
               } else {
                 tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
               }
@@ -153,21 +157,27 @@
         } else {
           matchingFlagOrKWArg = findArgOrKWarg(schema, globals, tree, isAlias, kwargName);
 
+          // Flag --flag
           if (matchingFlagOrKWArg._type === 'flag') {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = true;
+          // Invalid kwarg --kwarg=
           } else if (containsEquals && !kwargValue) {
             throw new Error(utils.createHelp(schema, globals, 'No value for argument: --' + kwargName));
+          // Valid kwarg --kwarg value
           } else if (!containsEquals) {
+            // No value --kwarg
             if (!argv.length) {
               throw new Error(utils.createHelp(schema, globals, 'No value for argument: --' + kwargName));
             }
 
+            // Valid kwarg --kwarg value
             if (matchingFlagOrKWArg.options.multi) {
               tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
               (tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] || []).concat(argv.shift());
             } else {
               tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = argv.shift();
             }
+          // Valid kwarg --kwarg=value
           } else if (matchingFlagOrKWArg.options.multi) {
             tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
             (tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] || []).concat(kwargValue);
