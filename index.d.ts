@@ -2,7 +2,7 @@ declare module 'jargs' {
 
   export type HelpOrProgram = Help | Program;
 
-  export function collect (rootNode: HelpOrProgram): Tree;
+  export function collect (rootNode: HelpOrProgram, argv: string[]): Tree;
 
   export interface ArgsOrKWArgs {
     [index: string]: string | undefined | Array<string | undefined>;

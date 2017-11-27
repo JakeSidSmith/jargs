@@ -4,12 +4,8 @@
 
 (function () {
 
-  var argv = [].concat(process.argv);
-  var program = argv.shift();
-  var command = argv.shift();
-
   module.exports = {
-    collect: require('./collect').bind(null, program, command, argv),
+    collect: require('./collect'),
     Help: require('./help'),
     Program: require('./program'),
     Command: require('./command'),

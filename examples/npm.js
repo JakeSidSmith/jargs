@@ -136,7 +136,8 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
           description: 'Display version number'
         }
       )
-    )
+    ),
+    process.argv
   );
 
   // Alternatively to callbacks you can inspect the tree yourself

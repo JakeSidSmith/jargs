@@ -119,7 +119,8 @@
           secondCommand
         )
       )
-    )
+    ),
+    process.argv
   );
 
   console.log('Full tree:\n');

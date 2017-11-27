@@ -189,13 +189,8 @@
     return tree;
   }
 
-  function collect (/* program, command, argv, ...rootNode */) {
-    var args = argsToArray(arguments);
-    /* var program = */ args.shift();
-    /* var command = */ args.shift();
-    var argv = args.shift();
-    var rootNode = args.shift();
-    var commands = [];
+  function collect (rootNode, argv) {
+    var allArgs = argsToArray(arguments);
 
     if (!rootNode) {
       throw new Error('No program defined');
@@ -205,12 +200,24 @@
       throw new Error('Root node must be a Program');
     }
 
-    if (args.length) {
-      throw new Error('Too many root nodes. Collect takes only a single Program root node');
+    if (!argv) {
+      throw new Error('No argv supplied');
     }
 
+    if (!Array.isArray(argv)) {
+      throw new Error('argv must be an array of strings, but got ' + (typeof argv));
+    }
+
+    if (allArgs.length > 2) {
+      throw new Error('Too many root nodes. Collect takes only a single Program root node and argv');
+    }
+
+    // Remove program & command info & copy argv
+    var args = argv.slice(2);
+    var commands = [];
+
     try {
-      return createTree(argv, rootNode, rootNode._globals, commands);
+      return createTree(args, rootNode, rootNode._globals, commands);
     } catch (error) {
       utils.exitWithHelp(error.message);
     }
