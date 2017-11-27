@@ -14,7 +14,7 @@ declare module 'jargs' {
 
   export interface Tree {
     name: string;
-    command: Tree | null;
+    command?: Tree;
     kwargs: ArgsOrKWArgs;
     flags: Flags;
     args: ArgsOrKWArgs;

@@ -109,7 +109,6 @@
 
       expect(result).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {},
         args: {}
@@ -134,7 +133,6 @@
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {},
           flags: {},
           args: {}
@@ -167,7 +165,6 @@
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {},
           flags: {},
           args: {
@@ -204,7 +201,6 @@
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {},
           flags: {
             save: true
@@ -243,7 +239,6 @@
 
       expect(result).to.eql({
         name: 'program',
-        command: null,
         kwargs: {
           transform: 'babelify',
           outfile: 'build/index.js'
@@ -280,7 +275,6 @@
         name: 'program',
         command: {
           name: 'command',
-          command: null,
           kwargs: {},
           flags: {},
           args: {
@@ -314,7 +308,6 @@
 
       expect(result).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {},
         args: {
@@ -447,7 +440,6 @@
         name: 'program',
         command: {
           name: 'build',
-          command: null,
           kwargs: {
             transform: 'babelify',
             outfile: 'build/index.js'
@@ -694,7 +686,6 @@
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {
           kwarg: 'thing',
           'another-kwarg': 'thing'
@@ -725,7 +716,6 @@
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {
           kwarg: 'thing',
           'another-kwarg': 'thing'
@@ -758,7 +748,6 @@
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {
           flag: true,
@@ -789,7 +778,6 @@
 
       expect(tree).to.eql({
         name: 'program',
-        command: null,
         kwargs: {},
         flags: {
           flag: true,
@@ -1167,7 +1155,6 @@
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {},
           flags: {},
           args: {
@@ -1204,7 +1191,6 @@
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {
             input: ['jargs', 'awesome']
           },
@@ -1240,7 +1226,6 @@
         name: 'program',
         command: {
           name: 'install',
-          command: null,
           kwargs: {
             input: ['jargs', 'awesome']
           },
@@ -1281,7 +1266,6 @@
         name: 'program',
         command: {
           name: 'run',
-          command: null,
           kwargs: {
             env: 'development'
           },

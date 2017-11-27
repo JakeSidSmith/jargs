@@ -85,7 +85,6 @@
   function createTree (argv, schema, globals, commands, parentTree) {
     var tree = {
       name: schema.name,
-      command: null,
       kwargs: {},
       flags: {},
       args: {}
