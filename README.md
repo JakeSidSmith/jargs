@@ -157,7 +157,7 @@ collect(Program('my-command'), process.argv);
 
 ### Querying the tree
 
-Each node always contains the keys `command`, `kwargs`, `flags`, and `args` so that you can easily query them.
+Each node always contains the keys `command`, `kwargs`, `flags`, `args` and `rest` so that you can easily query them.
 
 #### Querying Commands
 
@@ -170,6 +170,32 @@ if (tree.command) {
     default:
       // This should never be hit since we check for the command existence first
   }
+}
+```
+
+#### Rest
+
+Rest is a key that is populated with all remaining arguments when the user provides `--` in their command. This is often used to pass all remaining arguments to a sub-process.
+
+Running `npm test -- --coverage` would return something like
+
+```javascript
+{
+  name: 'npm',
+  command: {
+    {
+      name: 'test',
+      command: null,
+      kwargs: {},
+      flags: {},
+      args: {},
+      rest: ['--coverage']
+    }
+  },
+  kwargs: {},
+  flags: {},
+  args: {},
+  rest: null
 }
 ```
 
