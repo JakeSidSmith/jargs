@@ -151,7 +151,7 @@ Calling the command `npm install jargs another-lib --save` with `mutli` returns 
 
 ### Collecting arguments
 
-The `collect` function is provided with your program and `argv` (from process), and returns a tree that represents the matched arguments, and handles calling the callbacks of any commands that were matched.
+The `collect` function is provided with your program and `argv` (from process). Collect returns a tree that represents the matched arguments, and handles calling the callbacks of any commands that were matched with the relevant part of the tree.
 
 ```javascript
 collect(Program('my-command'), process.argv);
