@@ -213,7 +213,7 @@
     }
 
     // Remove program & command info & copy argv
-    var args = argv.slice(2);
+    var args = argv.slice();
     var commands = [];
 
     try {
