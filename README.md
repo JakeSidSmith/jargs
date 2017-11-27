@@ -87,7 +87,6 @@ Calling the command `npm` returns the following.
 ```javascript
 {
   name: 'npm',
-  command: null,
   kwargs: {},
   flags: {},
   args: {}
@@ -185,7 +184,6 @@ Running `npm test -- --coverage` would return something like
   command: {
     {
       name: 'test',
-      command: null,
       kwargs: {},
       flags: {},
       args: {},
@@ -194,8 +192,7 @@ Running `npm test -- --coverage` would return something like
   },
   kwargs: {},
   flags: {},
-  args: {},
-  rest: null
+  args: {}
 }
 ```
 
@@ -442,7 +439,6 @@ Program(
 
       tree = {
         name: 'command',
-        command: null,
         args: {},
         flags: {},
         kwargs: {}
