@@ -137,7 +137,7 @@ Return args descriptor with usefull functions like getIn, command, arg, etc
         }
       )
     ),
-    process.argv.slice(2)
+    process.argv
   );
 
   // Alternatively to callbacks you can inspect the tree yourself

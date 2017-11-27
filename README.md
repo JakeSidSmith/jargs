@@ -76,8 +76,7 @@ const tree = collect(
       )
     )
   ),
-  // We remove the first 2 arguments as these are not needed
-  process.argv.slice(2)
+  process.argv
 );
 ```
 
@@ -511,7 +510,6 @@ const tree = collect(
       )
     )
   ),
-  // We remove the first 2 arguments as these are not needed
-  process.argv.slice(2)
+  process.argv
 );
 ```

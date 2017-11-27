@@ -120,7 +120,7 @@
         )
       )
     ),
-    process.argv.slice(2)
+    process.argv
   );
 
   console.log('Full tree:\n');

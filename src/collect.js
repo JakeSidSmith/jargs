@@ -208,12 +208,16 @@
       throw new Error('argv must be an array of strings, but got ' + (typeof argv));
     }
 
+    if (argv.length < 2) {
+      throw new Error('argv has been tempered with');
+    }
+
     if (allArgs.length > 2) {
       throw new Error('Too many arguments: collect takes only a single root node and argv');
     }
 
     // Remove program & command info & copy argv
-    var args = argv.slice();
+    var args = argv.slice(2);
     var commands = [];
 
     try {
