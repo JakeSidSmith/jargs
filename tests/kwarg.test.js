@@ -15,7 +15,7 @@
 
       expect(node).to.be.ok;
       expect(node.name).to.equal('foo');
-      expect(node.options).to.eql({alias: 'f', description: ''});
+      expect(node.options).to.eql({alias: 'f', description: '', multi: false});
       expect(node.children).to.be.undefined;
       expect(node._type).to.equal('kwarg');
     });
