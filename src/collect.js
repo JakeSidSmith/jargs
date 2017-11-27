@@ -209,7 +209,7 @@
     }
 
     if (allArgs.length > 2) {
-      throw new Error('Too many root nodes. Collect takes only a single Program root node and argv');
+      throw new Error('Too many arguments: collect takes only a single root node and argv');
     }
 
     // Remove program & command info & copy argv
