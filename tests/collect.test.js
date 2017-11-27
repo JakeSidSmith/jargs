@@ -1299,6 +1299,36 @@
 
     });
 
+    it('should error if required args are interrupted by --', function () {
+      var anError = /required/i;
+
+      var boundCollect = collect.bind(
+        null,
+        Program(
+          'program',
+          null,
+          Command(
+            'run',
+            null,
+            Required(
+              Arg(
+                'command'
+              )
+            ),
+            KWArg(
+              'env',
+              {
+                alias: 'e'
+              }
+            )
+          )
+        ),
+        ['node', 'npm', 'run', '--', '--env=development', 'manage.py', 'command', '--flag']
+      );
+
+      expect(boundCollect).to.throw(anError);
+    });
+
   });
 
 })();
