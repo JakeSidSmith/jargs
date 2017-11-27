@@ -21,6 +21,10 @@
     },
     type: {
       type: 'string'
+    },
+    multi: {
+      type: 'boolean',
+      default: false
     }
   };
 
