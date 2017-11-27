@@ -104,7 +104,7 @@
             'install'
           )
         ),
-        []
+        ['node', 'program']
       );
 
       expect(result).to.eql({
@@ -127,7 +127,7 @@
             'install'
           )
         ),
-        ['install']
+        ['node', 'program', 'install']
       );
 
       expect(result).to.eql({
@@ -160,7 +160,7 @@
             )
           )
         ),
-        ['install', 'jargs']
+        ['node', 'program', 'install', 'jargs']
       );
 
       expect(result).to.eql({
@@ -197,7 +197,7 @@
             )
           )
         ),
-        ['install', 'jargs', '--save']
+        ['node', 'program', 'install', 'jargs', '--save']
       );
 
       expect(result).to.eql({
@@ -238,7 +238,7 @@
             'transform'
           )
         ),
-        ['--transform', 'babelify', '--verbose', '--outfile=build/index.js', 'src/index.js']
+        ['node', 'program', '--transform', 'babelify', '--verbose', '--outfile=build/index.js', 'src/index.js']
       );
 
       expect(result).to.eql({
@@ -273,7 +273,7 @@
             )
           )
         ),
-        ['command', 'command']
+        ['node', 'program', 'command', 'command']
       );
 
       expect(result).to.eql({
@@ -309,7 +309,7 @@
             )
           )
         ),
-        ['not-a-command']
+        ['node', 'program', 'not-a-command']
       );
 
       expect(result).to.eql({
@@ -355,7 +355,7 @@
             )
           )
         ),
-        ['argy', 'command2', 'argygain', 'command3']
+        ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
       );
 
       expect(programSpy).to.have.been.calledOnce;
@@ -402,7 +402,7 @@
             )
           )
         ),
-        ['argy', 'command2', 'argygain', 'command3']
+        ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
       );
 
       expect(programSpy).to.have.been.calledOnce;
@@ -440,7 +440,7 @@
             )
           )
         ),
-        ['b', '-t', 'babelify', '-v', '-o', 'build/index.js', 'src/index.js']
+        ['node', 'program', 'b', '-t', 'babelify', '-v', '-o', 'build/index.js', 'src/index.js']
       );
 
       expect(result).to.eql({
@@ -480,7 +480,7 @@
             'kwarg'
           )
         ),
-        ['--kwarg=', 'invalid']
+        ['node', 'program', '--kwarg=', 'invalid']
       );
 
       // With nested nodes
@@ -502,7 +502,7 @@
             'kwarg'
           )
         ),
-        ['--kwarg']
+        ['node', 'program', '--kwarg']
       );
 
       // With nested nodes
@@ -527,7 +527,7 @@
             }
           )
         ),
-        ['-k=invalid']
+        ['node', 'program', '-k=invalid']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -548,7 +548,7 @@
             'kwarg'
           )
         ),
-        ['--kwarg=correct', '--kwarg=incorrect']
+        ['node', 'program', '--kwarg=correct', '--kwarg=incorrect']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -569,7 +569,7 @@
             'flag'
           )
         ),
-        ['--flag', '--flag']
+        ['node', 'program', '--flag', '--flag']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -593,7 +593,7 @@
             }
           )
         ),
-        ['--flag', '-f']
+        ['node', 'program', '--flag', '-f']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -617,7 +617,7 @@
             'kwarg'
           )
         ),
-        ['--version']
+        ['node', 'program', '--version']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -641,7 +641,7 @@
             'kwarg'
           )
         ),
-        ['-v']
+        ['node', 'program', '-v']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -665,7 +665,7 @@
             'kwarg'
           )
         ),
-        ['another-command']
+        ['node', 'program', 'another-command']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -689,7 +689,7 @@
             }
           )
         ),
-        ['-kthing', '-athing']
+        ['node', 'program', '-kthing', '-athing']
       );
 
       expect(tree).to.eql({
@@ -720,7 +720,7 @@
             }
           )
         ),
-        ['-k', 'thing', '-a', 'thing']
+        ['node', 'program', '-k', 'thing', '-a', 'thing']
       );
 
       expect(tree).to.eql({
@@ -753,7 +753,7 @@
             }
           )
         ),
-        ['-f', '-a']
+        ['node', 'program', '-f', '-a']
       );
 
       expect(tree).to.eql({
@@ -784,7 +784,7 @@
             }
           )
         ),
-        ['-fa']
+        ['node', 'program', '-fa']
       );
 
       expect(tree).to.eql({
@@ -820,7 +820,7 @@
             }
           )
         ),
-        ['-fk']
+        ['node', 'program', '-fk']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -838,7 +838,7 @@
             Command('command')
           )
         ),
-        []
+        ['node', 'program']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -859,7 +859,7 @@
             Command('required')
           )
         ),
-        ['not-required']
+        ['node', 'program', 'not-required']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -881,7 +881,7 @@
             )
           )
         ),
-        ['command']
+        ['node', 'program', 'command']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -900,7 +900,7 @@
             Command('command2')
           )
         ),
-        []
+        ['node', 'program']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -922,7 +922,7 @@
             Command('required2')
           )
         ),
-        ['not-required']
+        ['node', 'program', 'not-required']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -945,7 +945,7 @@
             )
           )
         ),
-        ['command']
+        ['node', 'program', 'command']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -978,7 +978,7 @@
             )
           )
         ),
-        ['command', '--kwarg1=value', 'arg1', 'arg2']
+        ['node', 'program', 'command', '--kwarg1=value', 'arg1', 'arg2']
       );
 
       expect(boundCollect).not.to.throw(anError);
@@ -1010,7 +1010,7 @@
             )
           )
         ),
-        ['--help']
+        ['node', 'program', '--help']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -1042,7 +1042,7 @@
             )
           )
         ),
-        ['command', '--help']
+        ['node', 'program', 'command', '--help']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -1069,7 +1069,7 @@
             )
           )
         ),
-        ['command', '-h']
+        ['node', 'program', 'command', '-h']
       );
 
       expect(boundCollect).to.throw(anError);
@@ -1103,7 +1103,7 @@
             )
           )
         ),
-        ['command', '--help']
+        ['node', 'program', 'command', '--help']
       );
 
       expect(boundCollect).not.to.throw(anError);
@@ -1137,7 +1137,7 @@
             )
           )
         ),
-        ['command', '-h']
+        ['node', 'program', 'command', '-h']
       );
 
       expect(boundCollect).not.to.throw(anError);
@@ -1160,7 +1160,7 @@
             )
           )
         ),
-        ['install', 'jargs', 'awesome']
+        ['node', 'program', 'install', 'jargs', 'awesome']
       );
 
       expect(result).to.eql({
@@ -1197,7 +1197,7 @@
             )
           )
         ),
-        ['install', '--input', 'jargs', '--input=awesome']
+        ['node', 'program', 'install', '--input', 'jargs', '--input=awesome']
       );
 
       expect(result).to.eql({
@@ -1233,7 +1233,7 @@
             )
           )
         ),
-        ['install', '--input=jargs', '-i', 'awesome']
+        ['node', 'program', 'install', '--input=jargs', '-i', 'awesome']
       );
 
       expect(result).to.eql({
