@@ -1253,6 +1253,52 @@
       });
     });
 
+    it('should collect rest arguments', function () {
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'run',
+            null,
+            Required(
+              Arg(
+                'command'
+              )
+            ),
+            KWArg(
+              'env',
+              {
+                alias: 'e'
+              }
+            )
+          )
+        ),
+        ['node', 'npm', 'run', '--env=development', 'manage.py', '--', 'command', '--flag']
+      );
+
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'run',
+          command: null,
+          kwargs: {
+            env: 'development'
+          },
+          flags: {},
+          args: {
+            command: 'manage.py'
+          },
+          rest: ['command', '--flag']
+        },
+        kwargs: {},
+        flags: {},
+        args: {},
+        rest: null
+      });
+
+    });
+
   });
 
 })();
