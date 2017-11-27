@@ -1,4 +1,4 @@
-/* global describe, beforeEach, afterEach, it, xit */
+/* global describe, beforeEach, afterEach, it */
 
 'use strict';
 
@@ -1135,12 +1135,114 @@
       expect(boundCollect).not.to.throw(anError);
     });
 
-    xit('should collect multiple Arg values', function () {
+    it('should collect multiple Arg values', function () {
+      // With nested nodes
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'install',
+            null,
+            Arg(
+              'lib',
+              {
+                multi: true
+              }
+            )
+          )
+        ),
+        ['install', 'jargs', 'awesome']
+      );
 
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'install',
+          command: null,
+          kwargs: {},
+          flags: {},
+          args: {
+            lib: ['jargs', 'awesome']
+          }
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
     });
 
-    xit('should collect multiple KWArg values', function () {
+    it('should collect multiple KWArg values', function () {
+      // With nested nodes
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'install',
+            null,
+            KWArg(
+              'input',
+              {
+                multi: true
+              }
+            )
+          )
+        ),
+        ['install', '--input', 'jargs', '--input=awesome']
+      );
 
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'install',
+          command: null,
+          kwargs: {
+            input: ['jargs', 'awesome']
+          },
+          flags: {},
+          args: {}
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
+
+      // With nested nodes
+      var result = collect(
+        Program(
+          'program',
+          null,
+          Command(
+            'install',
+            null,
+            KWArg(
+              'input',
+              {
+                alias: 'i',
+                multi: true
+              }
+            )
+          )
+        ),
+        ['install', '--input=jargs', '-i', 'awesome']
+      );
+
+      expect(result).to.eql({
+        name: 'program',
+        command: {
+          name: 'install',
+          command: null,
+          kwargs: {
+            input: ['jargs', 'awesome']
+          },
+          flags: {},
+          args: {}
+        },
+        kwargs: {},
+        flags: {},
+        args: {}
+      });
     });
 
   });
