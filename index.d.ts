@@ -45,6 +45,7 @@ declare module 'jargs' {
     alias?: string;
     options?: string[];
     type?: string;
+    multi?: boolean;
   }
 
   export interface FlagProps {
@@ -56,6 +57,7 @@ declare module 'jargs' {
     description?: string;
     options?: string[];
     type?: string;
+    multi?: boolean;
   }
 
   export interface Help {
