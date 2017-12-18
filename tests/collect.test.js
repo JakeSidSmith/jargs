@@ -363,6 +363,56 @@
       expect(result.command.args.arg2).to.equal('argygain');
     });
 
+    it('should call program and commands with tree, parentTree, and returned value', function () {
+      var programSpy = stub().returns(1);
+      var command1Spy = stub().returns(2);
+      var command2Spy = stub().returns(3);
+
+      var expected = {
+        name: 'program',
+        kwargs: {},
+        flags: {},
+        args: {},
+        command: {
+          name: 'command1',
+          kwargs: {},
+          flags: {},
+          args: {},
+          command: {
+            name: 'command2',
+            kwargs: {},
+            flags: {},
+            args: {}
+          }
+        }
+      };
+
+      var result = collect(
+        Program(
+          'program',
+          {callback: programSpy},
+          Command(
+            'command1',
+            {callback: command1Spy},
+            Command(
+              'command2',
+              {callback: command2Spy}
+            )
+          )
+        ),
+        ['node', 'program', 'command1', 'command2']
+      );
+
+      expect(result).to.eql(expected);
+
+      expect(programSpy).to.have.been.calledOnce;
+      expect(programSpy).to.have.been.calledWith(expected, undefined, undefined);
+      expect(command1Spy).to.have.been.calledOnce;
+      expect(command1Spy).to.have.been.calledWith(expected.command, expected, 1);
+      expect(command2Spy).to.have.been.calledOnce;
+      expect(command2Spy).to.have.been.calledWith(expected.command.command, expected.command, 2);
+    });
+
     it('should pass parent tree & returned value to subsequent callbacks', function () {
       var programSpy = stub().returns(1);
       var command1Spy = stub().returns(2);

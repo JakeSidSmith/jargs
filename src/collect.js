@@ -90,6 +90,10 @@
       args: {}
     };
 
+    if (parentTree) {
+      parentTree.command = tree;
+    }
+
     if (typeof schema.options.callback === 'function') {
       commands.push(schema.options.callback.bind(null, tree, parentTree));
     }
@@ -105,7 +109,7 @@
 
         // Valid command
         if (matchingCommand) {
-          tree.command = createTree(argv, matchingCommand, globals, commands, tree);
+          createTree(argv, matchingCommand, globals, commands, tree);
         } else {
           var matchingArg = find(schema.children, function (node) {
             return node._type === 'arg' && (node.options.multi || !(node.name in tree.args));
