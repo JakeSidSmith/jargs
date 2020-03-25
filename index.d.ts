@@ -12,12 +12,12 @@ declare module 'jargs' {
     [index: string]: true | undefined;
   }
 
-  export interface Tree<C extends Tree<any>> {
+  export interface Tree<C extends Tree<any>, K extends ArgsOrKWArgs = {}, F extends Flags = {}, A extends ArgsOrKWArgs = {}> {
     name: string;
     command?: C;
-    kwargs: ArgsOrKWArgs;
-    flags: Flags;
-    args: ArgsOrKWArgs;
+    kwargs: K;
+    flags: F;
+    args: A;
     rest?: Array<string>;
   }
 
