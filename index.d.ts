@@ -5,7 +5,7 @@ declare module 'jargs' {
   export function collect <T extends Tree>(rootNode: HelpOrProgram, argv: ReadonlyArray<string>): T;
 
   export interface ArgsOrKWArgs {
-    [index: string]: string | undefined | ReadonlyArray<undefined>;
+    [index: string]: string | undefined | ReadonlyArray<string>;
   }
 
   export interface Flags {
