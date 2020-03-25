@@ -2,10 +2,10 @@ declare module 'jargs' {
 
   export type HelpOrProgram = Help | Program;
 
-  export function collect <T extends Tree>(rootNode: HelpOrProgram, argv: string[]): T;
+  export function collect <T extends Tree>(rootNode: HelpOrProgram, argv: ReadonlyArray<string>): T;
 
   export interface ArgsOrKWArgs {
-    [index: string]: string | undefined | Array<undefined>;
+    [index: string]: string | undefined | ReadonlyArray<undefined>;
   }
 
   export interface Flags {
@@ -18,7 +18,7 @@ declare module 'jargs' {
     kwargs: K;
     flags: F;
     args: A;
-    rest?: Array<string>;
+    rest?: ReadonlyArray<string>;
   }
 
   export interface HelpProps {
@@ -29,7 +29,7 @@ declare module 'jargs' {
   export interface ProgramProps {
     description?: string;
     usage?: string;
-    examples?: string[];
+    examples?: ReadonlyArray<string>;
     callback?: <T extends Tree, P extends Tree = Tree, R = void>(tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
@@ -37,14 +37,14 @@ declare module 'jargs' {
     description?: string;
     alias?: string;
     usage?: string;
-    examples?: string[];
+    examples?: ReadonlyArray<string>;
     callback?: <T extends Tree, P extends Tree = Tree, R = void>(tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
   export interface KWArgProps {
     description?: string;
     alias?: string;
-    options?: string[];
+    options?: ReadonlyArray<string>;
     type?: string;
     multi?: boolean;
   }
@@ -56,7 +56,7 @@ declare module 'jargs' {
 
   export interface ArgProps {
     description?: string;
-    options?: string[];
+    options?: ReadonlyArray<string>;
     type?: string;
     multi?: boolean;
   }
@@ -71,18 +71,18 @@ declare module 'jargs' {
     _type: 'program';
     name: string;
     options: ProgramProps;
-    _requireAll: ProgramOrCommandChild[];
-    _requireAny: ProgramOrCommandChild[];
-    children: ProgramOrCommandChild[];
+    _requireAll: ReadonlyArray<ProgramOrCommandChild>;
+    _requireAny: ReadonlyArray<ProgramOrCommandChild>;
+    children: ReadonlyArray<ProgramOrCommandChild>;
   }
 
   export interface Command {
     _type: 'command';
     name: string;
     options: CommandProps;
-    _requireAll: ProgramOrCommandChild[];
-    _requireAny: ProgramOrCommandChild[];
-    children: ProgramOrCommandChild[];
+    _requireAll: ReadonlyArray<ProgramOrCommandChild>;
+    _requireAny: ReadonlyArray<ProgramOrCommandChild>;
+    children: ReadonlyArray<ProgramOrCommandChild>;
   }
 
   export interface KWArg {
@@ -105,17 +105,17 @@ declare module 'jargs' {
 
   export interface Required {
     _type: 'required';
-    children: RequiredChild[];
+    children: ReadonlyArray<RequiredChild>;
   }
 
   export interface RequireAll {
     _type: 'require-all';
-    children: RequiredChild[];
+    children: ReadonlyArray<RequiredChild>;
   }
 
   export interface RequireAny {
     _type: 'require-any';
-    children: RequiredChild[];
+    children: ReadonlyArray<RequiredChild>;
   }
 
   export type RequiredChild =
@@ -134,13 +134,13 @@ declare module 'jargs' {
     RequireAny;
 
   export function Help (name: string, props: HelpProps | null | undefined, program: Program): Help;
-  export function Program (name: string, props?: ProgramProps | null, ...nodes: ProgramOrCommandChild[]): Program;
-  export function Command (name: string, props?: CommandProps | null, ...nodes: ProgramOrCommandChild[]): Command;
+  export function Program (name: string, props?: ProgramProps | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Program;
+  export function Command (name: string, props?: CommandProps | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Command;
   export function KWArg (name: string, props?: KWArgProps | null): KWArg;
   export function Flag (name: string, props?: FlagProps | null): Flag;
   export function Arg (name: string, props?: ArgProps | null): Arg;
   export function Required (node: RequiredChild): Required;
-  export function RequireAll (...nodes: RequiredChild[]): RequireAll;
-  export function RequireAny (...nodes: RequiredChild[]): RequireAny;
+  export function RequireAll (...nodes: ReadonlyArray<RequiredChild>): RequireAll;
+  export function RequireAny (...nodes: ReadonlyArray<RequiredChild>): RequireAny;
 
 }
