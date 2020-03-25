@@ -2,7 +2,7 @@ declare module 'jargs' {
 
   export type HelpOrProgram = Help | Program;
 
-  export function collect (rootNode: HelpOrProgram, argv: string[]): Tree;
+  export function collect <T extends Tree<any>>(rootNode: HelpOrProgram, argv: string[]): T;
 
   export interface ArgsOrKWArgs {
     [index: string]: string | undefined | Array<string | undefined>;
@@ -12,9 +12,9 @@ declare module 'jargs' {
     [index: string]: true | undefined;
   }
 
-  export interface Tree {
+  export interface Tree<C extends Tree<any>> {
     name: string;
-    command?: Tree;
+    command?: C;
     kwargs: ArgsOrKWArgs;
     flags: Flags;
     args: ArgsOrKWArgs;
@@ -30,7 +30,7 @@ declare module 'jargs' {
     description?: string;
     usage?: string;
     examples?: string[];
-    callback?: (tree: Tree, parentTree?: Tree, returned?: any) => any;
+    callback?: <T extends Tree<any>, P extends Tree<any>>(tree: T, parentTree?: P, returned?: any) => any;
   }
 
   export interface CommandProps {
@@ -38,7 +38,7 @@ declare module 'jargs' {
     alias?: string;
     usage?: string;
     examples?: string[];
-    callback?: (tree: Tree, parentTree?: Tree, returned?: any) => any;
+    callback?: <T extends Tree<any>, P extends Tree<any>>(tree: T, parentTree?: P, returned?: any) => any;
   }
 
   export interface KWArgProps {
