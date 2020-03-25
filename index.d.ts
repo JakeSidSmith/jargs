@@ -2,23 +2,23 @@ declare module 'jargs' {
 
   export type HelpOrProgram = Help | Program;
 
-  export function collect (rootNode: HelpOrProgram, argv: string[]): Tree;
+  export function collect <T extends Tree<undefined>>(rootNode: HelpOrProgram, argv: string[]): T;
 
   export interface ArgsOrKWArgs {
-    [index: string]: string | undefined | Array<string | undefined>;
+    [index: string]: string | undefined | Array<undefined>;
   }
 
   export interface Flags {
     [index: string]: true | undefined;
   }
 
-  export interface Tree {
+  export interface Tree<C extends Tree<undefined>, K extends ArgsOrKWArgs = {}, F extends Flags = {}, A extends ArgsOrKWArgs = {}> {
     name: string;
-    command?: Tree;
-    kwargs: ArgsOrKWArgs;
-    flags: Flags;
-    args: ArgsOrKWArgs;
-    rest?: Array<string | undefined>;
+    command?: C;
+    kwargs: K;
+    flags: F;
+    args: A;
+    rest?: Array<string>;
   }
 
   export interface HelpProps {
@@ -30,7 +30,7 @@ declare module 'jargs' {
     description?: string;
     usage?: string;
     examples?: string[];
-    callback?: (tree: Tree, parentTree?: Tree, returned?: any) => any;
+    callback?: <T extends Tree<undefined>, P extends Tree<undefined> = Tree<undefined>, R = void>(tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
   export interface CommandProps {
@@ -38,7 +38,7 @@ declare module 'jargs' {
     alias?: string;
     usage?: string;
     examples?: string[];
-    callback?: (tree: Tree, parentTree?: Tree, returned?: any) => any;
+    callback?: <T extends Tree<undefined>, P extends Tree<undefined> = Tree<undefined>, R = void>(tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
   export interface KWArgProps {
