@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "pretty": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["./index.d.ts"]
+}
