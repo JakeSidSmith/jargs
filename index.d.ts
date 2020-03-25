@@ -26,19 +26,19 @@ declare module 'jargs' {
     alias?: string;
   }
 
-  export interface ProgramProps {
+  export interface ProgramProps<T extends Tree = Tree, P extends Tree | undefined = undefined, R = void> {
     description?: string;
     usage?: string;
     examples?: ReadonlyArray<string>;
-    callback?: <T extends Tree, P extends Tree = Tree, R = void>(tree: T, parentTree?: P, parentReturned?: R) => void;
+    callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
-  export interface CommandProps {
+  export interface CommandProps<T extends Tree = Tree, P extends Tree | undefined = undefined, R = void> {
     description?: string;
     alias?: string;
     usage?: string;
     examples?: ReadonlyArray<string>;
-    callback?: <T extends Tree, P extends Tree = Tree, R = void>(tree: T, parentTree?: P, parentReturned?: R) => void;
+    callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
   export interface KWArgProps {
@@ -134,8 +134,8 @@ declare module 'jargs' {
     RequireAny;
 
   export function Help (name: string, props: HelpProps | null | undefined, program: Program): Help;
-  export function Program (name: string, props?: ProgramProps | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Program;
-  export function Command (name: string, props?: CommandProps | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Command;
+  export function Program <T extends Tree = Tree, P extends Tree | undefined = undefined, R = void>(name: string, props?: ProgramProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Program;
+  export function Command <T extends Tree = Tree, P extends Tree | undefined = undefined, R = void>(name: string, props?: CommandProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Command;
   export function KWArg (name: string, props?: KWArgProps | null): KWArg;
   export function Flag (name: string, props?: FlagProps | null): Flag;
   export function Arg (name: string, props?: ArgProps | null): Arg;
