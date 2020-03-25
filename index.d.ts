@@ -5,7 +5,7 @@ declare module 'jargs' {
   export function collect <T extends Tree<any>>(rootNode: HelpOrProgram, argv: string[]): T;
 
   export interface ArgsOrKWArgs {
-    [index: string]: string | undefined | Array<string | undefined>;
+    [index: string]: string | undefined | Array<string>;
   }
 
   export interface Flags {
@@ -18,7 +18,7 @@ declare module 'jargs' {
     kwargs: ArgsOrKWArgs;
     flags: Flags;
     args: ArgsOrKWArgs;
-    rest?: Array<string | undefined>;
+    rest?: Array<string>;
   }
 
   export interface HelpProps {
