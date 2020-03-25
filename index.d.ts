@@ -30,7 +30,7 @@ declare module 'jargs' {
     description?: string;
     usage?: string;
     examples?: string[];
-    callback?: <T extends Tree<undefined>, P extends Tree<undefined>>(tree: T, parentTree?: P, returned?: any) => any;
+    callback?: <T extends Tree<undefined>, P extends Tree<undefined>>(tree: T, parentTree?: P, returned?: any) => void;
   }
 
   export interface CommandProps {
@@ -38,7 +38,7 @@ declare module 'jargs' {
     alias?: string;
     usage?: string;
     examples?: string[];
-    callback?: <T extends Tree<undefined>, P extends Tree<undefined>>(tree: T, parentTree?: P, returned?: any) => any;
+    callback?: <T extends Tree<undefined>, P extends Tree<undefined>>(tree: T, parentTree?: P, returned?: any) => void;
   }
 
   export interface KWArgProps {
