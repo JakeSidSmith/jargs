@@ -2,7 +2,7 @@ declare module 'jargs' {
 
   export type HelpOrProgram = Help | Program;
 
-  export function collect <T extends Tree>(rootNode: HelpOrProgram, argv: ReadonlyArray<string>): T;
+  export function collect <T extends InferTree<Tree>>(rootNode: HelpOrProgram, argv: ReadonlyArray<string>): T;
 
   export interface ArgsOrKWArgs {
     [index: string]: string | undefined | ReadonlyArray<string>;
@@ -12,7 +12,9 @@ declare module 'jargs' {
     [index: string]: true | undefined;
   }
 
-  export interface Tree<C extends Tree | undefined = undefined, K extends ArgsOrKWArgs = {}, F extends Flags = {}, A extends ArgsOrKWArgs = {}> {
+  export type InferTree<T extends Tree<infer C>> = Tree<C>;
+
+  export interface Tree<C extends InferTree<Tree> | undefined = undefined, K extends ArgsOrKWArgs = {}, F extends Flags = {}, A extends ArgsOrKWArgs = {}> {
     name: string;
     command?: C;
     kwargs: K;
@@ -26,14 +28,14 @@ declare module 'jargs' {
     alias?: string;
   }
 
-  export interface ProgramProps<T extends Tree = Tree, P extends Tree | undefined = undefined, R = void> {
+  export interface ProgramProps<T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void> {
     description?: string;
     usage?: string;
     examples?: ReadonlyArray<string>;
     callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
-  export interface CommandProps<T extends Tree = Tree, P extends Tree | undefined = undefined, R = void> {
+  export interface CommandProps<T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void> {
     description?: string;
     alias?: string;
     usage?: string;
@@ -134,8 +136,8 @@ declare module 'jargs' {
     RequireAny;
 
   export function Help (name: string, props: HelpProps | null | undefined, program: Program): Help;
-  export function Program <T extends Tree<C> = Tree<C>, C extends Tree | undefined = T extends Tree<infer V> ? V : undefined, P extends Tree | undefined = undefined, R = void>(name: string, props?: ProgramProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Program;
-  export function Command <T extends Tree<C> = Tree<C>, C extends Tree | undefined = T extends Tree<infer V> ? V : undefined, P extends Tree | undefined = undefined, R = void>(name: string, props?: CommandProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Command;
+  export function Program <T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void>(name: string, props?: ProgramProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Program;
+  export function Command <T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void>(name: string, props?: CommandProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Command;
   export function KWArg (name: string, props?: KWArgProps | null): KWArg;
   export function Flag (name: string, props?: FlagProps | null): Flag;
   export function Arg (name: string, props?: ArgProps | null): Arg;
