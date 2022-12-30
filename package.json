@@ -32,7 +32,7 @@
     "chai": "^3.5.0",
     "eslint": "^3.19.0",
     "eslint-config-jakesidsmith": "github:jakesidsmith/eslint-config-jakesidsmith#v2.2.1",
-    "mocha": "^7.1.1",
+    "mocha": "^10.2.0",
     "nyc": "^15.0.0",
     "sinon": "^1.17.7",
     "sinon-chai": "^2.14.0",
