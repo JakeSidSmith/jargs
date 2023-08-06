@@ -8,7 +8,8 @@
   "plugins": ["prettier", "simple-import-sort"],
   "env": {
     "es6": true,
-    "commonjs": true
+    "commonjs": true,
+    "node": true
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
