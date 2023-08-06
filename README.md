@@ -30,7 +30,7 @@ import {
   Arg,
   Required,
   RequireAll,
-  RequireAny
+  RequireAny,
 } from 'jargs';
 ```
 
@@ -49,33 +49,17 @@ const tree = collect(
       'npm',
       null,
       RequireAny(
+        Command('init'),
         Command(
-          'init'
+          'install',
+          { alias: 'i' },
+          Arg('lib'),
+          Flag('save', { alias: 'S' }),
+          Flag('save-dev', { alias: 'D' }),
+          Flag('save-exact', { alias: 'E' }),
+          Flag('save-optional', { alias: 'O' })
         ),
-        Command(
-          'install', {alias: 'i'},
-          Arg(
-            'lib'
-          ),
-          Flag(
-            'save', {alias: 'S'}
-          ),
-          Flag(
-            'save-dev', {alias: 'D'}
-          ),
-          Flag(
-            'save-exact', {alias: 'E'}
-          ),
-          Flag(
-            'save-optional', {alias: 'O'}
-          )
-        ),
-        Command(
-          'run', {alias: 'run-scripts'},
-          Arg(
-            'command'
-          )
-        )
+        Command('run', { alias: 'run-scripts' }, Arg('command'))
       )
     )
   ),
@@ -120,12 +104,9 @@ Calling the command `npm install jargs --save` returns the following.
 If we set the `lib` `Arg` to `multi: true`, then we can supply multiple args and they will be added to an array.
 
 ```javascript
-Arg(
-  'lib',
-  {
-    multi: true
-  }
-)
+Arg('lib', {
+  multi: true,
+});
 ```
 
 Calling the command `npm install jargs another-lib --save` with `mutli` returns the following.
@@ -170,7 +151,7 @@ if (tree.command) {
       // Install stuff
       break;
     default:
-      // This should never be hit since we check for the command existence first
+    // This should never be hit since we check for the command existence first
   }
 }
 ```
@@ -354,13 +335,10 @@ Note: if you provide another flag / kwarg node with the same name or alias as th
 This allows you to override the help output, and output some custom usage info.
 
 ```javascript
-Help(
-  'help',
-  {
-    alias: 'h', // default: undefined
-    description: 'Display help & usage' // default: empty string
-  }
-)
+Help('help', {
+  alias: 'h', // default: undefined
+  description: 'Display help & usage', // default: empty string
+});
 ```
 
 ### Require Nodes
@@ -374,9 +352,7 @@ Note: you cannot require more than one Command at the same level unless you use 
 Takes a single node as an argument and ensures it is supplied.
 
 ```javascript
-Required(
-  Arg('arg-name')
-)
+Required(Arg('arg-name'));
 ```
 
 #### RequireAll
@@ -384,10 +360,7 @@ Required(
 Takes any number of nodes as arguments and ensures they are all supplied.
 
 ```javascript
-RequireAll(
-  KWArg('kwarg-name'),
-  Arg('arg-name')
-)
+RequireAll(KWArg('kwarg-name'), Arg('arg-name'));
 ```
 
 #### RequireAny
@@ -395,10 +368,7 @@ RequireAll(
 Takes any number of nodes as arguments, and ensures that one of them is supplied.
 
 ```javascript
-RequireAny(
-  Command('command1'),
-  Command('command2')
-)
+RequireAny(Command('command1'), Command('command2'));
 ```
 
 ### Callbacks
@@ -429,16 +399,12 @@ Program(
       */
 
       return 'Hello, World!';
-    }
+    },
   },
-  KWArg(
-    'kwarg'
-  ),
-  Command(
-    'command',
-    {
-      callback: function (tree, parentTree, data) {
-        /*
+  KWArg('kwarg'),
+  Command('command', {
+    callback: function (tree, parentTree, data) {
+      /*
 
       tree = {
         name: 'command',
@@ -460,10 +426,9 @@ Program(
       data = 'Hello, World!';
 
       */
-      }
-    }
-  )
-)
+    },
+  })
+);
 ```
 
 ## Command examples
@@ -502,44 +467,18 @@ const tree = collect(
     'naval_fate',
     null,
     Command(
-      'ship', null,
+      'ship',
+      null,
       RequireAny(
-        Arg(
-          'shipName'
-        ),
-        Command(
-          'new', null,
-          Required(
-            Arg(
-              'shipName'
-            )
-          )
-        ),
-        Command(
-          'shoot', null,
-          RequireAll(
-            Arg(
-              'shootX'
-            ),
-            Arg(
-              'shootY'
-            )
-          )
-        )
+        Arg('shipName'),
+        Command('new', null, Required(Arg('shipName'))),
+        Command('shoot', null, RequireAll(Arg('shootX'), Arg('shootY')))
       ),
       Command(
-        'move', null,
-        RequireAll(
-          Arg(
-            'moveX'
-          ),
-          Arg(
-            'moveY'
-          )
-        ),
-        KWArg(
-          'speed'
-        )
+        'move',
+        null,
+        RequireAll(Arg('moveX'), Arg('moveY')),
+        KWArg('speed')
       )
     )
   ),

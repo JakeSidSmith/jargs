@@ -3,13 +3,11 @@
 'use strict';
 
 (function () {
-
   var expect = require('chai').expect;
 
   var index = require('../src/index');
 
   describe('index.js', function () {
-
     it('should export some stuff', function () {
       var keyTypeMap = {
         collect: 'function',
@@ -21,7 +19,7 @@
         Arg: 'function',
         Required: 'function',
         RequireAll: 'function',
-        RequireAny: 'function'
+        RequireAny: 'function',
       };
 
       expect(index).to.be.ok;
@@ -31,7 +29,5 @@
         expect(typeof index[key]).to.equal(keyTypeMap[key]);
       }
     });
-
   });
-
 })();

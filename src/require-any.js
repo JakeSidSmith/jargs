@@ -1,17 +1,11 @@
 'use strict';
 
 (function () {
-
   var utils = require('./utils');
 
-  var VALID_CHILD_NODES = [
-    'arg',
-    'flag',
-    'kwarg',
-    'command'
-  ];
+  var VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
 
-  function RequireAny () {
+  function RequireAny() {
     var children = utils.argsToArray(arguments);
 
     if (!children.length) {
@@ -19,17 +13,18 @@
     }
 
     if (children.length < 2) {
-      throw new Error('Only one child node supplied to RequireAny node. Use Require node');
+      throw new Error(
+        'Only one child node supplied to RequireAny node. Use Require node'
+      );
     }
 
     utils.validateChildren(children, VALID_CHILD_NODES);
 
     return {
       _type: 'require-any',
-      children: children
+      children: children,
     };
   }
 
   module.exports = RequireAny;
-
 })();

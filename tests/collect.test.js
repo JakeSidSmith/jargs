@@ -3,7 +3,6 @@
 'use strict';
 
 (function () {
-
   var expect = require('chai').expect;
   var sinon = require('sinon');
   var stub = sinon.stub;
@@ -22,8 +21,7 @@
   var utils = require('../src/utils');
 
   describe('collect.js', function () {
-
-    function throwError (error) {
+    function throwError(error) {
       throw new Error(error);
     }
 
@@ -47,7 +45,6 @@
 
       // Without tree
       expect(collect).to.throw(anError);
-
     });
 
     it('should throw an error if root node is not a Program', function () {
@@ -57,7 +54,6 @@
 
       // Without tree
       expect(boundCollect).to.throw(anError);
-
     });
 
     it('should throw an error if there are too many arguments', function () {
@@ -67,7 +63,6 @@
 
       // Without tree
       expect(boundCollect).to.throw(anError);
-
     });
 
     it('should throw an error if the argv is undefined', function () {
@@ -96,38 +91,26 @@
 
     it('should return an arg tree when no args provided', function () {
       // With tree
-      var result = collect(
-        Program(
-          'program',
-          null,
-          Command(
-            'install'
-          )
-        ),
-        ['node', 'program']
-      );
+      var result = collect(Program('program', null, Command('install')), [
+        'node',
+        'program',
+      ]);
 
       expect(result).to.eql({
         name: 'program',
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
-
     });
 
     it('should return an arg tree for single command schema', function () {
       // With single node
-      var result = collect(
-        Program(
-          'program',
-          null,
-          Command(
-            'install'
-          )
-        ),
-        ['node', 'program', 'install']
-      );
+      var result = collect(Program('program', null, Command('install')), [
+        'node',
+        'program',
+        'install',
+      ]);
 
       expect(result).to.eql({
         name: 'program',
@@ -135,29 +118,18 @@
           name: 'install',
           kwargs: {},
           flags: {},
-          args: {}
+          args: {},
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
-
     });
 
     it('should return an arg tree with nested schema', function () {
       // With nested nodes
       var result = collect(
-        Program(
-          'program',
-          null,
-          Command(
-            'install',
-            null,
-            Arg(
-              'lib'
-            )
-          )
-        ),
+        Program('program', null, Command('install', null, Arg('lib'))),
         ['node', 'program', 'install', 'jargs']
       );
 
@@ -168,12 +140,12 @@
           kwargs: {},
           flags: {},
           args: {
-            lib: 'jargs'
-          }
+            lib: 'jargs',
+          },
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
     });
 
@@ -183,16 +155,7 @@
         Program(
           'program',
           null,
-          Command(
-            'install',
-            null,
-            Arg(
-              'lib'
-            ),
-            Flag(
-              'save'
-            )
-          )
+          Command('install', null, Arg('lib'), Flag('save'))
         ),
         ['node', 'program', 'install', 'jargs', '--save']
       );
@@ -203,15 +166,15 @@
           name: 'install',
           kwargs: {},
           flags: {
-            save: true
+            save: true,
           },
           args: {
-            lib: 'jargs'
-          }
+            lib: 'jargs',
+          },
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
     });
 
@@ -221,34 +184,34 @@
         Program(
           'program',
           null,
-          Arg(
-            'input'
-          ),
-          Flag(
-            'verbose'
-          ),
-          KWArg(
-            'outfile'
-          ),
-          KWArg(
-            'transform'
-          )
+          Arg('input'),
+          Flag('verbose'),
+          KWArg('outfile'),
+          KWArg('transform')
         ),
-        ['node', 'program', '--transform', 'babelify', '--verbose', '--outfile=build/index.js', 'src/index.js']
+        [
+          'node',
+          'program',
+          '--transform',
+          'babelify',
+          '--verbose',
+          '--outfile=build/index.js',
+          'src/index.js',
+        ]
       );
 
       expect(result).to.eql({
         name: 'program',
         kwargs: {
           transform: 'babelify',
-          outfile: 'build/index.js'
+          outfile: 'build/index.js',
         },
         flags: {
-          verbose: true
+          verbose: true,
         },
         args: {
-          input: 'src/index.js'
-        }
+          input: 'src/index.js',
+        },
       });
     });
 
@@ -257,16 +220,8 @@
         Program(
           'program',
           null,
-          Arg(
-            'arg1'
-          ),
-          Command(
-            'command',
-            null,
-            Arg(
-              'arg2'
-            )
-          )
+          Arg('arg1'),
+          Command('command', null, Arg('arg2'))
         ),
         ['node', 'program', 'command', 'command']
       );
@@ -278,12 +233,12 @@
           kwargs: {},
           flags: {},
           args: {
-            arg2: 'command'
-          }
+            arg2: 'command',
+          },
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
     });
 
@@ -292,16 +247,8 @@
         Program(
           'program',
           null,
-          Arg(
-            'arg1'
-          ),
-          Command(
-            'command',
-            null,
-            Arg(
-              'arg2'
-            )
-          )
+          Arg('arg1'),
+          Command('command', null, Arg('arg2'))
         ),
         ['node', 'program', 'not-a-command']
       );
@@ -311,8 +258,8 @@
         kwargs: {},
         flags: {},
         args: {
-          arg1: 'not-a-command'
-        }
+          arg1: 'not-a-command',
+        },
       });
     });
 
@@ -325,27 +272,14 @@
       var result = collect(
         Program(
           'program',
-          {callback: programSpy},
-          Arg(
-            'arg1'
-          ),
-          Command(
-            'command1',
-            {callback: command1Spy},
-            Arg(
-              'arg3'
-            )
-          ),
+          { callback: programSpy },
+          Arg('arg1'),
+          Command('command1', { callback: command1Spy }, Arg('arg3')),
           Command(
             'command2',
-            {callback: command2Spy},
-            Arg(
-              'arg2'
-            ),
-            Command(
-              'command3',
-              {callback: command3Spy}
-            )
+            { callback: command2Spy },
+            Arg('arg2'),
+            Command('command3', { callback: command3Spy })
           )
         ),
         ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
@@ -382,22 +316,19 @@
             name: 'command2',
             kwargs: {},
             flags: {},
-            args: {}
-          }
-        }
+            args: {},
+          },
+        },
       };
 
       var result = collect(
         Program(
           'program',
-          {callback: programSpy},
+          { callback: programSpy },
           Command(
             'command1',
-            {callback: command1Spy},
-            Command(
-              'command2',
-              {callback: command2Spy}
-            )
+            { callback: command1Spy },
+            Command('command2', { callback: command2Spy })
           )
         ),
         ['node', 'program', 'command1', 'command2']
@@ -406,11 +337,23 @@
       expect(result).to.eql(expected);
 
       expect(programSpy).to.have.been.calledOnce;
-      expect(programSpy).to.have.been.calledWith(expected, undefined, undefined);
+      expect(programSpy).to.have.been.calledWith(
+        expected,
+        undefined,
+        undefined
+      );
       expect(command1Spy).to.have.been.calledOnce;
-      expect(command1Spy).to.have.been.calledWith(expected.command, expected, 1);
+      expect(command1Spy).to.have.been.calledWith(
+        expected.command,
+        expected,
+        1
+      );
       expect(command2Spy).to.have.been.calledOnce;
-      expect(command2Spy).to.have.been.calledWith(expected.command.command, expected.command, 2);
+      expect(command2Spy).to.have.been.calledWith(
+        expected.command.command,
+        expected.command,
+        2
+      );
     });
 
     it('should pass parent tree & returned value to subsequent callbacks', function () {
@@ -422,27 +365,14 @@
       var result = collect(
         Program(
           'program',
-          {callback: programSpy},
-          Arg(
-            'arg1'
-          ),
-          Command(
-            'command1',
-            {callback: command1Spy},
-            Arg(
-              'arg3'
-            )
-          ),
+          { callback: programSpy },
+          Arg('arg1'),
+          Command('command1', { callback: command1Spy }, Arg('arg3')),
           Command(
             'command2',
-            {callback: command2Spy},
-            Arg(
-              'arg2'
-            ),
-            Command(
-              'command3',
-              {callback: command3Spy}
-            )
+            { callback: command2Spy },
+            Arg('arg2'),
+            Command('command3', { callback: command3Spy })
           )
         ),
         ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
@@ -453,7 +383,11 @@
       expect(command2Spy).to.have.been.calledOnce;
       expect(command2Spy).to.have.been.calledWith(result.command, result, 1);
       expect(command3Spy).to.have.been.calledOnce;
-      expect(command3Spy).to.have.been.calledWith(result.command.command, result.command, 3);
+      expect(command3Spy).to.have.been.calledWith(
+        result.command.command,
+        result.command,
+        3
+      );
       expect(command1Spy).not.to.have.been.called;
     });
 
@@ -465,25 +399,24 @@
           null,
           Command(
             'build',
-            {alias: 'b'},
-            Arg(
-              'input'
-            ),
-            Flag(
-              'verbose',
-              {alias: 'v'}
-            ),
-            KWArg(
-              'outfile',
-              {alias: 'o'}
-            ),
-            KWArg(
-              'transform',
-              {alias: 't'}
-            )
+            { alias: 'b' },
+            Arg('input'),
+            Flag('verbose', { alias: 'v' }),
+            KWArg('outfile', { alias: 'o' }),
+            KWArg('transform', { alias: 't' })
           )
         ),
-        ['node', 'program', 'b', '-t', 'babelify', '-v', '-o', 'build/index.js', 'src/index.js']
+        [
+          'node',
+          'program',
+          'b',
+          '-t',
+          'babelify',
+          '-v',
+          '-o',
+          'build/index.js',
+          'src/index.js',
+        ]
       );
 
       expect(result).to.eql({
@@ -492,18 +425,18 @@
           name: 'build',
           kwargs: {
             transform: 'babelify',
-            outfile: 'build/index.js'
+            outfile: 'build/index.js',
           },
           flags: {
-            verbose: true
+            verbose: true,
           },
           args: {
-            input: 'src/index.js'
-          }
+            input: 'src/index.js',
+          },
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
     });
 
@@ -512,16 +445,7 @@
 
       var boundCollect = collect.bind(
         null,
-        Program(
-          'program',
-          null,
-          Arg(
-            'arg'
-          ),
-          KWArg(
-            'kwarg'
-          )
-        ),
+        Program('program', null, Arg('arg'), KWArg('kwarg')),
         ['node', 'program', '--kwarg=', 'invalid']
       );
 
@@ -534,16 +458,7 @@
 
       var boundCollect = collect.bind(
         null,
-        Program(
-          'program',
-          null,
-          Arg(
-            'arg'
-          ),
-          KWArg(
-            'kwarg'
-          )
-        ),
+        Program('program', null, Arg('arg'), KWArg('kwarg')),
         ['node', 'program', '--kwarg']
       );
 
@@ -559,15 +474,10 @@
         Program(
           'program',
           null,
-          Arg(
-            'arg'
-          ),
-          KWArg(
-            'kwarg',
-            {
-              alias: 'k'
-            }
-          )
+          Arg('arg'),
+          KWArg('kwarg', {
+            alias: 'k',
+          })
         ),
         ['node', 'program', '-k=invalid']
       );
@@ -580,16 +490,7 @@
 
       var boundCollect = collect.bind(
         null,
-        Program(
-          'program',
-          null,
-          Arg(
-            'arg'
-          ),
-          KWArg(
-            'kwarg'
-          )
-        ),
+        Program('program', null, Arg('arg'), KWArg('kwarg')),
         ['node', 'program', '--kwarg=correct', '--kwarg=incorrect']
       );
 
@@ -601,16 +502,7 @@
 
       var boundCollect = collect.bind(
         null,
-        Program(
-          'program',
-          null,
-          Arg(
-            'arg'
-          ),
-          Flag(
-            'flag'
-          )
-        ),
+        Program('program', null, Arg('arg'), Flag('flag')),
         ['node', 'program', '--flag', '--flag']
       );
 
@@ -625,15 +517,10 @@
         Program(
           'program',
           null,
-          Arg(
-            'arg'
-          ),
-          Flag(
-            'flag',
-            {
-              alias: 'f'
-            }
-          )
+          Arg('arg'),
+          Flag('flag', {
+            alias: 'f',
+          })
         ),
         ['node', 'program', '--flag', '-f']
       );
@@ -646,19 +533,7 @@
 
       var boundCollect = collect.bind(
         null,
-        Program(
-          'program',
-          null,
-          Arg(
-            'arg'
-          ),
-          Flag(
-            'flag'
-          ),
-          KWArg(
-            'kwarg'
-          )
-        ),
+        Program('program', null, Arg('arg'), Flag('flag'), KWArg('kwarg')),
         ['node', 'program', '--version']
       );
 
@@ -670,19 +545,7 @@
 
       var boundCollect = collect.bind(
         null,
-        Program(
-          'program',
-          null,
-          Arg(
-            'arg'
-          ),
-          Flag(
-            'flag'
-          ),
-          KWArg(
-            'kwarg'
-          )
-        ),
+        Program('program', null, Arg('arg'), Flag('flag'), KWArg('kwarg')),
         ['node', 'program', '-v']
       );
 
@@ -697,15 +560,9 @@
         Program(
           'program',
           null,
-          Command(
-            'command'
-          ),
-          Flag(
-            'flag'
-          ),
-          KWArg(
-            'kwarg'
-          )
+          Command('command'),
+          Flag('flag'),
+          KWArg('kwarg')
         ),
         ['node', 'program', 'another-command']
       );
@@ -718,18 +575,12 @@
         Program(
           'program',
           null,
-          KWArg(
-            'kwarg',
-            {
-              alias: 'k'
-            }
-          ),
-          KWArg(
-            'another-kwarg',
-            {
-              alias: 'a'
-            }
-          )
+          KWArg('kwarg', {
+            alias: 'k',
+          }),
+          KWArg('another-kwarg', {
+            alias: 'a',
+          })
         ),
         ['node', 'program', '-kthing', '-athing']
       );
@@ -738,28 +589,22 @@
         name: 'program',
         kwargs: {
           kwarg: 'thing',
-          'another-kwarg': 'thing'
+          'another-kwarg': 'thing',
         },
         flags: {},
-        args: {}
+        args: {},
       });
 
       tree = collect(
         Program(
           'program',
           null,
-          KWArg(
-            'kwarg',
-            {
-              alias: 'k'
-            }
-          ),
-          KWArg(
-            'another-kwarg',
-            {
-              alias: 'a'
-            }
-          )
+          KWArg('kwarg', {
+            alias: 'k',
+          }),
+          KWArg('another-kwarg', {
+            alias: 'a',
+          })
         ),
         ['node', 'program', '-k', 'thing', '-a', 'thing']
       );
@@ -768,10 +613,10 @@
         name: 'program',
         kwargs: {
           kwarg: 'thing',
-          'another-kwarg': 'thing'
+          'another-kwarg': 'thing',
         },
         flags: {},
-        args: {}
+        args: {},
       });
     });
 
@@ -780,18 +625,12 @@
         Program(
           'program',
           null,
-          Flag(
-            'flag',
-            {
-              alias: 'f'
-            }
-          ),
-          Flag(
-            'another-flag',
-            {
-              alias: 'a'
-            }
-          )
+          Flag('flag', {
+            alias: 'f',
+          }),
+          Flag('another-flag', {
+            alias: 'a',
+          })
         ),
         ['node', 'program', '-f', '-a']
       );
@@ -801,27 +640,21 @@
         kwargs: {},
         flags: {
           flag: true,
-          'another-flag': true
+          'another-flag': true,
         },
-        args: {}
+        args: {},
       });
 
       tree = collect(
         Program(
           'program',
           null,
-          Flag(
-            'flag',
-            {
-              alias: 'f'
-            }
-          ),
-          Flag(
-            'another-flag',
-            {
-              alias: 'a'
-            }
-          )
+          Flag('flag', {
+            alias: 'f',
+          }),
+          Flag('another-flag', {
+            alias: 'a',
+          })
         ),
         ['node', 'program', '-fa']
       );
@@ -831,9 +664,9 @@
         kwargs: {},
         flags: {
           flag: true,
-          'another-flag': true
+          'another-flag': true,
         },
-        args: {}
+        args: {},
       });
     });
 
@@ -845,18 +678,12 @@
         Program(
           'program',
           null,
-          Flag(
-            'flag',
-            {
-              alias: 'f'
-            }
-          ),
-          KWArg(
-            'kwarg',
-            {
-              alias: 'k'
-            }
-          )
+          Flag('flag', {
+            alias: 'f',
+          }),
+          KWArg('kwarg', {
+            alias: 'k',
+          })
         ),
         ['node', 'program', '-fk']
       );
@@ -869,13 +696,7 @@
 
       var boundCollect = collect.bind(
         null,
-        Program(
-          'program',
-          null,
-          Required(
-            Command('command')
-          )
-        ),
+        Program('program', null, Required(Command('command'))),
         ['node', 'program']
       );
 
@@ -890,12 +711,8 @@
         Program(
           'program',
           null,
-          Command(
-            'not-required'
-          ),
-          Required(
-            Command('required')
-          )
+          Command('not-required'),
+          Required(Command('required'))
         ),
         ['node', 'program', 'not-required']
       );
@@ -911,13 +728,7 @@
         Program(
           'program',
           null,
-          Command(
-            'command',
-            null,
-            Required(
-              Arg('arg')
-            )
-          )
+          Command('command', null, Required(Arg('arg')))
         ),
         ['node', 'program', 'command']
       );
@@ -933,10 +744,7 @@
         Program(
           'program',
           null,
-          RequireAny(
-            Command('command1'),
-            Command('command2')
-          )
+          RequireAny(Command('command1'), Command('command2'))
         ),
         ['node', 'program']
       );
@@ -952,13 +760,8 @@
         Program(
           'program',
           null,
-          Command(
-            'not-required'
-          ),
-          RequireAny(
-            Command('required1'),
-            Command('required2')
-          )
+          Command('not-required'),
+          RequireAny(Command('required1'), Command('required2'))
         ),
         ['node', 'program', 'not-required']
       );
@@ -974,14 +777,7 @@
         Program(
           'program',
           null,
-          Command(
-            'command',
-            null,
-            RequireAny(
-              Arg('arg1'),
-              Arg('arg2')
-            )
-          )
+          Command('command', null, RequireAny(Arg('arg1'), Arg('arg2')))
         ),
         ['node', 'program', 'command']
       );
@@ -1001,18 +797,8 @@
             Command(
               'command',
               null,
-              RequireAny(
-                KWArg(
-                  'kwarg1'
-                ),
-                KWArg(
-                  'kwarg2'
-                )
-              ),
-              RequireAll(
-                Arg('arg1'),
-                Arg('arg2')
-              )
+              RequireAny(KWArg('kwarg1'), KWArg('kwarg2')),
+              RequireAll(Arg('arg1'), Arg('arg2'))
             )
           )
         ),
@@ -1031,20 +817,17 @@
           'help',
           {
             alias: 'h',
-            description: 'description'
+            description: 'description',
           },
           Program(
             'program',
             {
-              usage: 'program'
+              usage: 'program',
             },
             Required(
-              Command(
-                'command',
-                {
-                  usage: 'command'
-                }
-              )
+              Command('command', {
+                usage: 'command',
+              })
             )
           )
         ),
@@ -1063,20 +846,17 @@
           'help',
           {
             alias: 'h',
-            description: 'description'
+            description: 'description',
           },
           Program(
             'program',
             {
-              usage: 'program'
+              usage: 'program',
             },
             Required(
-              Command(
-                'command',
-                {
-                  usage: 'command'
-                }
-              )
+              Command('command', {
+                usage: 'command',
+              })
             )
           )
         ),
@@ -1095,17 +875,9 @@
           'help',
           {
             alias: 'h',
-            description: 'description'
+            description: 'description',
           },
-          Program(
-            'program',
-            null,
-            Required(
-              Command(
-                'command'
-              )
-            )
-          )
+          Program('program', null, Required(Command('command')))
         ),
         ['node', 'program', 'command', '-h']
       );
@@ -1122,7 +894,7 @@
           'help',
           {
             alias: 'h',
-            description: 'description'
+            description: 'description',
           },
           Program(
             'program',
@@ -1131,12 +903,9 @@
               Command(
                 'command',
                 null,
-                Flag(
-                  'help',
-                  {
-                    alias: 'h'
-                  }
-                )
+                Flag('help', {
+                  alias: 'h',
+                })
               )
             )
           )
@@ -1156,7 +925,7 @@
           'help',
           {
             alias: 'h',
-            description: 'description'
+            description: 'description',
           },
           Program(
             'program',
@@ -1165,12 +934,9 @@
               Command(
                 'command',
                 null,
-                Flag(
-                  'help',
-                  {
-                    alias: 'h'
-                  }
-                )
+                Flag('help', {
+                  alias: 'h',
+                })
               )
             )
           )
@@ -1190,12 +956,9 @@
           Command(
             'install',
             null,
-            Arg(
-              'lib',
-              {
-                multi: true
-              }
-            )
+            Arg('lib', {
+              multi: true,
+            })
           )
         ),
         ['node', 'program', 'install', 'jargs', 'awesome']
@@ -1208,12 +971,12 @@
           kwargs: {},
           flags: {},
           args: {
-            lib: ['jargs', 'awesome']
-          }
+            lib: ['jargs', 'awesome'],
+          },
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
     });
 
@@ -1226,12 +989,9 @@
           Command(
             'install',
             null,
-            KWArg(
-              'input',
-              {
-                multi: true
-              }
-            )
+            KWArg('input', {
+              multi: true,
+            })
           )
         ),
         ['node', 'program', 'install', '--input', 'jargs', '--input=awesome']
@@ -1242,14 +1002,14 @@
         command: {
           name: 'install',
           kwargs: {
-            input: ['jargs', 'awesome']
+            input: ['jargs', 'awesome'],
           },
           flags: {},
-          args: {}
+          args: {},
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
 
       // With nested nodes
@@ -1260,13 +1020,10 @@
           Command(
             'install',
             null,
-            KWArg(
-              'input',
-              {
-                alias: 'i',
-                multi: true
-              }
-            )
+            KWArg('input', {
+              alias: 'i',
+              multi: true,
+            })
           )
         ),
         ['node', 'program', 'install', '--input=jargs', '-i', 'awesome']
@@ -1277,14 +1034,14 @@
         command: {
           name: 'install',
           kwargs: {
-            input: ['jargs', 'awesome']
+            input: ['jargs', 'awesome'],
           },
           flags: {},
-          args: {}
+          args: {},
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
     });
 
@@ -1296,20 +1053,22 @@
           Command(
             'run',
             null,
-            Required(
-              Arg(
-                'command'
-              )
-            ),
-            KWArg(
-              'env',
-              {
-                alias: 'e'
-              }
-            )
+            Required(Arg('command')),
+            KWArg('env', {
+              alias: 'e',
+            })
           )
         ),
-        ['node', 'npm', 'run', '--env=development', 'manage.py', '--', 'command', '--flag']
+        [
+          'node',
+          'npm',
+          'run',
+          '--env=development',
+          'manage.py',
+          '--',
+          'command',
+          '--flag',
+        ]
       );
 
       expect(result).to.eql({
@@ -1317,19 +1076,18 @@
         command: {
           name: 'run',
           kwargs: {
-            env: 'development'
+            env: 'development',
           },
           flags: {},
           args: {
-            command: 'manage.py'
+            command: 'manage.py',
           },
-          rest: ['command', '--flag']
+          rest: ['command', '--flag'],
         },
         kwargs: {},
         flags: {},
-        args: {}
+        args: {},
       });
-
     });
 
     it('should error if required args are interrupted by --', function () {
@@ -1343,25 +1101,25 @@
           Command(
             'run',
             null,
-            Required(
-              Arg(
-                'command'
-              )
-            ),
-            KWArg(
-              'env',
-              {
-                alias: 'e'
-              }
-            )
+            Required(Arg('command')),
+            KWArg('env', {
+              alias: 'e',
+            })
           )
         ),
-        ['node', 'npm', 'run', '--', '--env=development', 'manage.py', 'command', '--flag']
+        [
+          'node',
+          'npm',
+          'run',
+          '--',
+          '--env=development',
+          'manage.py',
+          'command',
+          '--flag',
+        ]
       );
 
       expect(boundCollect).to.throw(anError);
     });
-
   });
-
 })();

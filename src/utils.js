@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-
   var MATCHES_LEADING_AND_TRAILING_SPACES = /(^\s+|\s+$)/;
   var MATCHES_TRAILING_SPACES = /\s+$/;
   var MATCHES_SPACE = /\s/;
@@ -17,16 +16,16 @@
     'command',
     'require-any',
     'require-all',
-    'required'
+    'required',
   ];
 
   var TABLE_OPTIONS = {
     indentation: '    ',
     margin: '  ',
-    width: 80
+    width: 80,
   };
 
-  function find (arr, fn) {
+  function find(arr, fn) {
     for (var i = 0; i < arr.length; i += 1) {
       if (fn(arr[i], i)) {
         return arr[i];
@@ -36,13 +35,13 @@
     return null;
   }
 
-  function each (arr, fn) {
+  function each(arr, fn) {
     for (var i = 0; i < arr.length; i += 1) {
       fn(arr[i], i);
     }
   }
 
-  function any (arr, fn) {
+  function any(arr, fn) {
     for (var i = 0; i < arr.length; i += 1) {
       if (fn(arr[i], i)) {
         return true;
@@ -52,7 +51,7 @@
     return false;
   }
 
-  function several (arr, fn) {
+  function several(arr, fn) {
     var count = 0;
 
     for (var i = 0; i < arr.length; i += 1) {
@@ -68,7 +67,7 @@
     return count > 1;
   }
 
-  function sum (arr) {
+  function sum(arr) {
     var total = 0;
 
     for (var i = 0; i < arr.length; i += 1) {
@@ -78,11 +77,11 @@
     return total;
   }
 
-  function argsToArray (args) {
+  function argsToArray(args) {
     return Array.prototype.slice.call(args);
   }
 
-  function validateChildren (children, validTypes) {
+  function validateChildren(children, validTypes) {
     var argNames = [];
     var kwargNames = [];
     var kwargAliases = [];
@@ -91,30 +90,46 @@
 
     each(children, function (node) {
       if (typeof node !== 'object') {
-        throw new Error('Invalid child node of type ' + (typeof node));
+        throw new Error('Invalid child node of type ' + typeof node);
       }
 
       if (validTypes.indexOf(node._type) < 0) {
-        throw new Error('Invalid child node with type ' + node._type +
-          '. Child nodes may only be ' + validTypes.join(', '));
+        throw new Error(
+          'Invalid child node with type ' +
+            node._type +
+            '. Child nodes may only be ' +
+            validTypes.join(', ')
+        );
       }
 
       if (node.name) {
         if (MATCHES_ARG_TYPE.test(node._type)) {
           if (argNames.indexOf(node.name) >= 0) {
-            throw new Error('More than one node with the name "' + node.name + '" at the same level');
+            throw new Error(
+              'More than one node with the name "' +
+                node.name +
+                '" at the same level'
+            );
           }
 
           argNames.push(node.name);
         } else if (MATCHES_KWARG_TYPE.test(node._type)) {
           if (kwargNames.indexOf(node.name) >= 0) {
-            throw new Error('More than one node with the name "' + node.name + '" at the same level');
+            throw new Error(
+              'More than one node with the name "' +
+                node.name +
+                '" at the same level'
+            );
           }
 
           kwargNames.push(node.name);
         } else {
           if (otherNames.indexOf(node.name) >= 0) {
-            throw new Error('More than one node with the name "' + node.name + '" at the same level');
+            throw new Error(
+              'More than one node with the name "' +
+                node.name +
+                '" at the same level'
+            );
           }
 
           otherNames.push(node.name);
@@ -124,13 +139,21 @@
       if (node.options && node.options.alias) {
         if (MATCHES_KWARG_TYPE.test(node._type)) {
           if (kwargAliases.indexOf(node.options.alias) >= 0) {
-            throw new Error('More than one node with the alias "' + node.options.alias + '" at the same level');
+            throw new Error(
+              'More than one node with the alias "' +
+                node.options.alias +
+                '" at the same level'
+            );
           }
 
           kwargAliases.push(node.options.alias);
         } else {
           if (otherAliases.indexOf(node.options.alias) >= 0) {
-            throw new Error('More than one node with the alias "' + node.options.alias + '" at the same level');
+            throw new Error(
+              'More than one node with the alias "' +
+                node.options.alias +
+                '" at the same level'
+            );
           }
 
           otherAliases.push(node.options.alias);
@@ -139,14 +162,14 @@
     });
   }
 
-  function getNodeProperties (args, getChildren) {
+  function getNodeProperties(args, getChildren) {
     var children = argsToArray(args);
     var name = children.shift();
     var options = children.shift() || {};
 
     var properties = {
       name: name,
-      options: options
+      options: options,
     };
 
     if (getChildren) {
@@ -160,7 +183,9 @@
         switch (child._type) {
           case 'required':
           case 'require-all':
-            properties._requireAll = properties._requireAll.concat(child.children);
+            properties._requireAll = properties._requireAll.concat(
+              child.children
+            );
             properties.children = properties.children.concat(child.children);
             break;
           case 'require-any':
@@ -173,12 +198,17 @@
         }
       });
 
-      var moreThanOneCommand = several(properties._requireAll, function (child) {
-        return child._type === 'command';
-      });
+      var moreThanOneCommand = several(
+        properties._requireAll,
+        function (child) {
+          return child._type === 'command';
+        }
+      );
 
       if (moreThanOneCommand) {
-        throw new Error('More than one required Command at the same level. Use RequireAny');
+        throw new Error(
+          'More than one required Command at the same level. Use RequireAny'
+        );
       }
     } else if (children.length) {
       throw new Error('Only commands can have children');
@@ -187,7 +217,7 @@
     return properties;
   }
 
-  function validateName (name) {
+  function validateName(name) {
     if (typeof name !== 'string') {
       throw new Error('Names and aliases must be a string');
     }
@@ -197,28 +227,35 @@
     }
 
     if (MATCHES_BAD_NAME_CHARS.test(name)) {
-      throw new Error('Names and aliases may only contain letters, numbers, and hyphens');
+      throw new Error(
+        'Names and aliases may only contain letters, numbers, and hyphens'
+      );
     }
 
     if (name.indexOf('-') === 0) {
-      throw new Error('Names and aliases cannot begin with \'-\'');
+      throw new Error("Names and aliases cannot begin with '-'");
     }
   }
 
-  function serializeOptions (options, validOptions) {
-    if (!(typeof options === 'undefined' || typeof options === 'object') || Array.isArray(options)) {
+  function serializeOptions(options, validOptions) {
+    if (
+      !(typeof options === 'undefined' || typeof options === 'object') ||
+      Array.isArray(options)
+    ) {
       throw new Error('Options must be an object');
     }
 
     if ('_type' in options) {
-      throw new Error('It looks like you\'ve accidentally passed a node as another node\'s second argument (options)');
+      throw new Error(
+        "It looks like you've accidentally passed a node as another node's second argument (options)"
+      );
     }
 
     for (var key in options) {
       var option = options[key];
 
       if (!(key in validOptions)) {
-        throw new Error('Invalid option \'' + key + '\'');
+        throw new Error("Invalid option '" + key + "'");
       }
 
       if (key === 'alias') {
@@ -230,7 +267,8 @@
       if (
         (valid.type === 'string' && typeof option !== 'string') ||
         (valid.type === 'number' && typeof option !== 'number') ||
-        (valid.type === 'object' && (typeof option !== 'object' || option === null)) ||
+        (valid.type === 'object' &&
+          (typeof option !== 'object' || option === null)) ||
         (valid.type === 'array' && !Array.isArray(option)) ||
         (valid.type === 'boolean' && typeof option !== 'boolean') ||
         (valid.type === 'function' && typeof option !== 'function')
@@ -246,7 +284,7 @@
     for (var validKey in validOptions) {
       var validOption = validOptions[validKey];
 
-      if (('default' in validOption) && !(validKey in options)) {
+      if ('default' in validOption && !(validKey in options)) {
         options[validKey] = validOption.default;
       }
     }
@@ -268,12 +306,15 @@
     Unknown argument: unknown
   */
 
-  function getMaxTableWidths (table) {
+  function getMaxTableWidths(table) {
     var maxWidths = [];
 
     each(table, function (row) {
       each(row, function (cell, index) {
-        if (typeof maxWidths[index] === 'undefined' || cell.length > maxWidths[index]) {
+        if (
+          typeof maxWidths[index] === 'undefined' ||
+          cell.length > maxWidths[index]
+        ) {
           maxWidths[index] = cell.length;
         }
       });
@@ -282,7 +323,7 @@
     return maxWidths;
   }
 
-  function getRemainingSpace (maxWidths, options) {
+  function getRemainingSpace(maxWidths, options) {
     var remainingSpace = TABLE_OPTIONS.width - TABLE_OPTIONS.indentation.length;
 
     each(maxWidths, function (value, index) {
@@ -298,7 +339,7 @@
     return remainingSpace;
   }
 
-  function createSpaces (length) {
+  function createSpaces(length) {
     var spaces = '';
 
     for (var i = 0; i < length; i += 1) {
@@ -308,19 +349,28 @@
     return spaces;
   }
 
-  function pad (str, length, right) {
+  function pad(str, length, right) {
     if (!right) {
       return (str + createSpaces(length)).substring(0, length);
     }
 
-    return (createSpaces(length) + str).substring(str.length, str.length + length);
+    return (createSpaces(length) + str).substring(
+      str.length,
+      str.length + length
+    );
   }
 
-  function wrapText (text, availableSpace, currentConcat, nextConcats, alignRight) {
+  function wrapText(
+    text,
+    availableSpace,
+    currentConcat,
+    nextConcats,
+    alignRight
+  ) {
     var wrappedWords = text.split(MATCHES_SPACE);
     var wrappedLineIndex = 0;
 
-    function indentLine (lineIndex) {
+    function indentLine(lineIndex) {
       if (typeof nextConcats[lineIndex] === 'undefined') {
         nextConcats[lineIndex] = createSpaces(currentConcat.length);
       } else {
@@ -335,20 +385,29 @@
         var hyphenatedWord = word;
 
         while (hyphenatedWord.length) {
-          var withHyphen = availableSpace > 1 &&
+          var withHyphen =
+            availableSpace > 1 &&
             hyphenatedWord.charAt(availableSpace) !== '-' &&
             hyphenatedWord.length > availableSpace;
 
-          nextConcats[wrappedLineIndex] += hyphenatedWord.substring(0, availableSpace - (withHyphen ? 1 : 0)) +
+          nextConcats[wrappedLineIndex] +=
+            hyphenatedWord.substring(0, availableSpace - (withHyphen ? 1 : 0)) +
             (withHyphen ? '-' : '');
-          hyphenatedWord = hyphenatedWord.substring(availableSpace - (withHyphen ? 1 : 0));
+          hyphenatedWord = hyphenatedWord.substring(
+            availableSpace - (withHyphen ? 1 : 0)
+          );
 
           if (hyphenatedWord.length) {
             wrappedLineIndex += 1;
             indentLine(wrappedLineIndex);
           }
         }
-      } else if (nextConcats[wrappedLineIndex].length - currentConcat.length + word.length > availableSpace) {
+      } else if (
+        nextConcats[wrappedLineIndex].length -
+          currentConcat.length +
+          word.length >
+        availableSpace
+      ) {
         wrappedLineIndex += 1;
         indentLine(wrappedLineIndex);
         nextConcats[wrappedLineIndex] += word;
@@ -357,7 +416,8 @@
       }
 
       if (
-        nextConcats[wrappedLineIndex].length < currentConcat.length + availableSpace &&
+        nextConcats[wrappedLineIndex].length <
+          currentConcat.length + availableSpace &&
         wordIndex < wrappedWords.length - 1
       ) {
         nextConcats[wrappedLineIndex] += ' ';
@@ -365,16 +425,19 @@
     });
 
     each(nextConcats, function (nextConcat, index) {
-      nextConcats[index] = nextConcat.substring(0, currentConcat.length) +
+      nextConcats[index] =
+        nextConcat.substring(0, currentConcat.length) +
         pad(
-          nextConcat.substring(currentConcat.length).replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
+          nextConcat
+            .substring(currentConcat.length)
+            .replace(MATCHES_LEADING_AND_TRAILING_SPACES, ''),
           availableSpace,
           alignRight
         );
     });
   }
 
-  function mapCells (table, options, maxWidths, remainingSpace, row, rowIndex) {
+  function mapCells(table, options, maxWidths, remainingSpace, row, rowIndex) {
     var currentConcat = TABLE_OPTIONS.indentation;
     var nextConcats = [];
 
@@ -386,16 +449,24 @@
           options.alignRight.indexOf(index) >= 0
         );
       } else {
-        var totalWrappedMaxWidth = sum(maxWidths.filter(function (width, maxWidthIndex) {
-          return options.wrap.indexOf(maxWidthIndex) >= 0;
-        }));
-        var availableSpace = Math.max(1, Math.round(maxWidths[index] / totalWrappedMaxWidth * remainingSpace));
+        var totalWrappedMaxWidth = sum(
+          maxWidths.filter(function (width, maxWidthIndex) {
+            return options.wrap.indexOf(maxWidthIndex) >= 0;
+          })
+        );
+        var availableSpace = Math.max(
+          1,
+          Math.round((maxWidths[index] / totalWrappedMaxWidth) * remainingSpace)
+        );
         var alignRight = options.alignRight.indexOf(index) >= 0;
 
         wrapText(cell, availableSpace, currentConcat, nextConcats, alignRight);
 
         currentConcat += pad(
-          nextConcats[0].substring(currentConcat.length, currentConcat.length + availableSpace),
+          nextConcats[0].substring(
+            currentConcat.length,
+            currentConcat.length + availableSpace
+          ),
           availableSpace,
           alignRight
         );
@@ -419,59 +490,91 @@
     return currentConcat;
   }
 
-  function mapRows (table, options, maxWidths, remainingSpace) {
+  function mapRows(table, options, maxWidths, remainingSpace) {
     var concat = '';
 
     each(table, function (row, rowIndex) {
-      concat += mapCells(table, options, maxWidths, remainingSpace, row, rowIndex);
+      concat += mapCells(
+        table,
+        options,
+        maxWidths,
+        remainingSpace,
+        row,
+        rowIndex
+      );
     });
 
     return concat;
   }
 
-  function createTable (table, options, maxWidths, remainingSpace) {
-    return mapRows(table, options, maxWidths, remainingSpace).split('\n').map(function (line) {
-      return line.replace(MATCHES_TRAILING_SPACES, '');
-    }).join('\n');
+  function createTable(table, options, maxWidths, remainingSpace) {
+    return mapRows(table, options, maxWidths, remainingSpace)
+      .split('\n')
+      .map(function (line) {
+        return line.replace(MATCHES_TRAILING_SPACES, '');
+      })
+      .join('\n');
   }
 
-  function formatTable (table, options) {
+  function formatTable(table, options) {
     var maxWidths = getMaxTableWidths(table);
     var remainingSpace = getRemainingSpace(maxWidths, options);
     return createTable(table, options, maxWidths, remainingSpace);
   }
 
-  function createCommandsText (commands) {
-    return (commands.length ? '  Commands:\n' : '') +
-      formatTable(commands.map(function (command) {
-        var alias = (command.options.alias ? ', ' + command.options.alias : '');
-        return [command.name + alias, command.options.description];
-      }), {wrap: [1], alignRight: [2]}) +
-      (commands.length ? '\n\n' : '');
+  function createCommandsText(commands) {
+    return (
+      (commands.length ? '  Commands:\n' : '') +
+      formatTable(
+        commands.map(function (command) {
+          var alias = command.options.alias ? ', ' + command.options.alias : '';
+          return [command.name + alias, command.options.description];
+        }),
+        { wrap: [1], alignRight: [2] }
+      ) +
+      (commands.length ? '\n\n' : '')
+    );
   }
 
-  function createOptionsText (options) {
-    return (options.length ? '  Options:\n' : '') +
-      formatTable(options.map(function (option) {
-        var namePrefix = option._type === 'arg' ? '<' : '--';
-        var nameSuffix = option._type === 'arg' ? '>' : '';
-        var aliasPrefix = namePrefix.substring(0, 1);
-        var alias = (option.options.alias ? ', ' + aliasPrefix + option.options.alias : '');
-        var type = option.options.type ? '   [' + option.options.type + ']' : '';
-        return [namePrefix + option.name + nameSuffix + alias, option.options.description, type];
-      }), {wrap: [1], alignRight: [2]}) +
-      (options.length ? '\n\n' : '');
+  function createOptionsText(options) {
+    return (
+      (options.length ? '  Options:\n' : '') +
+      formatTable(
+        options.map(function (option) {
+          var namePrefix = option._type === 'arg' ? '<' : '--';
+          var nameSuffix = option._type === 'arg' ? '>' : '';
+          var aliasPrefix = namePrefix.substring(0, 1);
+          var alias = option.options.alias
+            ? ', ' + aliasPrefix + option.options.alias
+            : '';
+          var type = option.options.type
+            ? '   [' + option.options.type + ']'
+            : '';
+          return [
+            namePrefix + option.name + nameSuffix + alias,
+            option.options.description,
+            type,
+          ];
+        }),
+        { wrap: [1], alignRight: [2] }
+      ) +
+      (options.length ? '\n\n' : '')
+    );
   }
 
-  function createExamplesText (examples) {
-    return (examples.length ? '  Examples:\n' : '') +
-      examples.map(function (example) {
-        return '    ' + example;
-      }).join('\n') +
-      (examples.length ? '\n\n' : '');
+  function createExamplesText(examples) {
+    return (
+      (examples.length ? '  Examples:\n' : '') +
+      examples
+        .map(function (example) {
+          return '    ' + example;
+        })
+        .join('\n') +
+      (examples.length ? '\n\n' : '')
+    );
   }
 
-  function sortByName (a, b) {
+  function sortByName(a, b) {
     if (a.name < b.name) {
       return -1;
     }
@@ -483,7 +586,7 @@
     return 0;
   }
 
-  function createHelp (schema, globals, error) {
+  function createHelp(schema, globals, error) {
     var commands = [];
     var flags = [];
     var kwargs = [];
@@ -515,26 +618,30 @@
 
     var options = flags.concat(kwargs).concat(args);
 
-    return '\n' +
-      (schema.options.usage ? '  Usage: ' + schema.options.usage + '\n\n' : '') +
+    return (
+      '\n' +
+      (schema.options.usage
+        ? '  Usage: ' + schema.options.usage + '\n\n'
+        : '') +
       createCommandsText(commands) +
       createOptionsText(options) +
       createExamplesText(schema.options.examples) +
-      (error ? ('  ' + error + '\n\n') : '');
+      (error ? '  ' + error + '\n\n' : '')
+    );
   }
 
   /* istanbul ignore next */
-  function exitWithHelp (help) {
+  function exitWithHelp(help) {
     process.stderr.write(help);
     process.exit(1);
   }
 
-  function formatNodeName (node) {
+  function formatNodeName(node) {
     var prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
     return prefix + node.name;
   }
 
-  function formatRequiredList (nodes) {
+  function formatRequiredList(nodes) {
     return nodes.map(formatNodeName).join(', ');
   }
 
@@ -554,7 +661,6 @@
     createHelp: createHelp,
     exitWithHelp: exitWithHelp,
     formatNodeName: formatNodeName,
-    formatRequiredList: formatRequiredList
+    formatRequiredList: formatRequiredList,
   };
-
 })();

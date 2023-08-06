@@ -1,27 +1,24 @@
 'use strict';
 
 (function () {
-
   var utils = require('./utils');
   var validateName = utils.validateName;
   var serializeOptions = utils.serializeOptions;
 
-  var VALID_CHILD_NODES = [
-    'program'
-  ];
+  var VALID_CHILD_NODES = ['program'];
 
   var validOptions = {
     alias: {
       type: 'string',
-      length: 1
+      length: 1,
     },
     description: {
       type: 'string',
-      default: ''
-    }
+      default: '',
+    },
   };
 
-  function Help () {
+  function Help() {
     var children = utils.argsToArray(arguments);
     var name = children.shift();
     var options = children.shift() || {};
@@ -41,12 +38,11 @@
     children[0]._globals.help = {
       _type: 'flag',
       name: name,
-      options: options
+      options: options,
     };
 
     return children[0];
   }
 
   module.exports = Help;
-
 })();

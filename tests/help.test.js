@@ -3,7 +3,6 @@
 'use strict';
 
 (function () {
-
   var expect = require('chai').expect;
 
   var Program = require('../src/program');
@@ -11,9 +10,8 @@
   var Help = require('../src/help');
 
   describe('help.js', function () {
-
     it('should construct a Help', function () {
-      var node = Help('help', {alias: 'h'}, Program('foo'));
+      var node = Help('help', { alias: 'h' }, Program('foo'));
 
       expect(node).to.be.ok;
       expect(node).to.eql({
@@ -23,9 +21,9 @@
             name: 'help',
             options: {
               alias: 'h',
-              description: ''
-            }
-          }
+              description: '',
+            },
+          },
         },
         _type: 'program',
         _requireAll: [],
@@ -34,15 +32,15 @@
         options: {
           description: '',
           usage: '',
-          examples: []
+          examples: [],
         },
-        children: []
+        children: [],
       });
     });
 
     it('should throw an error if alias is more than 1 char', function () {
       var anError = /length/;
-      var node = Help.bind(null, 'foo', {alias: 'fo'});
+      var node = Help.bind(null, 'foo', { alias: 'fo' });
 
       expect(node).to.throw(anError);
     });
@@ -69,7 +67,5 @@
 
       expect(boundRequired).to.throw(anError);
     });
-
   });
-
 })();

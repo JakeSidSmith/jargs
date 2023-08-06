@@ -3,14 +3,12 @@
 'use strict';
 
 (function () {
-
   var expect = require('chai').expect;
 
   var RequireAny = require('../src/require-any');
   var Arg = require('../src/arg');
 
   describe('require-any.js', function () {
-
     it('should construct an RequireAll', function () {
       var child1 = Arg('foo');
       var child2 = Arg('bar');
@@ -19,7 +17,7 @@
       expect(node).to.be.ok;
       expect(node).to.eql({
         _type: 'require-any',
-        children: [child1, child2]
+        children: [child1, child2],
       });
 
       expect(node.children[0]).to.equal(child1);
@@ -39,7 +37,5 @@
 
       expect(boundRequired).to.throw(anError);
     });
-
   });
-
 })();

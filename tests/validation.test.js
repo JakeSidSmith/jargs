@@ -3,7 +3,6 @@
 'use strict';
 
 (function () {
-
   var expect = require('chai').expect;
 
   var utils = require('../src/utils');
@@ -13,9 +12,7 @@
   var Arg = require('../src/arg');
 
   describe('validation', function () {
-
     describe('validateName', function () {
-
       var nodes = [Command, KWArg, Flag, Arg];
 
       it('should error if node names are not strings', function () {
@@ -64,11 +61,9 @@
           expect(node.bind(null, 'word-word')).not.to.throw(anError);
         });
       });
-
     });
 
     describe('serializeOptions', function () {
-
       var nodesWithAliases = [Command, KWArg, Flag];
 
       it('should should throw an error if options is not an object', function () {
@@ -90,11 +85,13 @@
         var anError = /string/i;
 
         utils.each(nodesWithAliases, function (node) {
-          expect(node.bind(null, 'name', {alias: undefined})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: null})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: {}})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: []})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: 1})).to.throw(anError);
+          expect(node.bind(null, 'name', { alias: undefined })).to.throw(
+            anError
+          );
+          expect(node.bind(null, 'name', { alias: null })).to.throw(anError);
+          expect(node.bind(null, 'name', { alias: {} })).to.throw(anError);
+          expect(node.bind(null, 'name', { alias: [] })).to.throw(anError);
+          expect(node.bind(null, 'name', { alias: 1 })).to.throw(anError);
         });
       });
 
@@ -102,7 +99,7 @@
         var anError = /empty/i;
 
         utils.each(nodesWithAliases, function (node) {
-          expect(node.bind(null, 'name', {alias: ''})).to.throw(anError);
+          expect(node.bind(null, 'name', { alias: '' })).to.throw(anError);
         });
       });
 
@@ -128,37 +125,41 @@
         var anError = /begin\swith/i;
 
         utils.each(nodesWithAliases, function (node) {
-          expect(node.bind(null, 'name', {alias: '-test'})).to.throw(anError);
-          expect(node.bind(null, 'name', {alias: 'word-word'})).not.to.throw(anError);
+          expect(node.bind(null, 'name', { alias: '-test' })).to.throw(anError);
+          expect(node.bind(null, 'name', { alias: 'word-word' })).not.to.throw(
+            anError
+          );
         });
       });
 
       it('should validate options', function () {
         var anError = /invalid/i;
 
-        expect(utils.serializeOptions.bind(null, {foo: 'bar'}, {bar: 'foo'})).to.throw(anError);
+        expect(
+          utils.serializeOptions.bind(null, { foo: 'bar' }, { bar: 'foo' })
+        ).to.throw(anError);
       });
 
       it('should validate option types', function () {
         var validOptions = {
           string: {
-            type: 'string'
+            type: 'string',
           },
           number: {
-            type: 'number'
+            type: 'number',
           },
           object: {
-            type: 'object'
+            type: 'object',
           },
           array: {
-            type: 'array'
+            type: 'array',
           },
           boolean: {
-            type: 'boolean'
+            type: 'boolean',
           },
           func: {
-            type: 'function'
-          }
+            type: 'function',
+          },
         };
 
         var aStringError = /type\sstring/i;
@@ -168,20 +169,29 @@
         var aBooleanError = /type\sboolean/i;
         var aFuncError = /type\sfunction/i;
 
-        expect(utils.serializeOptions.bind(null, {string: null}, validOptions)).to.throw(aStringError);
-        expect(utils.serializeOptions.bind(null, {number: null}, validOptions)).to.throw(aNumberError);
-        expect(utils.serializeOptions.bind(null, {object: null}, validOptions)).to.throw(anObjectError);
-        expect(utils.serializeOptions.bind(null, {array: null}, validOptions)).to.throw(anArrayError);
-        expect(utils.serializeOptions.bind(null, {boolean: null}, validOptions)).to.throw(aBooleanError);
-        expect(utils.serializeOptions.bind(null, {func: null}, validOptions)).to.throw(aFuncError);
+        expect(
+          utils.serializeOptions.bind(null, { string: null }, validOptions)
+        ).to.throw(aStringError);
+        expect(
+          utils.serializeOptions.bind(null, { number: null }, validOptions)
+        ).to.throw(aNumberError);
+        expect(
+          utils.serializeOptions.bind(null, { object: null }, validOptions)
+        ).to.throw(anObjectError);
+        expect(
+          utils.serializeOptions.bind(null, { array: null }, validOptions)
+        ).to.throw(anArrayError);
+        expect(
+          utils.serializeOptions.bind(null, { boolean: null }, validOptions)
+        ).to.throw(aBooleanError);
+        expect(
+          utils.serializeOptions.bind(null, { func: null }, validOptions)
+        ).to.throw(aFuncError);
       });
-
     });
-
   });
 
   describe('validateChildren', function () {
-
     it('should throw an error if children are not nodes', function () {
       var anError = /invalid/i;
 
@@ -195,9 +205,23 @@
       var validTypes = ['arg', 'kwarg'];
       var anError = /invalid/i;
 
-      expect(utils.validateChildren.bind(null, [{_type: 'foo'}], validTypes)).to.throw(anError);
-      expect(utils.validateChildren.bind(null, [{_type: 'arg'}, {_type: 'bar'}], validTypes)).to.throw(anError);
-      expect(utils.validateChildren.bind(null, [{_type: 'arg'}, {_type: 'kwarg'}], validTypes)).not.to.throw(anError);
+      expect(
+        utils.validateChildren.bind(null, [{ _type: 'foo' }], validTypes)
+      ).to.throw(anError);
+      expect(
+        utils.validateChildren.bind(
+          null,
+          [{ _type: 'arg' }, { _type: 'bar' }],
+          validTypes
+        )
+      ).to.throw(anError);
+      expect(
+        utils.validateChildren.bind(
+          null,
+          [{ _type: 'arg' }, { _type: 'kwarg' }],
+          validTypes
+        )
+      ).not.to.throw(anError);
     });
 
     it('should throw an error for duplicate node names', function () {
@@ -208,28 +232,27 @@
         Arg('foo'),
         KWArg('foo'),
         Command('bar'),
-        Flag('bar')
+        Flag('bar'),
       ];
 
-      var badArgChildren = [
-        Arg('foo'),
-        Arg('foo')
-      ];
+      var badArgChildren = [Arg('foo'), Arg('foo')];
 
-      var badKWArgChildren = [
-        KWArg('foo'),
-        Flag('foo')
-      ];
+      var badKWArgChildren = [KWArg('foo'), Flag('foo')];
 
-      var badOtherChildren = [
-        Command('foo'),
-        Command('foo')
-      ];
+      var badOtherChildren = [Command('foo'), Command('foo')];
 
-      expect(utils.validateChildren.bind(null, goodChildren, validTypes)).not.to.throw();
-      expect(utils.validateChildren.bind(null, badArgChildren, validTypes)).to.throw(anError);
-      expect(utils.validateChildren.bind(null, badKWArgChildren, validTypes)).to.throw(anError);
-      expect(utils.validateChildren.bind(null, badOtherChildren, validTypes)).to.throw(anError);
+      expect(
+        utils.validateChildren.bind(null, goodChildren, validTypes)
+      ).not.to.throw();
+      expect(
+        utils.validateChildren.bind(null, badArgChildren, validTypes)
+      ).to.throw(anError);
+      expect(
+        utils.validateChildren.bind(null, badKWArgChildren, validTypes)
+      ).to.throw(anError);
+      expect(
+        utils.validateChildren.bind(null, badOtherChildren, validTypes)
+      ).to.throw(anError);
     });
 
     it('should throw an error for duplicate node aliases', function () {
@@ -238,26 +261,30 @@
 
       var goodChildren = [
         Arg('foo'),
-        KWArg('foo', {alias: 'f'}),
-        Command('bar', {alias: 'b'}),
-        Flag('bar', {alias: 'b'})
+        KWArg('foo', { alias: 'f' }),
+        Command('bar', { alias: 'b' }),
+        Flag('bar', { alias: 'b' }),
       ];
 
       var badKWArgChildren = [
-        KWArg('foo', {alias: 'f'}),
-        Flag('bar', {alias: 'f'})
+        KWArg('foo', { alias: 'f' }),
+        Flag('bar', { alias: 'f' }),
       ];
 
       var badOtherChildren = [
-        Command('foo', {alias: 'f'}),
-        Command('bar', {alias: 'f'})
+        Command('foo', { alias: 'f' }),
+        Command('bar', { alias: 'f' }),
       ];
 
-      expect(utils.validateChildren.bind(null, goodChildren, validTypes)).not.to.throw();
-      expect(utils.validateChildren.bind(null, badKWArgChildren, validTypes)).to.throw(anError);
-      expect(utils.validateChildren.bind(null, badOtherChildren, validTypes)).to.throw(anError);
+      expect(
+        utils.validateChildren.bind(null, goodChildren, validTypes)
+      ).not.to.throw();
+      expect(
+        utils.validateChildren.bind(null, badKWArgChildren, validTypes)
+      ).to.throw(anError);
+      expect(
+        utils.validateChildren.bind(null, badOtherChildren, validTypes)
+      ).to.throw(anError);
     });
-
   });
-
 })();

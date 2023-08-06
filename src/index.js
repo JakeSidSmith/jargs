@@ -3,7 +3,6 @@
 // Ref: http://docopt.org/
 
 (function () {
-
   module.exports = {
     collect: require('./collect'),
     Help: require('./help'),
@@ -14,7 +13,6 @@
     Arg: require('./arg'),
     Required: require('./required'),
     RequireAll: require('./require-all'),
-    RequireAny: require('./require-any')
+    RequireAny: require('./require-any'),
   };
-
 })();

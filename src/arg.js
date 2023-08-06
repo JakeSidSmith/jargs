@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-
   var utils = require('./utils');
   var getNodeProperties = utils.getNodeProperties;
   var validateName = utils.validateName;
@@ -10,21 +9,21 @@
   var validOptions = {
     description: {
       type: 'string',
-      default: ''
+      default: '',
     },
     options: {
-      type: 'array'
+      type: 'array',
     },
     type: {
-      type: 'string'
+      type: 'string',
     },
     multi: {
       type: 'boolean',
-      default: false
-    }
+      default: false,
+    },
   };
 
-  function Arg () {
+  function Arg() {
     var properties = getNodeProperties(arguments);
     validateName(properties.name);
     serializeOptions(properties.options, validOptions);
@@ -35,5 +34,4 @@
   }
 
   module.exports = Arg;
-
 })();

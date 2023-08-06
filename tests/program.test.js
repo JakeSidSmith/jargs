@@ -3,14 +3,12 @@
 'use strict';
 
 (function () {
-
   var expect = require('chai').expect;
 
   var Program = require('../src/program');
   var Command = require('../src/command');
 
   describe('program.js', function () {
-
     it('should construct a Program', function () {
       var child1 = Command('child1');
       var child2 = Command('child2');
@@ -26,12 +24,10 @@
         options: {
           description: '',
           usage: '',
-          examples: []
+          examples: [],
         },
-        children: [child1, child2]
+        children: [child1, child2],
       });
     });
-
   });
-
 })();

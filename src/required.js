@@ -1,17 +1,11 @@
 'use strict';
 
 (function () {
-
   var utils = require('./utils');
 
-  var VALID_CHILD_NODES = [
-    'arg',
-    'flag',
-    'kwarg',
-    'command'
-  ];
+  var VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
 
-  function Required () {
+  function Required() {
     var children = utils.argsToArray(arguments);
 
     if (!children.length) {
@@ -19,17 +13,18 @@
     }
 
     if (children.length > 1) {
-      throw new Error('More than one child node supplied to Required node. Use RequireAll node');
+      throw new Error(
+        'More than one child node supplied to Required node. Use RequireAll node'
+      );
     }
 
     utils.validateChildren(children, VALID_CHILD_NODES);
 
     return {
       _type: 'required',
-      children: children
+      children: children,
     };
   }
 
   module.exports = Required;
-
 })();
