@@ -1,7 +1,5 @@
 /* global describe, it */
 
-import { expect } from 'chai';
-
 import { Arg } from '../src/arg';
 import { Required } from '../src/required';
 
@@ -10,30 +8,27 @@ describe('required.js', () => {
     let child = Arg('foo');
     let node = Required(child);
 
-    expect(node).to.be.ok;
-    expect(node).to.eql({
+    expect(node).toBeTruthy();
+    expect(node).toEqual({
       _type: 'required',
       children: [child],
     });
 
-    expect(node.children[0]).to.equal(child);
+    expect(node.children[0]).toBe(child);
   });
 
   it('should throw an error if no children are supplied', () => {
     let anError = /child/i;
 
-    expect(Required).to.throw(anError);
+    expect(Required).toThrow(anError);
   });
 
-  it(
-    'should throw an error if more than one children are supplied',
-    () => {
-      let anError = /child/i;
-      let child1 = Arg('foo');
-      let child2 = Arg('bar');
-      let boundRequired = Required.bind(null, child1, child2);
+  it('should throw an error if more than one children are supplied', () => {
+    let anError = /child/i;
+    let child1 = Arg('foo');
+    let child2 = Arg('bar');
+    let boundRequired = Required.bind(null, child1, child2);
 
-      expect(boundRequired).to.throw(anError);
-    }
-  );
+    expect(boundRequired).toThrow(anError);
+  });
 });

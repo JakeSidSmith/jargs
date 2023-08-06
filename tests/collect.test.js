@@ -1,8 +1,5 @@
 /* global describe, beforeEach, afterEach, it */
 
-import { expect } from 'chai';
-import { spy, stub } from 'sinon';
-
 import { Arg } from '../src/arg';
 import { collect } from '../src/collect';
 import { Command } from '../src/command';
@@ -20,26 +17,24 @@ describe('collect.js', () => {
     throw new Error(error);
   }
 
-  let exitWithHelpStub;
-
-  beforeEach(() => {
-    exitWithHelpStub = stub(utils, 'exitWithHelp', throwError);
-  });
+  const exitWithHelpStub = jest
+    .spyOn(utils, 'exitWithHelp')
+    .mockImplementation(throwError);
 
   afterEach(() => {
-    exitWithHelpStub.restore();
+    jest.clearAllMocks();
   });
 
   it('should exist', () => {
-    expect(collect).to.be.ok;
-    expect(typeof collect).to.equal('function');
+    expect(collect).toBeTruthy();
+    expect(typeof collect).toBe('function');
   });
 
   it('should throw an error if no Program provided', () => {
     let anError = /program/i;
 
     // Without tree
-    expect(collect).to.throw(anError);
+    expect(collect).toThrow(anError);
   });
 
   it('should throw an error if root node is not a Program', () => {
@@ -48,7 +43,7 @@ describe('collect.js', () => {
     let boundCollect = collect.bind(null, Arg('test'));
 
     // Without tree
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should throw an error if there are too many arguments', () => {
@@ -57,7 +52,7 @@ describe('collect.js', () => {
     let boundCollect = collect.bind(null, Program('test'), [], 'too many');
 
     // Without tree
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should throw an error if the argv is undefined', () => {
@@ -65,26 +60,23 @@ describe('collect.js', () => {
 
     let boundCollect = collect.bind(null, Program('test'));
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
-  it(
-    'should throw an error if the second argument is not an argv',
-    () => {
-      let anError = /argv must be an array of strings/i;
+  it('should throw an error if the second argument is not an argv', () => {
+    let anError = /argv must be an array of strings/i;
 
-      let boundCollect = collect.bind(null, Program('test'), 'nope');
+    let boundCollect = collect.bind(null, Program('test'), 'nope');
 
-      expect(boundCollect).to.throw(anError);
-    }
-  );
+    expect(boundCollect).toThrow(anError);
+  });
 
   it('should throw an error if the argv has been modified', () => {
     let anError = /argv has been tampered with/i;
 
     let boundCollect = collect.bind(null, Program('test'), ['invalid']);
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should return an arg tree when no args provided', () => {
@@ -94,7 +86,7 @@ describe('collect.js', () => {
       'program',
     ]);
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       kwargs: {},
       flags: {},
@@ -110,7 +102,7 @@ describe('collect.js', () => {
       'install',
     ]);
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       command: {
         name: 'install',
@@ -131,7 +123,7 @@ describe('collect.js', () => {
       ['node', 'program', 'install', 'jargs']
     );
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       command: {
         name: 'install',
@@ -158,7 +150,7 @@ describe('collect.js', () => {
       ['node', 'program', 'install', 'jargs', '--save']
     );
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       command: {
         name: 'install',
@@ -198,7 +190,7 @@ describe('collect.js', () => {
       ]
     );
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       kwargs: {
         transform: 'babelify',
@@ -213,65 +205,59 @@ describe('collect.js', () => {
     });
   });
 
-  it(
-    'should prioritize commands and traverse their children (test 1)',
-    () => {
-      let result = collect(
-        Program(
-          'program',
-          null,
-          Arg('arg1'),
-          Command('command', null, Arg('arg2'))
-        ),
-        ['node', 'program', 'command', 'command']
-      );
+  it('should prioritize commands and traverse their children (test 1)', () => {
+    let result = collect(
+      Program(
+        'program',
+        null,
+        Arg('arg1'),
+        Command('command', null, Arg('arg2'))
+      ),
+      ['node', 'program', 'command', 'command']
+    );
 
-      expect(result).to.eql({
-        name: 'program',
-        command: {
-          name: 'command',
-          kwargs: {},
-          flags: {},
-          args: {
-            arg2: 'command',
-          },
-        },
-        kwargs: {},
-        flags: {},
-        args: {},
-      });
-    }
-  );
-
-  it(
-    'should prioritize commands and traverse their children (test 2)',
-    () => {
-      let result = collect(
-        Program(
-          'program',
-          null,
-          Arg('arg1'),
-          Command('command', null, Arg('arg2'))
-        ),
-        ['node', 'program', 'not-a-command']
-      );
-
-      expect(result).to.eql({
-        name: 'program',
+    expect(result).toEqual({
+      name: 'program',
+      command: {
+        name: 'command',
         kwargs: {},
         flags: {},
         args: {
-          arg1: 'not-a-command',
+          arg2: 'command',
         },
-      });
-    }
-  );
+      },
+      kwargs: {},
+      flags: {},
+      args: {},
+    });
+  });
+
+  it('should prioritize commands and traverse their children (test 2)', () => {
+    let result = collect(
+      Program(
+        'program',
+        null,
+        Arg('arg1'),
+        Command('command', null, Arg('arg2'))
+      ),
+      ['node', 'program', 'not-a-command']
+    );
+
+    expect(result).toEqual({
+      name: 'program',
+      kwargs: {},
+      flags: {},
+      args: {
+        arg1: 'not-a-command',
+      },
+    });
+  });
 
   it('should call program and command callbacks if matched', () => {
-    let programSpy = spy();
-    let command1Spy = spy();
-    let command2Spy = spy();
-    let command3Spy = spy();
+    let programSpy = jest.fn();
+    let command1Spy = jest.fn();
+    let command2Spy = jest.fn();
+    let command3Spy = jest.fn();
 
     let result = collect(
       Program(
@@ -289,109 +275,103 @@ describe('collect.js', () => {
       ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
     );
 
-    expect(programSpy).to.have.been.calledOnce;
-    expect(programSpy).to.have.been.calledWith(result);
-    expect(command2Spy).to.have.been.calledOnce;
-    expect(command2Spy).to.have.been.calledWith(result.command);
-    expect(command3Spy).to.have.been.calledOnce;
-    expect(command3Spy).to.have.been.calledWith(result.command.command);
-    expect(command1Spy).not.to.have.been.called;
+    expect(programSpy).toHaveBeenCalledTimes(1);
+    expect(programSpy.mock.calls[0][0]).toEqual(result);
+    expect(command2Spy).toHaveBeenCalledTimes(1);
+    expect(command2Spy.mock.calls[0][0]).toEqual(result.command);
+    expect(command3Spy).toHaveBeenCalledTimes(1);
+    expect(command3Spy.mock.calls[0][0]).toEqual(result.command.command);
+    expect(command1Spy).not.toHaveBeenCalled();
 
-    expect(result.args.arg1).to.equal('argy');
-    expect(result.command.args.arg2).to.equal('argygain');
+    expect(result.args.arg1).toBe('argy');
+    expect(result.command.args.arg2).toBe('argygain');
   });
 
-  it(
-    'should call program and commands with tree, parentTree, and returned value',
-    () => {
-      let programSpy = stub().returns(1);
-      let command1Spy = stub().returns(2);
-      let command2Spy = stub().returns(3);
+  it('should call program and commands with tree, parentTree, and returned value', () => {
+    let programSpy = jest.fn().mockReturnValue(1);
+    let command1Spy = jest.fn().mockReturnValue(2);
+    let command2Spy = jest.fn().mockReturnValue(3);
 
-      let expected = {
-        name: 'program',
+    let expected = {
+      name: 'program',
+      kwargs: {},
+      flags: {},
+      args: {},
+      command: {
+        name: 'command1',
         kwargs: {},
         flags: {},
         args: {},
         command: {
-          name: 'command1',
+          name: 'command2',
           kwargs: {},
           flags: {},
           args: {},
-          command: {
-            name: 'command2',
-            kwargs: {},
-            flags: {},
-            args: {},
-          },
         },
-      };
+      },
+    };
 
-      let result = collect(
-        Program(
-          'program',
-          { callback: programSpy },
-          Command(
-            'command1',
-            { callback: command1Spy },
-            Command('command2', { callback: command2Spy })
-          )
-        ),
-        ['node', 'program', 'command1', 'command2']
-      );
+    let result = collect(
+      Program(
+        'program',
+        { callback: programSpy },
+        Command(
+          'command1',
+          { callback: command1Spy },
+          Command('command2', { callback: command2Spy })
+        )
+      ),
+      ['node', 'program', 'command1', 'command2']
+    );
 
-      expect(result).to.eql(expected);
+    expect(result).toEqual(expected);
 
-      expect(programSpy).to.have.been.calledOnce;
-      expect(programSpy).to.have.been.calledWith(expected, undefined, undefined);
-      expect(command1Spy).to.have.been.calledOnce;
-      expect(command1Spy).to.have.been.calledWith(expected.command, expected, 1);
-      expect(command2Spy).to.have.been.calledOnce;
-      expect(command2Spy).to.have.been.calledWith(
-        expected.command.command,
-        expected.command,
-        2
-      );
-    }
-  );
+    expect(programSpy).toHaveBeenCalledTimes(1);
+    expect(programSpy).toHaveBeenCalledWith(expected, undefined, undefined);
+    expect(command1Spy).toHaveBeenCalledTimes(1);
+    expect(command1Spy).toHaveBeenCalledWith(expected.command, expected, 1);
+    expect(command2Spy).toHaveBeenCalledTimes(1);
+    expect(command2Spy).toHaveBeenCalledWith(
+      expected.command.command,
+      expected.command,
+      2
+    );
+  });
 
-  it(
-    'should pass parent tree & returned value to subsequent callbacks',
-    () => {
-      let programSpy = stub().returns(1);
-      let command1Spy = stub().returns(2);
-      let command2Spy = stub().returns(3);
-      let command3Spy = stub().returns(4);
+  it('should pass parent tree & returned value to subsequent callbacks', () => {
+    let programSpy = jest.fn().mockReturnValue(1);
+    let command1Spy = jest.fn().mockReturnValue(2);
+    let command2Spy = jest.fn().mockReturnValue(3);
+    let command3Spy = jest.fn().mockReturnValue(4);
 
-      let result = collect(
-        Program(
-          'program',
-          { callback: programSpy },
-          Arg('arg1'),
-          Command('command1', { callback: command1Spy }, Arg('arg3')),
-          Command(
-            'command2',
-            { callback: command2Spy },
-            Arg('arg2'),
-            Command('command3', { callback: command3Spy })
-          )
-        ),
-        ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
-      );
+    let result = collect(
+      Program(
+        'program',
+        { callback: programSpy },
+        Arg('arg1'),
+        Command('command1', { callback: command1Spy }, Arg('arg3')),
+        Command(
+          'command2',
+          { callback: command2Spy },
+          Arg('arg2'),
+          Command('command3', { callback: command3Spy })
+        )
+      ),
+      ['node', 'program', 'argy', 'command2', 'argygain', 'command3']
+    );
 
-      expect(programSpy).to.have.been.calledOnce;
-      expect(programSpy).to.have.been.calledWith(result, undefined, undefined);
-      expect(command2Spy).to.have.been.calledOnce;
-      expect(command2Spy).to.have.been.calledWith(result.command, result, 1);
-      expect(command3Spy).to.have.been.calledOnce;
-      expect(command3Spy).to.have.been.calledWith(
-        result.command.command,
-        result.command,
-        3
-      );
-      expect(command1Spy).not.to.have.been.called;
-    }
-  );
+    expect(programSpy).toHaveBeenCalledTimes(1);
+    expect(programSpy).toHaveBeenCalledWith(result, undefined, undefined);
+    expect(command2Spy).toHaveBeenCalledTimes(1);
+    expect(command2Spy).toHaveBeenCalledWith(result.command, result, 1);
+    expect(command3Spy).toHaveBeenCalledTimes(1);
+    expect(command3Spy).toHaveBeenCalledWith(
+      result.command.command,
+      result.command,
+      3
+    );
+    expect(command1Spy).not.toHaveBeenCalled();
+  });
 
   it('should return an arg tree from aliases', () => {
     // With nested nodes
@@ -421,7 +401,7 @@ describe('collect.js', () => {
       ]
     );
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       command: {
         name: 'build',
@@ -452,7 +432,7 @@ describe('collect.js', () => {
     );
 
     // With nested nodes
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for no kwarg value (not equals)', () => {
@@ -465,7 +445,7 @@ describe('collect.js', () => {
     );
 
     // With nested nodes
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for invalid alias syntax', () => {
@@ -484,7 +464,7 @@ describe('collect.js', () => {
       ['node', 'program', '-k=invalid']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for duplicate kwargs', () => {
@@ -496,7 +476,7 @@ describe('collect.js', () => {
       ['node', 'program', '--kwarg=correct', '--kwarg=incorrect']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for duplicate flags', () => {
@@ -508,7 +488,7 @@ describe('collect.js', () => {
       ['node', 'program', '--flag', '--flag']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for duplicate flag aliases', () => {
@@ -527,7 +507,7 @@ describe('collect.js', () => {
       ['node', 'program', '--flag', '-f']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for unknown flags / kwargs', () => {
@@ -539,7 +519,7 @@ describe('collect.js', () => {
       ['node', 'program', '--version']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for unknown flag / kwarg aliases', () => {
@@ -551,7 +531,7 @@ describe('collect.js', () => {
       ['node', 'program', '-v']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for unknown commands / args', () => {
@@ -569,7 +549,7 @@ describe('collect.js', () => {
       ['node', 'program', 'another-command']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should return an arg tree with kwarg aliases', () => {
@@ -587,7 +567,7 @@ describe('collect.js', () => {
       ['node', 'program', '-kthing', '-athing']
     );
 
-    expect(tree).to.eql({
+    expect(tree).toEqual({
       name: 'program',
       kwargs: {
         kwarg: 'thing',
@@ -611,7 +591,7 @@ describe('collect.js', () => {
       ['node', 'program', '-k', 'thing', '-a', 'thing']
     );
 
-    expect(tree).to.eql({
+    expect(tree).toEqual({
       name: 'program',
       kwargs: {
         kwarg: 'thing',
@@ -637,7 +617,7 @@ describe('collect.js', () => {
       ['node', 'program', '-f', '-a']
     );
 
-    expect(tree).to.eql({
+    expect(tree).toEqual({
       name: 'program',
       kwargs: {},
       flags: {
@@ -661,7 +641,7 @@ describe('collect.js', () => {
       ['node', 'program', '-fa']
     );
 
-    expect(tree).to.eql({
+    expect(tree).toEqual({
       name: 'program',
       kwargs: {},
       flags: {
@@ -690,7 +670,7 @@ describe('collect.js', () => {
       ['node', 'program', '-fk']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for missing required Commands', () => {
@@ -702,28 +682,25 @@ describe('collect.js', () => {
       ['node', 'program']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
-  it(
-    'should exit with help for missing required Commands when other Command found',
-    () => {
-      let anError = /required\swas\snot\ssupplied\n\n/i;
+  it('should exit with help for missing required Commands when other Command found', () => {
+    let anError = /required\swas\snot\ssupplied\n\n/i;
 
-      let boundCollect = collect.bind(
+    let boundCollect = collect.bind(
+      null,
+      Program(
+        'program',
         null,
-        Program(
-          'program',
-          null,
-          Command('not-required'),
-          Required(Command('required'))
-        ),
-        ['node', 'program', 'not-required']
-      );
+        Command('not-required'),
+        Required(Command('required'))
+      ),
+      ['node', 'program', 'not-required']
+    );
 
-      expect(boundCollect).to.throw(anError);
-    }
-  );
+    expect(boundCollect).toThrow(anError);
+  });
 
   it('should exit with help for missing required Args', () => {
     let anError = /arg\swas\snot\ssupplied\n\n/i;
@@ -734,7 +711,7 @@ describe('collect.js', () => {
       ['node', 'program', 'command']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should exit with help for missing require any Commands', () => {
@@ -750,28 +727,25 @@ describe('collect.js', () => {
       ['node', 'program']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
-  it(
-    'should exit with help for missing require any Commands when other Command found',
-    () => {
-      let anError = /required1,\srequired2\n\n/i;
+  it('should exit with help for missing require any Commands when other Command found', () => {
+    let anError = /required1,\srequired2\n\n/i;
 
-      let boundCollect = collect.bind(
+    let boundCollect = collect.bind(
+      null,
+      Program(
+        'program',
         null,
-        Program(
-          'program',
-          null,
-          Command('not-required'),
-          RequireAny(Command('required1'), Command('required2'))
-        ),
-        ['node', 'program', 'not-required']
-      );
+        Command('not-required'),
+        RequireAny(Command('required1'), Command('required2'))
+      ),
+      ['node', 'program', 'not-required']
+    );
 
-      expect(boundCollect).to.throw(anError);
-    }
-  );
+    expect(boundCollect).toThrow(anError);
+  });
 
   it('should exit with help for missing require any Args', () => {
     let anError = /arg1,\sarg2\n\n/i;
@@ -786,7 +760,7 @@ describe('collect.js', () => {
       ['node', 'program', 'command']
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 
   it('should not error when all required arguments are met', () => {
@@ -809,162 +783,147 @@ describe('collect.js', () => {
       ['node', 'program', 'command', '--kwarg1=value', 'arg1', 'arg2']
     );
 
-    expect(boundCollect).not.to.throw(anError);
+    expect(boundCollect).not.toThrow(anError);
   });
 
-  it(
-    'should display help info if a global help node is present (root)',
-    () => {
-      let anError = /Usage:\sprogram(.|\n)*description\n\n/;
+  it('should display help info if a global help node is present (root)', () => {
+    let anError = /Usage:\sprogram(.|\n)*description\n\n/;
 
-      let boundCollect = collect.bind(
-        null,
-        Help(
-          'help',
+    let boundCollect = collect.bind(
+      null,
+      Help(
+        'help',
+        {
+          alias: 'h',
+          description: 'description',
+        },
+        Program(
+          'program',
           {
-            alias: 'h',
-            description: 'description',
+            usage: 'program',
           },
-          Program(
-            'program',
-            {
-              usage: 'program',
-            },
-            Required(
-              Command('command', {
-                usage: 'command',
+          Required(
+            Command('command', {
+              usage: 'command',
+            })
+          )
+        )
+      ),
+      ['node', 'program', '--help']
+    );
+
+    expect(boundCollect).toThrow(anError);
+  });
+
+  it('should display help info if a global help node is present (nested)', () => {
+    let anError = /Usage:\scommand(.|\n)*description\n\n/;
+
+    let boundCollect = collect.bind(
+      null,
+      Help(
+        'help',
+        {
+          alias: 'h',
+          description: 'description',
+        },
+        Program(
+          'program',
+          {
+            usage: 'program',
+          },
+          Required(
+            Command('command', {
+              usage: 'command',
+            })
+          )
+        )
+      ),
+      ['node', 'program', 'command', '--help']
+    );
+
+    expect(boundCollect).toThrow(anError);
+  });
+
+  it('should display help info if a global help node is present (alias)', () => {
+    let anError = /description\n\n$/i;
+
+    let boundCollect = collect.bind(
+      null,
+      Help(
+        'help',
+        {
+          alias: 'h',
+          description: 'description',
+        },
+        Program('program', null, Required(Command('command')))
+      ),
+      ['node', 'program', 'command', '-h']
+    );
+
+    expect(boundCollect).toThrow(anError);
+  });
+
+  it('should not display help info if a global help node is present but another node is matched', () => {
+    let anError = /description\n\n$/i;
+
+    let boundCollect = collect.bind(
+      null,
+      Help(
+        'help',
+        {
+          alias: 'h',
+          description: 'description',
+        },
+        Program(
+          'program',
+          null,
+          Required(
+            Command(
+              'command',
+              null,
+              Flag('help', {
+                alias: 'h',
               })
             )
           )
-        ),
-        ['node', 'program', '--help']
-      );
+        )
+      ),
+      ['node', 'program', 'command', '--help']
+    );
 
-      expect(boundCollect).to.throw(anError);
-    }
-  );
+    expect(boundCollect).not.toThrow(anError);
+  });
 
-  it(
-    'should display help info if a global help node is present (nested)',
-    () => {
-      let anError = /Usage:\scommand(.|\n)*description\n\n/;
+  it('should not display help info if a global help node is present but another node is matched (alias', () => {
+    let anError = /description\n\n$/i;
 
-      let boundCollect = collect.bind(
-        null,
-        Help(
-          'help',
-          {
-            alias: 'h',
-            description: 'description',
-          },
-          Program(
-            'program',
-            {
-              usage: 'program',
-            },
-            Required(
-              Command('command', {
-                usage: 'command',
+    let boundCollect = collect.bind(
+      null,
+      Help(
+        'help',
+        {
+          alias: 'h',
+          description: 'description',
+        },
+        Program(
+          'program',
+          null,
+          Required(
+            Command(
+              'command',
+              null,
+              Flag('help', {
+                alias: 'h',
               })
             )
           )
-        ),
-        ['node', 'program', 'command', '--help']
-      );
+        )
+      ),
+      ['node', 'program', 'command', '-h']
+    );
 
-      expect(boundCollect).to.throw(anError);
-    }
-  );
-
-  it(
-    'should display help info if a global help node is present (alias)',
-    () => {
-      let anError = /description\n\n$/i;
-
-      let boundCollect = collect.bind(
-        null,
-        Help(
-          'help',
-          {
-            alias: 'h',
-            description: 'description',
-          },
-          Program('program', null, Required(Command('command')))
-        ),
-        ['node', 'program', 'command', '-h']
-      );
-
-      expect(boundCollect).to.throw(anError);
-    }
-  );
-
-  it(
-    'should not display help info if a global help node is present but another node is matched',
-    () => {
-      let anError = /description\n\n$/i;
-
-      let boundCollect = collect.bind(
-        null,
-        Help(
-          'help',
-          {
-            alias: 'h',
-            description: 'description',
-          },
-          Program(
-            'program',
-            null,
-            Required(
-              Command(
-                'command',
-                null,
-                Flag('help', {
-                  alias: 'h',
-                })
-              )
-            )
-          )
-        ),
-        ['node', 'program', 'command', '--help']
-      );
-
-      expect(boundCollect).not.to.throw(anError);
-    }
-  );
-
-  it(
-    'should not display help info if a global help node is present but another node is matched (alias',
-    () => {
-      let anError = /description\n\n$/i;
-
-      let boundCollect = collect.bind(
-        null,
-        Help(
-          'help',
-          {
-            alias: 'h',
-            description: 'description',
-          },
-          Program(
-            'program',
-            null,
-            Required(
-              Command(
-                'command',
-                null,
-                Flag('help', {
-                  alias: 'h',
-                })
-              )
-            )
-          )
-        ),
-        ['node', 'program', 'command', '-h']
-      );
-
-      expect(boundCollect).not.to.throw(anError);
-    }
-  );
+    expect(boundCollect).not.toThrow(anError);
+  });
 
   it('should collect multiple Arg values', () => {
     // With nested nodes
@@ -983,7 +942,7 @@ describe('collect.js', () => {
       ['node', 'program', 'install', 'jargs', 'awesome']
     );
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       command: {
         name: 'install',
@@ -1016,7 +975,7 @@ describe('collect.js', () => {
       ['node', 'program', 'install', '--input', 'jargs', '--input=awesome']
     );
 
-    expect(result1).to.eql({
+    expect(result1).toEqual({
       name: 'program',
       command: {
         name: 'install',
@@ -1048,7 +1007,7 @@ describe('collect.js', () => {
       ['node', 'program', 'install', '--input=jargs', '-i', 'awesome']
     );
 
-    expect(result2).to.eql({
+    expect(result2).toEqual({
       name: 'program',
       command: {
         name: 'install',
@@ -1090,7 +1049,7 @@ describe('collect.js', () => {
       ]
     );
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       name: 'program',
       command: {
         name: 'run',
@@ -1138,6 +1097,6 @@ describe('collect.js', () => {
       ]
     );
 
-    expect(boundCollect).to.throw(anError);
+    expect(boundCollect).toThrow(anError);
   });
 });

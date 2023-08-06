@@ -1,7 +1,5 @@
 /* global describe, it */
 
-import { expect } from 'chai';
-
 import { Arg } from '../src/arg';
 import { Command } from '../src/command';
 import { Flag } from '../src/flag';
@@ -16,11 +14,11 @@ describe('validation', () => {
       let anError = /string/i;
 
       utils.each(nodes, function (node) {
-        expect(node.bind(null, undefined)).to.throw(anError);
-        expect(node.bind(null, null)).to.throw(anError);
-        expect(node.bind(null, {})).to.throw(anError);
-        expect(node.bind(null, [])).to.throw(anError);
-        expect(node.bind(null, 1)).to.throw(anError);
+        expect(node.bind(null, undefined)).toThrow(anError);
+        expect(node.bind(null, null)).toThrow(anError);
+        expect(node.bind(null, {})).toThrow(anError);
+        expect(node.bind(null, [])).toThrow(anError);
+        expect(node.bind(null, 1)).toThrow(anError);
       });
     });
 
@@ -28,37 +26,34 @@ describe('validation', () => {
       let anError = /empty/i;
 
       utils.each(nodes, function (node) {
-        expect(node.bind(null, '')).to.throw(anError);
+        expect(node.bind(null, '')).toThrow(anError);
       });
     });
 
-    it(
-      'should error if node names contain anything but letters, numbers & hyphens',
-      () => {
-        let anError = /letters.+numbers.+hyphens/i;
+    it('should error if node names contain anything but letters, numbers & hyphens', () => {
+      let anError = /letters.+numbers.+hyphens/i;
 
-        utils.each(nodes, function (node) {
-          expect(node.bind(null, ' test')).to.throw(anError);
-          expect(node.bind(null, 'test ')).to.throw(anError);
-          expect(node.bind(null, ' te st ')).to.throw(anError);
+      utils.each(nodes, function (node) {
+        expect(node.bind(null, ' test')).toThrow(anError);
+        expect(node.bind(null, 'test ')).toThrow(anError);
+        expect(node.bind(null, ' te st ')).toThrow(anError);
 
-          expect(node.bind(null, '_test')).to.throw(anError);
-          expect(node.bind(null, 'test_')).to.throw(anError);
-          expect(node.bind(null, '_te_st_')).to.throw(anError);
+        expect(node.bind(null, '_test')).toThrow(anError);
+        expect(node.bind(null, 'test_')).toThrow(anError);
+        expect(node.bind(null, '_te_st_')).toThrow(anError);
 
-          expect(node.bind(null, '+test')).to.throw(anError);
-          expect(node.bind(null, 'test=')).to.throw(anError);
-          expect(node.bind(null, 'te:st')).to.throw(anError);
-        });
-      }
-    );
+        expect(node.bind(null, '+test')).toThrow(anError);
+        expect(node.bind(null, 'test=')).toThrow(anError);
+        expect(node.bind(null, 'te:st')).toThrow(anError);
+      });
+    });
 
     it('should error if node names begin with -', () => {
       let anError = /begin\swith/i;
 
       utils.each(nodes, function (node) {
-        expect(node.bind(null, '-test')).to.throw(anError);
-        expect(node.bind(null, 'word-word')).not.to.throw(anError);
+        expect(node.bind(null, '-test')).toThrow(anError);
+        expect(node.bind(null, 'word-word')).not.toThrow(anError);
       });
     });
   });
@@ -69,30 +64,27 @@ describe('validation', () => {
     it('should should throw an error if options is not an object', () => {
       let anError = /object/i;
 
-      expect(Arg.bind(null, 'foo', 'test')).to.throw(anError);
-      expect(Arg.bind(null, 'foo', [])).to.throw(anError);
-      expect(Arg.bind(null, 'foo', 7)).to.throw(anError);
-      expect(Arg.bind(null, 'foo', undefined)).not.to.throw(anError);
+      expect(Arg.bind(null, 'foo', 'test')).toThrow(anError);
+      expect(Arg.bind(null, 'foo', [])).toThrow(anError);
+      expect(Arg.bind(null, 'foo', 7)).toThrow(anError);
+      expect(Arg.bind(null, 'foo', undefined)).not.toThrow(anError);
     });
 
-    it(
-      'should should throw an error if a node is passed as options',
-      () => {
-        let anError = /node/i;
+    it('should should throw an error if a node is passed as options', () => {
+      let anError = /node/i;
 
-        expect(Arg.bind(null, 'foo', Arg('test'))).to.throw(anError);
-      }
-    );
+      expect(Arg.bind(null, 'foo', Arg('test'))).toThrow(anError);
+    });
 
     it('should error if node aliases are not strings', () => {
       let anError = /string/i;
 
       utils.each(nodesWithAliases, function (node) {
-        expect(node.bind(null, 'name', { alias: undefined })).to.throw(anError);
-        expect(node.bind(null, 'name', { alias: null })).to.throw(anError);
-        expect(node.bind(null, 'name', { alias: {} })).to.throw(anError);
-        expect(node.bind(null, 'name', { alias: [] })).to.throw(anError);
-        expect(node.bind(null, 'name', { alias: 1 })).to.throw(anError);
+        expect(node.bind(null, 'name', { alias: undefined })).toThrow(anError);
+        expect(node.bind(null, 'name', { alias: null })).toThrow(anError);
+        expect(node.bind(null, 'name', { alias: {} })).toThrow(anError);
+        expect(node.bind(null, 'name', { alias: [] })).toThrow(anError);
+        expect(node.bind(null, 'name', { alias: 1 })).toThrow(anError);
       });
     });
 
@@ -100,37 +92,34 @@ describe('validation', () => {
       let anError = /empty/i;
 
       utils.each(nodesWithAliases, function (node) {
-        expect(node.bind(null, 'name', { alias: '' })).to.throw(anError);
+        expect(node.bind(null, 'name', { alias: '' })).toThrow(anError);
       });
     });
 
-    it(
-      'should error if node aliases contain anything but letters, numbers, and hyphens',
-      () => {
-        let anError = /letters.+numbers.+hyphens/i;
+    it('should error if node aliases contain anything but letters, numbers, and hyphens', () => {
+      let anError = /letters.+numbers.+hyphens/i;
 
-        utils.each(nodesWithAliases, function (node) {
-          expect(node.bind(null, ' test')).to.throw(anError);
-          expect(node.bind(null, 'test ')).to.throw(anError);
-          expect(node.bind(null, ' te st ')).to.throw(anError);
+      utils.each(nodesWithAliases, function (node) {
+        expect(node.bind(null, ' test')).toThrow(anError);
+        expect(node.bind(null, 'test ')).toThrow(anError);
+        expect(node.bind(null, ' te st ')).toThrow(anError);
 
-          expect(node.bind(null, '_test')).to.throw(anError);
-          expect(node.bind(null, 'test_')).to.throw(anError);
-          expect(node.bind(null, '_te_st_')).to.throw(anError);
+        expect(node.bind(null, '_test')).toThrow(anError);
+        expect(node.bind(null, 'test_')).toThrow(anError);
+        expect(node.bind(null, '_te_st_')).toThrow(anError);
 
-          expect(node.bind(null, '+test')).to.throw(anError);
-          expect(node.bind(null, 'test=')).to.throw(anError);
-          expect(node.bind(null, 'te:st')).to.throw(anError);
-        });
-      }
-    );
+        expect(node.bind(null, '+test')).toThrow(anError);
+        expect(node.bind(null, 'test=')).toThrow(anError);
+        expect(node.bind(null, 'te:st')).toThrow(anError);
+      });
+    });
 
     it('should error if node aliases begin with -', () => {
       let anError = /begin\swith/i;
 
       utils.each(nodesWithAliases, function (node) {
-        expect(node.bind(null, 'name', { alias: '-test' })).to.throw(anError);
-        expect(node.bind(null, 'name', { alias: 'word-word' })).not.to.throw(
+        expect(node.bind(null, 'name', { alias: '-test' })).toThrow(anError);
+        expect(node.bind(null, 'name', { alias: 'word-word' })).not.toThrow(
           anError
         );
       });
@@ -141,7 +130,7 @@ describe('validation', () => {
 
       expect(
         utils.serializeOptions.bind(null, { foo: 'bar' }, { bar: 'foo' })
-      ).to.throw(anError);
+      ).toThrow(anError);
     });
 
     it('should validate option types', () => {
@@ -175,22 +164,22 @@ describe('validation', () => {
 
       expect(
         utils.serializeOptions.bind(null, { string: null }, validOptions)
-      ).to.throw(aStringError);
+      ).toThrow(aStringError);
       expect(
         utils.serializeOptions.bind(null, { number: null }, validOptions)
-      ).to.throw(aNumberError);
+      ).toThrow(aNumberError);
       expect(
         utils.serializeOptions.bind(null, { object: null }, validOptions)
-      ).to.throw(anObjectError);
+      ).toThrow(anObjectError);
       expect(
         utils.serializeOptions.bind(null, { array: null }, validOptions)
-      ).to.throw(anArrayError);
+      ).toThrow(anArrayError);
       expect(
         utils.serializeOptions.bind(null, { boolean: null }, validOptions)
-      ).to.throw(aBooleanError);
+      ).toThrow(aBooleanError);
       expect(
         utils.serializeOptions.bind(null, { func: null }, validOptions)
-      ).to.throw(aFuncError);
+      ).toThrow(aFuncError);
     });
   });
 });
@@ -199,37 +188,34 @@ describe('validateChildren', () => {
   it('should throw an error if children are not nodes', () => {
     let anError = /invalid/i;
 
-    expect(utils.validateChildren.bind(null, [1])).to.throw(anError);
-    expect(utils.validateChildren.bind(null, ['a'])).to.throw(anError);
-    expect(utils.validateChildren.bind(null, [undefined])).to.throw(anError);
-    expect(utils.validateChildren.bind(null, [{}])).not.to.throw(anError);
+    expect(utils.validateChildren.bind(null, [1])).toThrow(anError);
+    expect(utils.validateChildren.bind(null, ['a'])).toThrow(anError);
+    expect(utils.validateChildren.bind(null, [undefined])).toThrow(anError);
+    expect(utils.validateChildren.bind(null, [{}])).not.toThrow(anError);
   });
 
-  it(
-    'should throw an error if children are not the correct type',
-    () => {
-      let validTypes = ['arg', 'kwarg'];
-      let anError = /invalid/i;
+  it('should throw an error if children are not the correct type', () => {
+    let validTypes = ['arg', 'kwarg'];
+    let anError = /invalid/i;
 
-      expect(
-        utils.validateChildren.bind(null, [{ _type: 'foo' }], validTypes)
-      ).to.throw(anError);
-      expect(
-        utils.validateChildren.bind(
-          null,
-          [{ _type: 'arg' }, { _type: 'bar' }],
-          validTypes
-        )
-      ).to.throw(anError);
-      expect(
-        utils.validateChildren.bind(
-          null,
-          [{ _type: 'arg' }, { _type: 'kwarg' }],
-          validTypes
-        )
-      ).not.to.throw(anError);
-    }
-  );
+    expect(
+      utils.validateChildren.bind(null, [{ _type: 'foo' }], validTypes)
+    ).toThrow(anError);
+    expect(
+      utils.validateChildren.bind(
+        null,
+        [{ _type: 'arg' }, { _type: 'bar' }],
+        validTypes
+      )
+    ).toThrow(anError);
+    expect(
+      utils.validateChildren.bind(
+        null,
+        [{ _type: 'arg' }, { _type: 'kwarg' }],
+        validTypes
+      )
+    ).not.toThrow(anError);
+  });
 
   it('should throw an error for duplicate node names', () => {
     let validTypes = ['command', 'arg', 'flag', 'kwarg'];
@@ -245,16 +231,16 @@ describe('validateChildren', () => {
 
     expect(
       utils.validateChildren.bind(null, goodChildren, validTypes)
-    ).not.to.throw();
+    ).not.toThrow();
     expect(
       utils.validateChildren.bind(null, badArgChildren, validTypes)
-    ).to.throw(anError);
+    ).toThrow(anError);
     expect(
       utils.validateChildren.bind(null, badKWArgChildren, validTypes)
-    ).to.throw(anError);
+    ).toThrow(anError);
     expect(
       utils.validateChildren.bind(null, badOtherChildren, validTypes)
-    ).to.throw(anError);
+    ).toThrow(anError);
   });
 
   it('should throw an error for duplicate node aliases', () => {
@@ -280,12 +266,12 @@ describe('validateChildren', () => {
 
     expect(
       utils.validateChildren.bind(null, goodChildren, validTypes)
-    ).not.to.throw();
+    ).not.toThrow();
     expect(
       utils.validateChildren.bind(null, badKWArgChildren, validTypes)
-    ).to.throw(anError);
+    ).toThrow(anError);
     expect(
       utils.validateChildren.bind(null, badOtherChildren, validTypes)
-    ).to.throw(anError);
+    ).toThrow(anError);
   });
 });

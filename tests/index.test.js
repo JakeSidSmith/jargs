@@ -1,7 +1,5 @@
 /* global describe, it */
 
-import { expect } from 'chai';
-
 import * as index from '../src/index';
 
 describe('index.js', () => {
@@ -19,11 +17,11 @@ describe('index.js', () => {
       RequireAny: 'function',
     };
 
-    expect(index).to.be.ok;
+    expect(index).toBeTruthy();
 
     for (let key in index) {
-      expect(key in keyTypeMap).to.be.true;
-      expect(typeof index[key]).to.equal(keyTypeMap[key]);
+      expect(key in keyTypeMap).toBe(true);
+      expect(typeof index[key]).toBe(keyTypeMap[key]);
     }
   });
 });

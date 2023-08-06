@@ -1,7 +1,5 @@
 /* global describe, it */
 
-import { expect } from 'chai';
-
 import { Command } from '../src/command';
 import { Program } from '../src/program';
 
@@ -11,8 +9,8 @@ describe('program.js', () => {
     let child2 = Command('child2');
     let node = Program('foo', null, child1, child2);
 
-    expect(node).to.be.ok;
-    expect(node).to.eql({
+    expect(node).toBeTruthy();
+    expect(node).toEqual({
       _globals: {},
       _type: 'program',
       _requireAll: [],

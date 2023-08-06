@@ -1,7 +1,5 @@
 /* global describe, it */
 
-import { expect } from 'chai';
-
 import { Command } from '../src/command';
 
 describe('command.js', () => {
@@ -10,15 +8,15 @@ describe('command.js', () => {
     let child2 = Command('child2');
     let node = Command('foo', { alias: 'bar' }, child1, child2);
 
-    expect(node).to.be.ok;
-    expect(node.name).to.equal('foo');
-    expect(node.options).to.eql({
+    expect(node).toBeTruthy();
+    expect(node.name).toBe('foo');
+    expect(node.options).toEqual({
       alias: 'bar',
       description: '',
       usage: '',
       examples: [],
     });
-    expect(node.children).to.eql([child1, child2]);
-    expect(node._type).to.equal('command');
+    expect(node.children).toEqual([child1, child2]);
+    expect(node._type).toBe('command');
   });
 });
