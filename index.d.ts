@@ -1,7 +1,9 @@
 declare module 'jargs' {
+  export type EmptyObject = Record<never, never>;
+
   export type HelpOrProgram = Help | Program;
 
-  export function collect<T extends InferTree<Tree>>(
+  export function collect<const T extends Tree>(
     rootNode: HelpOrProgram,
     argv: ReadonlyArray<string>
   ): T;
@@ -14,13 +16,11 @@ declare module 'jargs' {
     [index: string]: true | undefined;
   }
 
-  export type InferTree<T extends Tree<infer C>> = Tree<C>;
-
   export interface Tree<
-    C extends InferTree<Tree> | undefined = undefined,
-    K extends ArgsOrKWArgs = {},
-    F extends Flags = {},
-    A extends ArgsOrKWArgs = {},
+    C extends Tree | undefined = undefined,
+    K extends ArgsOrKWArgs = EmptyObject,
+    F extends Flags = EmptyObject,
+    A extends ArgsOrKWArgs = EmptyObject,
   > {
     name: string;
     command?: C;
@@ -36,8 +36,8 @@ declare module 'jargs' {
   }
 
   export interface ProgramProps<
-    T extends InferTree<Tree> = Tree,
-    P extends InferTree<Tree> | undefined = undefined,
+    T extends Tree = Tree,
+    P extends Tree | undefined = undefined,
     R = void,
   > {
     description?: string;
@@ -47,8 +47,8 @@ declare module 'jargs' {
   }
 
   export interface CommandProps<
-    T extends InferTree<Tree> = Tree,
-    P extends InferTree<Tree> | undefined = undefined,
+    T extends Tree = Tree,
+    P extends Tree | undefined = undefined,
     R = void,
   > {
     description?: string;
@@ -152,8 +152,8 @@ declare module 'jargs' {
     program: Program
   ): Help;
   export function Program<
-    T extends InferTree<Tree> = Tree,
-    P extends InferTree<Tree> | undefined = undefined,
+    const T extends Tree = Tree,
+    const P extends Tree | undefined = undefined,
     R = void,
   >(
     name: string,
@@ -161,8 +161,8 @@ declare module 'jargs' {
     ...nodes: ReadonlyArray<ProgramOrCommandChild>
   ): Program;
   export function Command<
-    T extends InferTree<Tree> = Tree,
-    P extends InferTree<Tree> | undefined = undefined,
+    const T extends Tree = Tree,
+    const P extends Tree | undefined = undefined,
     R = void,
   >(
     name: string,
