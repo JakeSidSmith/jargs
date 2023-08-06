@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": true,
+    "outDir": "commonjs",
+    "target": "ES5",
+    "module": "CommonJS"
+  },
+  "include": ["src"]
+}

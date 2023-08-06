@@ -1,33 +1,22 @@
-'use strict';
+import { getNodeProperties, serializeOptions, validateName } from './utils';
 
-(function () {
+let validOptions = {
+  alias: {
+    type: 'string',
+    length: 1,
+  },
+  description: {
+    type: 'string',
+    default: '',
+  },
+};
 
-  var utils = require('./utils');
-  var getNodeProperties = utils.getNodeProperties;
-  var validateName = utils.validateName;
-  var serializeOptions = utils.serializeOptions;
+export function Flag() {
+  let properties = getNodeProperties(arguments);
+  validateName(properties.name);
+  serializeOptions(properties.options, validOptions);
 
-  var validOptions = {
-    alias: {
-      type: 'string',
-      length: 1
-    },
-    description: {
-      type: 'string',
-      default: ''
-    }
-  };
+  properties._type = 'flag';
 
-  function Flag () {
-    var properties = getNodeProperties(arguments);
-    validateName(properties.name);
-    serializeOptions(properties.options, validOptions);
-
-    properties._type = 'flag';
-
-    return properties;
-  }
-
-  module.exports = Flag;
-
-})();
+  return properties;
+}

@@ -1,8 +1,12 @@
 declare module 'jargs' {
+  export type EmptyObject = Record<never, never>;
 
   export type HelpOrProgram = Help | Program;
 
-  export function collect <T extends InferTree<Tree>>(rootNode: HelpOrProgram, argv: ReadonlyArray<string>): T;
+  export function collect<const T extends Tree>(
+    rootNode: HelpOrProgram,
+    argv: ReadonlyArray<string>
+  ): T;
 
   export interface ArgsOrKWArgs {
     [index: string]: string | undefined | ReadonlyArray<string>;
@@ -12,9 +16,12 @@ declare module 'jargs' {
     [index: string]: true | undefined;
   }
 
-  export type InferTree<T extends Tree<infer C>> = Tree<C>;
-
-  export interface Tree<C extends InferTree<Tree> | undefined = undefined, K extends ArgsOrKWArgs = {}, F extends Flags = {}, A extends ArgsOrKWArgs = {}> {
+  export interface Tree<
+    C extends Tree | undefined = undefined,
+    K extends ArgsOrKWArgs = EmptyObject,
+    F extends Flags = EmptyObject,
+    A extends ArgsOrKWArgs = EmptyObject,
+  > {
     name: string;
     command?: C;
     kwargs: K;
@@ -28,14 +35,22 @@ declare module 'jargs' {
     alias?: string;
   }
 
-  export interface ProgramProps<T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void> {
+  export interface ProgramProps<
+    T extends Tree = Tree,
+    P extends Tree | undefined = undefined,
+    R = void,
+  > {
     description?: string;
     usage?: string;
     examples?: ReadonlyArray<string>;
     callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
   }
 
-  export interface CommandProps<T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void> {
+  export interface CommandProps<
+    T extends Tree = Tree,
+    P extends Tree | undefined = undefined,
+    R = void,
+  > {
     description?: string;
     alias?: string;
     usage?: string;
@@ -120,29 +135,48 @@ declare module 'jargs' {
     children: ReadonlyArray<RequiredChild>;
   }
 
-  export type RequiredChild =
-    Command |
-    KWArg |
-    Flag |
-    Arg;
+  export type RequiredChild = Command | KWArg | Flag | Arg;
 
   export type ProgramOrCommandChild =
-    Command |
-    KWArg |
-    Flag |
-    Arg |
-    Required |
-    RequireAll |
-    RequireAny;
+    | Command
+    | KWArg
+    | Flag
+    | Arg
+    | Required
+    | RequireAll
+    | RequireAny;
 
-  export function Help (name: string, props: HelpProps | null | undefined, program: Program): Help;
-  export function Program <T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void>(name: string, props?: ProgramProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Program;
-  export function Command <T extends InferTree<Tree> = Tree, P extends InferTree<Tree> | undefined = undefined, R = void>(name: string, props?: CommandProps<T, P, R> | null, ...nodes: ReadonlyArray<ProgramOrCommandChild>): Command;
-  export function KWArg (name: string, props?: KWArgProps | null): KWArg;
-  export function Flag (name: string, props?: FlagProps | null): Flag;
-  export function Arg (name: string, props?: ArgProps | null): Arg;
-  export function Required (node: RequiredChild): Required;
-  export function RequireAll (...nodes: ReadonlyArray<RequiredChild>): RequireAll;
-  export function RequireAny (...nodes: ReadonlyArray<RequiredChild>): RequireAny;
-
+  export function Help(
+    name: string,
+    props: HelpProps | null | undefined,
+    program: Program
+  ): Help;
+  export function Program<
+    const T extends Tree = Tree,
+    const P extends Tree | undefined = undefined,
+    R = void,
+  >(
+    name: string,
+    props?: ProgramProps<T, P, R> | null,
+    ...nodes: ReadonlyArray<ProgramOrCommandChild>
+  ): Program;
+  export function Command<
+    const T extends Tree = Tree,
+    const P extends Tree | undefined = undefined,
+    R = void,
+  >(
+    name: string,
+    props?: CommandProps<T, P, R> | null,
+    ...nodes: ReadonlyArray<ProgramOrCommandChild>
+  ): Command;
+  export function KWArg(name: string, props?: KWArgProps | null): KWArg;
+  export function Flag(name: string, props?: FlagProps | null): Flag;
+  export function Arg(name: string, props?: ArgProps | null): Arg;
+  export function Required(node: RequiredChild): Required;
+  export function RequireAll(
+    ...nodes: ReadonlyArray<RequiredChild>
+  ): RequireAll;
+  export function RequireAny(
+    ...nodes: ReadonlyArray<RequiredChild>
+  ): RequireAny;
 }

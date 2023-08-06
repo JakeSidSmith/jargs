@@ -1,11 +1,21 @@
 {
   "compilerOptions": {
-    "noImplicitAny": true,
-    "skipLibCheck": true,
-    "pretty": true,
     "strict": true,
+    "allowJs": true,
+    "noErrorTruncation": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "module": "ESNext"
   },
   "include": ["./index.d.ts"]
 }
