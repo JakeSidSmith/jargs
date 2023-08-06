@@ -4,8 +4,8 @@ import { expect } from 'chai';
 
 import * as index from '../src/index';
 
-describe('index.js', function () {
-  it('should export some stuff', function () {
+describe('index.js', () => {
+  it('should export some stuff', () => {
     let keyTypeMap = {
       collect: 'function',
       Help: 'function',

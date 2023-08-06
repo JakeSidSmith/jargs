@@ -4,8 +4,8 @@ import { expect } from 'chai';
 
 import { Arg } from '../src/arg';
 
-describe('arg.js', function () {
-  it('should construct an Arg', function () {
+describe('arg.js', () => {
+  it('should construct an Arg', () => {
     let node = Arg('foo', null);
 
     expect(node).to.be.ok;
@@ -15,7 +15,7 @@ describe('arg.js', function () {
     expect(node._type).to.equal('arg');
   });
 
-  it('should throw an error if has children', function () {
+  it('should throw an error if has children', () => {
     let anError = /children/i;
 
     expect(Arg.bind(null, 'foo', null, 'child')).to.throw(anError);

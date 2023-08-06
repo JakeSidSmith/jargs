@@ -4,8 +4,8 @@ import { expect } from 'chai';
 
 import { Flag } from '../src/flag';
 
-describe('flag.js', function () {
-  it('should construct a Flag', function () {
+describe('flag.js', () => {
+  it('should construct a Flag', () => {
     let node = Flag('foo', { alias: 'f' });
 
     expect(node).to.be.ok;
@@ -15,14 +15,14 @@ describe('flag.js', function () {
     expect(node._type).to.equal('flag');
   });
 
-  it('should throw an error if alias is more than 1 char', function () {
+  it('should throw an error if alias is more than 1 char', () => {
     let anError = /length/;
     let node = Flag.bind(null, 'foo', { alias: 'fo' });
 
     expect(node).to.throw(anError);
   });
 
-  it('should throw an error if has children', function () {
+  it('should throw an error if has children', () => {
     let anError = /children/i;
 
     expect(Flag.bind(null, 'foo', null, 'child')).to.throw(anError);

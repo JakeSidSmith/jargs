@@ -18,5 +18,4 @@ module.exports = {
     '<rootDir>/node_modules/',
     '<rootDir>/tests/helpers/',
   ],
-  setupFiles: ['<rootDir>/tests/helpers/test-setup.js'],
 };

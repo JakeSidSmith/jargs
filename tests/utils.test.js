@@ -13,13 +13,13 @@ import { RequireAny } from '../src/require-any';
 import { Required } from '../src/required';
 import * as utils from '../src/utils';
 
-describe('utils.js', function () {
-  it('should exist', function () {
+describe('utils.js', () => {
+  it('should exist', () => {
     expect(utils).to.be.ok;
   });
 
-  describe('argsToArray', function () {
-    it('should convert arguments to an array', function () {
+  describe('argsToArray', () => {
+    it('should convert arguments to an array', () => {
       function fn() {
         let args = utils.argsToArray(arguments);
 
@@ -31,8 +31,8 @@ describe('utils.js', function () {
     });
   });
 
-  describe('getNodeProperties', function () {
-    it('should throw an error for invalid children', function () {
+  describe('getNodeProperties', () => {
+    it('should throw an error for invalid children', () => {
       let anError = /invalid/i;
       let child1 = Command('child1');
       let child2 = 'invalid';
@@ -46,7 +46,7 @@ describe('utils.js', function () {
       );
     });
 
-    it('should throw an error for invalid types of children', function () {
+    it('should throw an error for invalid types of children', () => {
       let anError = /invalid/i;
       let child1 = Command('child1');
       let child2 = Program('invalid');
@@ -60,125 +60,140 @@ describe('utils.js', function () {
       );
     });
 
-    it("should get a node's properties from the supplied arguments (with children)", function () {
-      let child1 = Command('child1');
-      let child2 = Command('child2');
-      let child3 = Command('child3');
+    it(
+      "should get a node's properties from the supplied arguments (with children)",
+      () => {
+        let child1 = Command('child1');
+        let child2 = Command('child2');
+        let child3 = Command('child3');
 
-      function fn() {
-        let properties = utils.getNodeProperties(arguments, true);
+        function fn() {
+          let properties = utils.getNodeProperties(arguments, true);
 
-        expect(properties).to.be.ok;
-        expect(properties).to.eql({
-          name: 'foo',
-          options: {
-            alias: 'bar',
-          },
-          children: [child1, child2, child3],
-          _requireAll: [],
-          _requireAny: [],
-        });
+          expect(properties).to.be.ok;
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar',
+            },
+            children: [child1, child2, child3],
+            _requireAll: [],
+            _requireAny: [],
+          });
+        }
+
+        fn('foo', { alias: 'bar' }, child1, child2, child3);
       }
+    );
 
-      fn('foo', { alias: 'bar' }, child1, child2, child3);
-    });
+    it(
+      "should get a node's properties from the supplied arguments (with required children)",
+      () => {
+        let child1 = Arg('child1');
+        let child2 = Arg('child2');
+        let child3 = Arg('child3');
+        let child4 = Arg('child4');
+        let child5 = Arg('child5');
+        let child6 = Arg('child6');
+        let child7 = Arg('child7');
 
-    it("should get a node's properties from the supplied arguments (with required children)", function () {
-      let child1 = Arg('child1');
-      let child2 = Arg('child2');
-      let child3 = Arg('child3');
-      let child4 = Arg('child4');
-      let child5 = Arg('child5');
-      let child6 = Arg('child6');
-      let child7 = Arg('child7');
+        function fn() {
+          let properties = utils.getNodeProperties(arguments, true);
 
-      function fn() {
-        let properties = utils.getNodeProperties(arguments, true);
+          expect(properties).to.be.ok;
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar',
+            },
+            children: [child1, child2, child3, child4, child5, child6, child7],
+            _requireAll: [child2, child3, child4],
+            _requireAny: [[child5, child6]],
+          });
 
-        expect(properties).to.be.ok;
-        expect(properties).to.eql({
-          name: 'foo',
-          options: {
-            alias: 'bar',
-          },
-          children: [child1, child2, child3, child4, child5, child6, child7],
-          _requireAll: [child2, child3, child4],
-          _requireAny: [[child5, child6]],
-        });
+          expect(properties.children[0]).to.equal(child1);
+          expect(properties.children[3]).to.equal(child4);
 
-        expect(properties.children[0]).to.equal(child1);
-        expect(properties.children[3]).to.equal(child4);
+          expect(properties._requireAll[1]).to.equal(child3);
+          expect(properties._requireAny[0][0]).to.equal(child5);
+        }
 
-        expect(properties._requireAll[1]).to.equal(child3);
-        expect(properties._requireAny[0][0]).to.equal(child5);
-      }
-
-      fn(
-        'foo',
-        { alias: 'bar' },
-        child1,
-        Required(child2),
-        RequireAll(child3, child4),
-        RequireAny(child5, child6),
-        child7
-      );
-    });
-
-    it("should get a node's properties from the supplied arguments (without children)", function () {
-      function fn() {
-        let properties = utils.getNodeProperties(arguments);
-
-        expect(properties).to.be.ok;
-        expect(properties).to.eql({
-          name: 'foo',
-          options: {
-            alias: 'bar',
-          },
-        });
-      }
-
-      fn('foo', { alias: 'bar' });
-    });
-
-    it('should should throw an error if children are provided, but not welcome', function () {
-      let anError = /children/i;
-      let child = Command('child');
-
-      function fn() {
-        utils.getNodeProperties(arguments);
-      }
-
-      expect(fn.bind(null, 'foo', { alias: 'bar' }, child)).to.throw(anError);
-    });
-
-    it('should should throw an error if more than one command is required', function () {
-      let anError = /more\sthan\sone/i;
-      let child1 = Command('child1');
-      let child2 = Command('child2');
-
-      function fn() {
-        utils.getNodeProperties(arguments, true);
-      }
-
-      expect(
-        fn.bind(
-          null,
+        fn(
           'foo',
           { alias: 'bar' },
-          Required(child1),
-          Required(child2)
-        )
-      ).to.throw(anError);
-      expect(
-        fn.bind(null, 'foo', { alias: 'bar' }, RequireAll(child1, child2))
-      ).to.throw(anError);
-    });
+          child1,
+          Required(child2),
+          RequireAll(child3, child4),
+          RequireAny(child5, child6),
+          child7
+        );
+      }
+    );
+
+    it(
+      "should get a node's properties from the supplied arguments (without children)",
+      () => {
+        function fn() {
+          let properties = utils.getNodeProperties(arguments);
+
+          expect(properties).to.be.ok;
+          expect(properties).to.eql({
+            name: 'foo',
+            options: {
+              alias: 'bar',
+            },
+          });
+        }
+
+        fn('foo', { alias: 'bar' });
+      }
+    );
+
+    it(
+      'should should throw an error if children are provided, but not welcome',
+      () => {
+        let anError = /children/i;
+        let child = Command('child');
+
+        function fn() {
+          utils.getNodeProperties(arguments);
+        }
+
+        expect(fn.bind(null, 'foo', { alias: 'bar' }, child)).to.throw(anError);
+      }
+    );
+
+    it(
+      'should should throw an error if more than one command is required',
+      () => {
+        let anError = /more\sthan\sone/i;
+        let child1 = Command('child1');
+        let child2 = Command('child2');
+
+        function fn() {
+          utils.getNodeProperties(arguments, true);
+        }
+
+        expect(
+          fn.bind(
+            null,
+            'foo',
+            { alias: 'bar' },
+            Required(child1),
+            Required(child2)
+          )
+        ).to.throw(anError);
+        expect(
+          fn.bind(null, 'foo', { alias: 'bar' }, RequireAll(child1, child2))
+        ).to.throw(anError);
+      }
+    );
   });
 
-  describe('find', function () {
+  describe('find', () => {
     let arr = [1, 2, 3, 4, 5];
 
-    it('should return null if no items match the predicate', function () {
+    it('should return null if no items match the predicate', () => {
       let result = utils.find(arr, function (value) {
         return value > 5;
       });
@@ -186,7 +201,7 @@ describe('utils.js', function () {
       expect(result).to.be.null;
     });
 
-    it('should return the value if an item matches the predicate', function () {
+    it('should return the value if an item matches the predicate', () => {
       let result = utils.find(arr, function (value) {
         return value < 4 && value > 2;
       });
@@ -195,26 +210,29 @@ describe('utils.js', function () {
     });
   });
 
-  describe('each', function () {
+  describe('each', () => {
     let arr = [1, 2, 3, 4, 5];
 
-    it('should call the provided function for each item in an array', function () {
-      let count = 0;
+    it(
+      'should call the provided function for each item in an array',
+      () => {
+        let count = 0;
 
-      utils.each(arr, function (value, index) {
-        expect(index).to.equal(count);
-        expect(value).to.equal(arr[index]);
-        count += 1;
-      });
+        utils.each(arr, function (value, index) {
+          expect(index).to.equal(count);
+          expect(value).to.equal(arr[index]);
+          count += 1;
+        });
 
-      expect(count).to.equal(5);
-    });
+        expect(count).to.equal(5);
+      }
+    );
   });
 
-  describe('any', function () {
+  describe('any', () => {
     let arr = [1, 2, 3, 4, 5];
 
-    it('should return true if any items match the predicate', function () {
+    it('should return true if any items match the predicate', () => {
       expect(
         utils.any(arr, function (value) {
           return value === 3;
@@ -229,10 +247,10 @@ describe('utils.js', function () {
     });
   });
 
-  describe('several', function () {
+  describe('several', () => {
     let arr = [1, 2, 3, 4, 5];
 
-    it('should return true if several items match the predicate', function () {
+    it('should return true if several items match the predicate', () => {
       expect(
         utils.several(arr, function (value) {
           return value > 3;
@@ -247,16 +265,16 @@ describe('utils.js', function () {
     });
   });
 
-  describe('sum', function () {
-    it('should sum the values in an array', function () {
+  describe('sum', () => {
+    it('should sum the values in an array', () => {
       expect(utils.sum([1, 2, 3, 4])).to.equal(10);
       expect(utils.sum([1, 2, 3, 4, 5])).to.equal(15);
       expect(utils.sum([3, 4, 2])).to.equal(9);
     });
   });
 
-  describe('sortByName', function () {
-    it('should sort some nodes by name', function () {
+  describe('sortByName', () => {
+    it('should sort some nodes by name', () => {
       let nodes = [
         { name: 'c' },
         { name: 'a' },
@@ -277,8 +295,8 @@ describe('utils.js', function () {
     });
   });
 
-  describe('createHelp', function () {
-    it('should create a basic error message', function () {
+  describe('createHelp', () => {
+    it('should create a basic error message', () => {
       let schema = Command('test');
       let error = 'An error';
 
@@ -287,7 +305,7 @@ describe('utils.js', function () {
       expect(utils.createHelp(schema, {}, error)).to.equal(expected);
     });
 
-    it('should create help with usage text', function () {
+    it('should create help with usage text', () => {
       let schema = Command('test', { usage: 'How to use' });
       let error = 'An error';
 
@@ -298,7 +316,7 @@ describe('utils.js', function () {
       expect(utils.createHelp(schema, {}, error)).to.equal(expected);
     });
 
-    it('should create help with commands text', function () {
+    it('should create help with commands text', () => {
       let schema = Command(
         'test',
         null,
@@ -321,7 +339,7 @@ describe('utils.js', function () {
       expect(result).to.equal(expected);
     });
 
-    it('should create help with options text', function () {
+    it('should create help with options text', () => {
       let schema = Command(
         'test',
         null,
@@ -344,7 +362,7 @@ describe('utils.js', function () {
       expect(utils.createHelp(schema, {}, error)).to.equal(expected);
     });
 
-    it('should create help with global help option', function () {
+    it('should create help with global help option', () => {
       let schema = Help(
         'help',
         {
@@ -381,7 +399,7 @@ describe('utils.js', function () {
       ).to.equal(expected);
     });
 
-    it('should create help with global help option (overridden)', function () {
+    it('should create help with global help option (overridden)', () => {
       let schema = Help(
         'help',
         {
@@ -422,7 +440,7 @@ describe('utils.js', function () {
       ).to.equal(expected);
     });
 
-    it('should create help with options text with types', function () {
+    it('should create help with options text with types', () => {
       let schema = Command(
         'test',
         null,
@@ -445,7 +463,7 @@ describe('utils.js', function () {
       expect(utils.createHelp(schema, {}, error)).to.equal(expected);
     });
 
-    it('should create help with examples text', function () {
+    it('should create help with examples text', () => {
       let schema = Command('test', { examples: ['Just like this'] });
       let error = 'An error';
 
@@ -462,7 +480,7 @@ describe('utils.js', function () {
       expect(utils.createHelp(schema, {}, error)).to.equal(expected);
     });
 
-    it('should create some complex help text', function () {
+    it('should create some complex help text', () => {
       let schema = Command(
         'test',
         {
@@ -507,97 +525,106 @@ describe('utils.js', function () {
     });
   });
 
-  describe('formatTable', function () {
-    it('should format a table with 2 columns, and wrap the last column (commands)', function () {
-      let table = [
-        ['build', 'Build your project'],
-        [
-          'install, i',
-          'Install new dependencies, or dependencies saved in your package.json',
-        ],
-      ];
+  describe('formatTable', () => {
+    it(
+      'should format a table with 2 columns, and wrap the last column (commands)',
+      () => {
+        let table = [
+          ['build', 'Build your project'],
+          [
+            'install, i',
+            'Install new dependencies, or dependencies saved in your package.json',
+          ],
+        ];
 
-      let expected = [
-        '    build       Build your project',
-        '    install, i  Install new dependencies, or dependencies saved in your',
-        '                package.json',
-      ].join('\n');
+        let expected = [
+          '    build       Build your project',
+          '    install, i  Install new dependencies, or dependencies saved in your',
+          '                package.json',
+        ].join('\n');
 
-      let result = utils.formatTable(table, { alignRight: [], wrap: [1] });
+        let result = utils.formatTable(table, { alignRight: [], wrap: [1] });
 
-      expect(result).to.equal(expected);
-    });
+        expect(result).to.equal(expected);
+      }
+    );
 
-    it('should format a table with 3 columns, and wrap the 2nd column (options)', function () {
-      let table = [
-        ['--help', 'Display help & usage information', ''],
-        [
-          '--transform, -t',
-          'Plugin to use when compiling your javascript blah blah blah',
-          '[string]',
-        ],
-        ['--version, -v', 'Display version number', ''],
-      ];
+    it(
+      'should format a table with 3 columns, and wrap the 2nd column (options)',
+      () => {
+        let table = [
+          ['--help', 'Display help & usage information', ''],
+          [
+            '--transform, -t',
+            'Plugin to use when compiling your javascript blah blah blah',
+            '[string]',
+          ],
+          ['--version, -v', 'Display version number', ''],
+        ];
 
-      let expected = [
-        '    --help           Display help & usage information',
-        '    --transform, -t  Plugin to use when compiling your javascript blah  [string]',
-        '                     blah blah',
-        '    --version, -v    Display version number',
-      ].join('\n');
+        let expected = [
+          '    --help           Display help & usage information',
+          '    --transform, -t  Plugin to use when compiling your javascript blah  [string]',
+          '                     blah blah',
+          '    --version, -v    Display version number',
+        ].join('\n');
 
-      let result = utils.formatTable(table, { alignRight: [2], wrap: [1] });
+        let result = utils.formatTable(table, { alignRight: [2], wrap: [1] });
 
-      expect(result).to.equal(expected);
-    });
+        expect(result).to.equal(expected);
+      }
+    );
 
-    it('should format a table with 3 columns, and wrap the last 2, and right align the final column', function () {
-      let table = [
-        [
-          'line1',
-          'Some text that should be wrapped',
-          'Some right aligned text that will be wrappped',
-        ],
-        [
-          'line2, l2',
-          'Some incidentally wrapped text',
-          'Some right aligned text',
-        ],
-        ['line3, l3', 'No wrap', 'Right aligned'],
-        [
-          'line4, l4',
-          'Another line of text that should be wrapped',
-          "Some more right aligned text that will be wrapped onto 3 different lines because it's really quite long",
-        ],
-        [
-          'line5, l5',
-          'Ahyphenatedwordwillbewrapped',
-          'Anotherhyphenatedwordwillbewrappedbuthastobelongerbecausethiscolumniswider',
-        ],
-      ];
+    it(
+      'should format a table with 3 columns, and wrap the last 2, and right align the final column',
+      () => {
+        let table = [
+          [
+            'line1',
+            'Some text that should be wrapped',
+            'Some right aligned text that will be wrappped',
+          ],
+          [
+            'line2, l2',
+            'Some incidentally wrapped text',
+            'Some right aligned text',
+          ],
+          ['line3, l3', 'No wrap', 'Right aligned'],
+          [
+            'line4, l4',
+            'Another line of text that should be wrapped',
+            "Some more right aligned text that will be wrapped onto 3 different lines because it's really quite long",
+          ],
+          [
+            'line5, l5',
+            'Ahyphenatedwordwillbewrapped',
+            'Anotherhyphenatedwordwillbewrappedbuthastobelongerbecausethiscolumniswider',
+          ],
+        ];
 
-      let expected = [
-        '    line1      Some text that               Some right aligned text that will be',
-        '               should be wrapped                                        wrappped',
-        '    line2, l2  Some incidentally                         Some right aligned text',
-        '               wrapped text',
-        '    line3, l3  No wrap                                             Right aligned',
-        '    line4, l4  Another line of         Some more right aligned text that will be',
-        "               text that should be   wrapped onto 3 different lines because it's",
-        '               wrapped                                         really quite long',
-        '    line5, l5  Ahyphenatedwordwil-  Anotherhyphenatedwordwillbewrappedbuthastob-',
-        '               lbewrapped                        elongerbecausethiscolumniswider',
-      ].join('\n');
+        let expected = [
+          '    line1      Some text that               Some right aligned text that will be',
+          '               should be wrapped                                        wrappped',
+          '    line2, l2  Some incidentally                         Some right aligned text',
+          '               wrapped text',
+          '    line3, l3  No wrap                                             Right aligned',
+          '    line4, l4  Another line of         Some more right aligned text that will be',
+          "               text that should be   wrapped onto 3 different lines because it's",
+          '               wrapped                                         really quite long',
+          '    line5, l5  Ahyphenatedwordwil-  Anotherhyphenatedwordwillbewrappedbuthastob-',
+          '               lbewrapped                        elongerbecausethiscolumniswider',
+        ].join('\n');
 
-      let result = utils.formatTable(table, {
-        alignRight: [2],
-        wrap: [1, 2],
-      });
+        let result = utils.formatTable(table, {
+          alignRight: [2],
+          wrap: [1, 2],
+        });
 
-      expect(result).to.equal(expected);
-    });
+        expect(result).to.equal(expected);
+      }
+    );
 
-    it('should format a table with 3 columns and wrap them all', function () {
+    it('should format a table with 3 columns and wrap them all', () => {
       let table = [
         [
           '40 character string la da da da da... da',
@@ -625,8 +652,8 @@ describe('utils.js', function () {
     });
   });
 
-  describe('formatRequiredList', function () {
-    it('should format node names in a list', function () {
+  describe('formatRequiredList', () => {
+    it('should format node names in a list', () => {
       expect(utils.formatRequiredList([Arg('arg'), KWArg('kwarg')])).to.equal(
         'arg, --kwarg'
       );

@@ -5,8 +5,8 @@ import { expect } from 'chai';
 import { Command } from '../src/command';
 import { Program } from '../src/program';
 
-describe('program.js', function () {
-  it('should construct a Program', function () {
+describe('program.js', () => {
+  it('should construct a Program', () => {
     let child1 = Command('child1');
     let child2 = Command('child2');
     let node = Program('foo', null, child1, child2);

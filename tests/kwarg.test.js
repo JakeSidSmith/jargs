@@ -4,8 +4,8 @@ import { expect } from 'chai';
 
 import { KWArg } from '../src/kwarg';
 
-describe('kwarg.js', function () {
-  it('should construct a KWArg', function () {
+describe('kwarg.js', () => {
+  it('should construct a KWArg', () => {
     let node = KWArg('foo', { alias: 'f' });
 
     expect(node).to.be.ok;
@@ -19,14 +19,14 @@ describe('kwarg.js', function () {
     expect(node._type).to.equal('kwarg');
   });
 
-  it('should throw an error if alias is more than 1 char', function () {
+  it('should throw an error if alias is more than 1 char', () => {
     let anError = /length/;
     let node = KWArg.bind(null, 'foo', { alias: 'fo' });
 
     expect(node).to.throw(anError);
   });
 
-  it('should throw an error if has children', function () {
+  it('should throw an error if has children', () => {
     let anError = /children/i;
 
     expect(KWArg.bind(null, 'foo', null, 'child')).to.throw(anError);

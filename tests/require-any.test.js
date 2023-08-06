@@ -5,8 +5,8 @@ import { expect } from 'chai';
 import { Arg } from '../src/arg';
 import { RequireAny } from '../src/require-any';
 
-describe('require-any.js', function () {
-  it('should construct an RequireAll', function () {
+describe('require-any.js', () => {
+  it('should construct an RequireAll', () => {
     let child1 = Arg('foo');
     let child2 = Arg('bar');
     let node = RequireAny(child1, child2);
@@ -21,17 +21,20 @@ describe('require-any.js', function () {
     expect(node.children[1]).to.equal(child2);
   });
 
-  it('should throw an error if no children are supplied', function () {
+  it('should throw an error if no children are supplied', () => {
     let anError = /child/i;
 
     expect(RequireAny).to.throw(anError);
   });
 
-  it('should throw an error if less than 2 children are supplied', function () {
-    let anError = /child/i;
-    let child = Arg('foo');
-    let boundRequired = RequireAny.bind(null, child);
+  it(
+    'should throw an error if less than 2 children are supplied',
+    () => {
+      let anError = /child/i;
+      let child = Arg('foo');
+      let boundRequired = RequireAny.bind(null, child);
 
-    expect(boundRequired).to.throw(anError);
-  });
+      expect(boundRequired).to.throw(anError);
+    }
+  );
 });
