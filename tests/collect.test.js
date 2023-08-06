@@ -20,7 +20,7 @@ describe('collect.js', () => {
     .mockImplementation(throwError);
 
   afterEach(() => {
-    jest.clearAllMocks();
+    exitWithHelpStub.mockClear();
   });
 
   it('should exist', () => {
