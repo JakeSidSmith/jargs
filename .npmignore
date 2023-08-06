@@ -1,0 +1,5 @@
+/coverage/*
+/examples/*
+/tests/*
+/.nyc_output/*
+/.github/*
