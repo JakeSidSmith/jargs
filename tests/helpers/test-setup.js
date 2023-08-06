@@ -1,9 +1,5 @@
-'use strict';
+import chai from 'chai';
+import sinonChai from 'sinon-chai';
 
-(function () {
-  var chai = require('chai');
-  var sinonChai = require('sinon-chai');
-
-  chai.expect();
-  chai.use(sinonChai);
-})();
+chai.expect();
+chai.use(sinonChai);

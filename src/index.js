@@ -1,18 +1,12 @@
-'use strict';
-
 // Ref: http://docopt.org/
 
-(function () {
-  module.exports = {
-    collect: require('./collect'),
-    Help: require('./help'),
-    Program: require('./program'),
-    Command: require('./command'),
-    KWArg: require('./kwarg'),
-    Flag: require('./flag'),
-    Arg: require('./arg'),
-    Required: require('./required'),
-    RequireAll: require('./require-all'),
-    RequireAny: require('./require-any'),
-  };
-})();
+export { collect } from './collect';
+export { Help } from './help';
+export { Program } from './program';
+export { Command } from './command';
+export { KWArg } from './kwarg';
+export { Flag } from './flag';
+export { Arg } from './arg';
+export { Required } from './required';
+export { RequireAll } from './require-all';
+export { RequireAny } from './require-any';
