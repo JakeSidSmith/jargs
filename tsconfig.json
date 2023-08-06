@@ -1,11 +1,19 @@
 {
   "compilerOptions": {
-    "noImplicitAny": true,
-    "skipLibCheck": true,
-    "pretty": true,
     "strict": true,
+    "noErrorTruncation": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "moduleResolution": "Node",
+    "target": "ES6"
   },
   "include": ["./index.d.ts"]
 }
