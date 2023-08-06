@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
+    "allowJs": true,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -13,7 +14,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "moduleResolution": "Node",
-    "target": "ES6"
+    "target": "ESNext",
+    "module": "ESNext"
   },
   "include": ["./index.d.ts"]
 }
