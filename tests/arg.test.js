@@ -1,5 +1,3 @@
-/* global describe, it */
-
 import { Arg } from '../src/arg';
 
 describe('arg.js', () => {

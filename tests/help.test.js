@@ -1,5 +1,3 @@
-/* global describe, it */
-
 import { Arg } from '../src/arg';
 import { Help } from '../src/help';
 import { Program } from '../src/program';

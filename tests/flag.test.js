@@ -1,5 +1,3 @@
-/* global describe, it */
-
 import { Flag } from '../src/flag';
 
 describe('flag.js', () => {

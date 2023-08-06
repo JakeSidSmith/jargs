@@ -1,5 +1,3 @@
-/* global describe, it */
-
 import { Arg } from '../src/arg';
 import { Command } from '../src/command';
 import { Flag } from '../src/flag';

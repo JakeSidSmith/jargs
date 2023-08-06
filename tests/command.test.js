@@ -1,5 +1,3 @@
-/* global describe, it */
-
 import { Command } from '../src/command';
 
 describe('command.js', () => {

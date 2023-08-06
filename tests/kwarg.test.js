@@ -1,5 +1,3 @@
-/* global describe, it */
-
 import { KWArg } from '../src/kwarg';
 
 describe('kwarg.js', () => {

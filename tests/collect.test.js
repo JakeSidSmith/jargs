@@ -1,5 +1,3 @@
-/* global describe, beforeEach, afterEach, it */
-
 import { Arg } from '../src/arg';
 import { collect } from '../src/collect';
 import { Command } from '../src/command';
