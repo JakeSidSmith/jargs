@@ -2,15 +2,19 @@
   "name": "jargs",
   "version": "0.4.7",
   "description": "Simple node arg parser with explicit tree structure schema",
-  "main": "src/index.js",
+  "main": "commonjs/index.js",
+  "module": "src/index.js",
   "types": "index.d.ts",
   "scripts": {
+    "dist": "npm run commonjs",
+    "commonjs": "rm -rf commonjs && tsc --project tsconfig.commonjs.json",
     "lint": "eslint src/ examples/ tests/",
     "tests": "jest --runInBand --coverage",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "format-check": "prettier --check '**/*'",
     "format": "prettier --write '**/*'",
-    "test": "npm run format-check && npm run lint && npm run typecheck && npm run tests"
+    "test": "npm run format-check && npm run lint && npm run typecheck && npm run tests",
+    "prepublishOnly": "npm run dist"
   },
   "repository": {
     "type": "git",

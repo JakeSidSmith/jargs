@@ -4,6 +4,7 @@
 /coverage/*
 /build/*
 /scripts/*
+/commonjs/*
 **/*.txt
 **/*.snap
 *.png
