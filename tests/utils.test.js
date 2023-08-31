@@ -561,4 +561,13 @@ describe('utils.js', () => {
       );
     });
   });
+
+  describe('extractErrorMessage', () => {
+    it('should return a string error message', () => {
+      expect(utils.extractErrorMessage('foo')).toBe('foo');
+      expect(utils.extractErrorMessage(123)).toBe('123');
+      expect(utils.extractErrorMessage(new Error('foo'))).toBe('foo');
+      expect(utils.extractErrorMessage(null)).toBe('An unknown error occurred');
+    });
+  });
 });
