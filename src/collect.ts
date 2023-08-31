@@ -9,28 +9,41 @@
   */
 
 import {
-  any,
-  argsToArray,
+  CollectArgs,
+  CommandNode,
+  FlagNode,
+  GlobalsInjected,
+  KWArgNode,
+  ProgramNode,
+  Tree,
+} from './types';
+import {
   createHelp,
-  each,
   exitWithHelp,
-  find,
+  extractErrorMessage,
   formatNodeName,
   formatRequiredList,
+  pluralize,
 } from './utils';
 
-let MATCHES_LEADING_HYPHENS = /^-+/;
-let MATCHES_EQUALS_VALUE = /=.*/;
-let MATCHES_NAME_EQUALS = /.*?=/;
-let MATCHES_SINGLE_HYPHEN = /^-[^-]/;
+const MATCHES_LEADING_HYPHENS = /^-+/;
+const MATCHES_EQUALS_VALUE = /=.*/;
+const MATCHES_NAME_EQUALS = /.*?=/;
+const MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-function findArgOrKWarg(schema, globals, tree, isAlias, kwargName) {
-  let matchingFlagOrKWArg = find(schema.children, function (node) {
+function findFlagOrKWarg(
+  schema: ProgramNode | CommandNode,
+  globals: GlobalsInjected,
+  tree: Tree,
+  isAlias: boolean,
+  kwargName: string
+): FlagNode | KWArgNode {
+  const matchingFlagOrKWArg = schema.children.find((node) => {
     return (
       (node._type === 'flag' || node._type === 'kwarg') &&
       (isAlias ? node.options.alias === kwargName : node.name === kwargName)
     );
-  });
+  }) as FlagNode | KWArgNode | undefined;
 
   if (!matchingFlagOrKWArg) {
     if (
@@ -51,7 +64,7 @@ function findArgOrKWarg(schema, globals, tree, isAlias, kwargName) {
       );
     }
   } else if (
-    matchingFlagOrKWArg.name in tree[matchingFlagOrKWArg._type + 's'] &&
+    matchingFlagOrKWArg.name in tree[pluralize(matchingFlagOrKWArg._type)] &&
     !matchingFlagOrKWArg.options.multi
   ) {
     throw new Error(
@@ -66,9 +79,13 @@ function findArgOrKWarg(schema, globals, tree, isAlias, kwargName) {
   return matchingFlagOrKWArg;
 }
 
-function checkRequiredArgs(schema, globals, tree) {
+function checkRequiredArgs(
+  schema: ProgramNode | CommandNode,
+  globals: GlobalsInjected,
+  tree: Tree
+) {
   if (schema._requireAll && schema._requireAll.length) {
-    each(schema._requireAll, function (node) {
+    schema._requireAll.forEach((node) => {
       if (node._type === 'command') {
         if (!tree.command || node.name !== tree.command.name) {
           throw new Error(
@@ -79,7 +96,7 @@ function checkRequiredArgs(schema, globals, tree) {
             )
           );
         }
-      } else if (!(node.name in tree[node._type + 's'])) {
+      } else if (!(node.name in tree[pluralize(node._type)])) {
         throw new Error(
           createHelp(
             schema,
@@ -92,13 +109,13 @@ function checkRequiredArgs(schema, globals, tree) {
   }
 
   if (schema._requireAny && schema._requireAny.length) {
-    each(schema._requireAny, function (anyRequired) {
-      let anyMatch = any(anyRequired, function (node) {
+    schema._requireAny.forEach((anyRequired) => {
+      const anyMatch = anyRequired.some((node) => {
         if (node._type === 'command') {
           return tree.command && node.name === tree.command.name;
         }
 
-        return node.name in tree[node._type + 's'];
+        return node.name in tree[pluralize(node._type)];
       });
 
       if (!anyMatch) {
@@ -114,8 +131,15 @@ function checkRequiredArgs(schema, globals, tree) {
   }
 }
 
-function createTree(argv, schema, globals, commands, parentTree) {
-  let tree = {
+function createTree(
+  argv: string[],
+  schema: ProgramNode | CommandNode,
+  globals: GlobalsInjected,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  commands: ((parentReturnValue: any) => void)[],
+  parentTree?: Tree
+) {
+  const tree: Tree = {
     name: schema.name,
     kwargs: {},
     flags: {},
@@ -127,26 +151,33 @@ function createTree(argv, schema, globals, commands, parentTree) {
   }
 
   if (typeof schema.options.callback === 'function') {
-    commands.push(schema.options.callback.bind(null, tree, parentTree));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    commands.push(schema.options.callback.bind(null, tree, parentTree as any));
   }
 
   while (argv.length) {
     const arg = argv.shift();
-    let isPositional = arg.indexOf('-') !== 0; // command or arg
+
+    /* istanbul ignore next */
+    if (typeof arg === 'undefined') {
+      continue;
+    }
+
+    const isPositional = arg.indexOf('-') !== 0; // command or arg
 
     if (isPositional) {
-      let matchingCommand = find(schema.children, function (node) {
+      const matchingCommand = schema.children.find((node) => {
         return (
           node._type === 'command' &&
           (node.name === arg || node.options.alias === arg)
         );
-      });
+      }) as CommandNode | undefined;
 
       // Valid command
       if (matchingCommand) {
         createTree(argv, matchingCommand, globals, commands, tree);
       } else {
-        let matchingArg = find(schema.children, function (node) {
+        const matchingArg = schema.children.find((node) => {
           return (
             node._type === 'arg' &&
             (node.options.multi || !(node.name in tree.args))
@@ -168,7 +199,7 @@ function createTree(argv, schema, globals, commands, parentTree) {
         }
       }
     } else {
-      let containsEquals = arg.indexOf('=') >= 0;
+      const containsEquals = arg.indexOf('=') >= 0;
       const isAlias = MATCHES_SINGLE_HYPHEN.test(arg);
       const kwargName = arg
         .replace(MATCHES_LEADING_HYPHENS, '')
@@ -191,10 +222,21 @@ function createTree(argv, schema, globals, commands, parentTree) {
         );
         // Valid multiple alias -abc or flag --flag
       } else if (isAlias && kwargName.length > 1) {
-        let flagNames = kwargName.split('');
-        let firstName = flagNames.shift();
+        const flagNames = kwargName.split('');
+        const firstName = flagNames.shift();
 
-        matchingFlagOrKWArg = findArgOrKWarg(
+        /* istanbul ignore next */
+        if (!firstName) {
+          throw new Error(
+            createHelp(
+              schema,
+              globals,
+              'Could not get aliased name for flag ' + kwargName
+            )
+          );
+        }
+
+        matchingFlagOrKWArg = findFlagOrKWarg(
           schema,
           globals,
           tree,
@@ -204,12 +246,11 @@ function createTree(argv, schema, globals, commands, parentTree) {
 
         // Valid multiple flag alias --abc
         if (matchingFlagOrKWArg._type === 'flag') {
-          tree[matchingFlagOrKWArg._type + 's'][
-            matchingFlagOrKWArg.name
-          ] = true;
+          tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
+            true;
 
-          each(flagNames, function (flagName) {
-            matchingFlagOrKWArg = findArgOrKWarg(
+          flagNames.forEach((flagName) => {
+            matchingFlagOrKWArg = findFlagOrKWarg(
               schema,
               globals,
               tree,
@@ -224,18 +265,18 @@ function createTree(argv, schema, globals, commands, parentTree) {
               );
               // Known flag alias -a
             } else {
-              tree[matchingFlagOrKWArg._type + 's'][
+              tree[pluralize(matchingFlagOrKWArg._type)][
                 matchingFlagOrKWArg.name
               ] = true;
             }
           });
           // Valid flag --flag
         } else {
-          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
+          tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
             kwargName.substring(1);
         }
       } else {
-        matchingFlagOrKWArg = findArgOrKWarg(
+        matchingFlagOrKWArg = findFlagOrKWarg(
           schema,
           globals,
           tree,
@@ -245,9 +286,8 @@ function createTree(argv, schema, globals, commands, parentTree) {
 
         // Flag --flag
         if (matchingFlagOrKWArg._type === 'flag') {
-          tree[matchingFlagOrKWArg._type + 's'][
-            matchingFlagOrKWArg.name
-          ] = true;
+          tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
+            true;
           // Invalid kwarg --kwarg=
         } else if (containsEquals && !kwargValue) {
           throw new Error(
@@ -268,22 +308,37 @@ function createTree(argv, schema, globals, commands, parentTree) {
 
           // Valid kwarg --kwarg value
           if (matchingFlagOrKWArg.options.multi) {
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = (
-              tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] ||
-              []
-            ).concat(argv.shift());
+            const kwargVal = argv.shift();
+
+            /* istanbul ignore next */
+            if (!kwargVal) {
+              throw new Error(
+                createHelp(schema, globals, 'No value for kwarg --' + kwargName)
+              );
+            }
+
+            tree[pluralize(matchingFlagOrKWArg._type)][
+              matchingFlagOrKWArg.name
+            ] = (
+              tree[pluralize(matchingFlagOrKWArg._type)][
+                matchingFlagOrKWArg.name
+              ] || []
+            ).concat(kwargVal);
           } else {
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
-              argv.shift();
+            tree[pluralize(matchingFlagOrKWArg._type)][
+              matchingFlagOrKWArg.name
+            ] = argv.shift();
           }
           // Valid kwarg --kwarg=value
         } else if (matchingFlagOrKWArg.options.multi) {
-          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] = (
-            tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] ||
-            []
-          ).concat(kwargValue);
+          tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
+            (
+              tree[pluralize(matchingFlagOrKWArg._type)][
+                matchingFlagOrKWArg.name
+              ] || []
+            ).concat(kwargValue);
         } else {
-          tree[matchingFlagOrKWArg._type + 's'][matchingFlagOrKWArg.name] =
+          tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
             kwargValue;
         }
       }
@@ -295,16 +350,16 @@ function createTree(argv, schema, globals, commands, parentTree) {
   let returned;
 
   while (commands.length) {
-    returned = commands.shift()(returned);
+    returned = commands.shift()?.(returned);
   }
 
   return tree;
 }
 
-export function collect(rootNode, argv) {
-  let allArgs = argsToArray(arguments);
+export function collect(...args: CollectArgs) {
+  const [rootNode, argv] = args;
 
-  if (allArgs.length > 2) {
+  if (args.length > 2) {
     throw new Error(
       'Too many arguments: collect takes only a single root node and argv'
     );
@@ -331,12 +386,13 @@ export function collect(rootNode, argv) {
   }
 
   // Remove program & command info & copy argv
-  let args = argv.slice(2);
-  let commands = [];
+  const [, , ...rest] = argv;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const commands: ((parentReturnValue: any) => void)[] = [];
 
   try {
-    return createTree(args, rootNode, rootNode._globals, commands);
+    return createTree(rest, rootNode, rootNode._globals, commands);
   } catch (error) {
-    exitWithHelp(error.message);
+    exitWithHelp(extractErrorMessage(error));
   }
 }

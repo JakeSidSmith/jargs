@@ -14,19 +14,6 @@ describe('utils.js', () => {
     expect(utils).toBeTruthy();
   });
 
-  describe('argsToArray', () => {
-    it('should convert arguments to an array', () => {
-      function fn() {
-        let args = utils.argsToArray(arguments);
-
-        expect(Array.isArray(args)).toBe(true);
-        expect(args).not.toBe(arguments);
-      }
-
-      fn('foo', 'bar');
-    });
-  });
-
   describe('getNodeProperties', () => {
     it('should throw an error for invalid children', () => {
       let anError = /invalid/i;
@@ -168,60 +155,6 @@ describe('utils.js', () => {
       expect(
         fn.bind(null, 'foo', { alias: 'bar' }, RequireAll(child1, child2))
       ).toThrow(anError);
-    });
-  });
-
-  describe('find', () => {
-    let arr = [1, 2, 3, 4, 5];
-
-    it('should return null if no items match the predicate', () => {
-      let result = utils.find(arr, function (value) {
-        return value > 5;
-      });
-
-      expect(result).toBeNull();
-    });
-
-    it('should return the value if an item matches the predicate', () => {
-      let result = utils.find(arr, function (value) {
-        return value < 4 && value > 2;
-      });
-
-      expect(result).toBe(3);
-    });
-  });
-
-  describe('each', () => {
-    let arr = [1, 2, 3, 4, 5];
-
-    it('should call the provided function for each item in an array', () => {
-      let count = 0;
-
-      utils.each(arr, function (value, index) {
-        expect(index).toBe(count);
-        expect(value).toBe(arr[index]);
-        count += 1;
-      });
-
-      expect(count).toBe(5);
-    });
-  });
-
-  describe('any', () => {
-    let arr = [1, 2, 3, 4, 5];
-
-    it('should return true if any items match the predicate', () => {
-      expect(
-        utils.any(arr, function (value) {
-          return value === 3;
-        })
-      ).toBe(true);
-
-      expect(
-        utils.any(arr, function (value) {
-          return value === 10;
-        })
-      ).toBe(false);
     });
   });
 
@@ -626,6 +559,15 @@ describe('utils.js', () => {
       expect(utils.formatRequiredList([Arg('arg'), KWArg('kwarg')])).toBe(
         'arg, --kwarg'
       );
+    });
+  });
+
+  describe('extractErrorMessage', () => {
+    it('should return a string error message', () => {
+      expect(utils.extractErrorMessage('foo')).toBe('foo');
+      expect(utils.extractErrorMessage(123)).toBe('123');
+      expect(utils.extractErrorMessage(new Error('foo'))).toBe('foo');
+      expect(utils.extractErrorMessage(null)).toBe('An unknown error occurred');
     });
   });
 });

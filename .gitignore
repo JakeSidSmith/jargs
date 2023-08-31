@@ -3,6 +3,7 @@
 /.nyc_output/*
 /examples/build/*
 /commonjs/*
+/esm/*
 
 .vscode/*
 

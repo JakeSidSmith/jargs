@@ -6,7 +6,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
@@ -17,5 +17,5 @@
     "target": "ESNext",
     "module": "ESNext"
   },
-  "include": ["./index.d.ts"]
+  "include": ["src/**/*", "test/**/*"]
 }

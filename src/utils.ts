@@ -1,12 +1,24 @@
-let MATCHES_LEADING_AND_TRAILING_SPACES = /(^\s+|\s+$)/;
-let MATCHES_TRAILING_SPACES = /\s+$/;
-let MATCHES_SPACE = /\s/;
-let MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
+import {
+  AnyArgs,
+  AnyNode,
+  ArgNode,
+  CommandNode,
+  FlagNode,
+  GlobalsInjected,
+  KWArgNode,
+  ProgramNode,
+} from './types';
+import { AnyOptions, TableFormatOptions, ValidOptions } from './types-internal';
 
-let MATCHES_ARG_TYPE = /\b(?:arg)\b/i;
-let MATCHES_KWARG_TYPE = /\b(kwarg|flag)\b/i;
+const MATCHES_LEADING_AND_TRAILING_SPACES = /(^\s+|\s+$)/;
+const MATCHES_TRAILING_SPACES = /\s+$/;
+const MATCHES_SPACE = /\s/;
+const MATCHES_BAD_NAME_CHARS = /[^a-z0-9-]/i;
 
-let VALID_CHILD_NODES = [
+const MATCHES_ARG_TYPE = /\b(?:arg)\b/i;
+const MATCHES_KWARG_TYPE = /\b(kwarg|flag)\b/i;
+
+const VALID_CHILD_NODES = [
   'arg',
   'flag',
   'kwarg',
@@ -16,76 +28,43 @@ let VALID_CHILD_NODES = [
   'required',
 ];
 
-let TABLE_OPTIONS = {
+const TABLE_OPTIONS = {
   indentation: '    ',
   margin: '  ',
   width: 80,
 };
 
-function find(arr, fn) {
-  for (let i = 0; i < arr.length; i += 1) {
-    if (fn(arr[i], i)) {
-      return arr[i];
-    }
-  }
-
-  return null;
-}
-
-function each(arr, fn) {
-  for (let i = 0; i < arr.length; i += 1) {
-    fn(arr[i], i);
-  }
-}
-
-function any(arr, fn) {
-  for (let i = 0; i < arr.length; i += 1) {
-    if (fn(arr[i], i)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function several(arr, fn) {
-  let count = 0;
-
-  for (let i = 0; i < arr.length; i += 1) {
-    if (fn(arr[i], i)) {
-      count += 1;
+const several = <T>(
+  arr: readonly T[],
+  fn: (item: T, index: number) => boolean
+) =>
+  arr.reduce((count, item, index) => {
+    if (fn(item, index)) {
+      return count + 1;
     }
 
-    if (count > 1) {
-      return true;
-    }
-  }
+    return count;
+  }, 0) > 1;
 
-  return count > 1;
+const sum = (arr: readonly number[]) =>
+  arr.reduce((count, item) => count + item, 0);
+
+function withDefault<T>(value: T, defaultValue: Exclude<T, null | undefined>) {
+  /* istanbul ignore next */
+  return (value ?? defaultValue) as Exclude<T, null | undefined>;
 }
 
-function sum(arr) {
-  let total = 0;
+function validateChildren(
+  children: readonly AnyNode[],
+  validTypes: readonly string[]
+) {
+  const argNames: string[] = [];
+  const kwargNames: string[] = [];
+  const kwargAliases: string[] = [];
+  const otherNames: string[] = [];
+  const otherAliases: string[] = [];
 
-  for (let i = 0; i < arr.length; i += 1) {
-    total += arr[i];
-  }
-
-  return total;
-}
-
-function argsToArray(args) {
-  return Array.prototype.slice.call(args);
-}
-
-function validateChildren(children, validTypes) {
-  let argNames = [];
-  let kwargNames = [];
-  let kwargAliases = [];
-  let otherNames = [];
-  let otherAliases = [];
-
-  each(children, function (node) {
+  children.forEach((node) => {
     if (typeof node !== 'object') {
       throw new Error('Invalid child node of type ' + typeof node);
     }
@@ -99,7 +78,7 @@ function validateChildren(children, validTypes) {
       );
     }
 
-    if (node.name) {
+    if ('name' in node && node.name) {
       if (MATCHES_ARG_TYPE.test(node._type)) {
         if (argNames.indexOf(node.name) >= 0) {
           throw new Error(
@@ -133,7 +112,12 @@ function validateChildren(children, validTypes) {
       }
     }
 
-    if (node.options && node.options.alias) {
+    if (
+      'options' in node &&
+      node.options &&
+      'alias' in node.options &&
+      node.options.alias
+    ) {
       if (MATCHES_KWARG_TYPE.test(node._type)) {
         if (kwargAliases.indexOf(node.options.alias) >= 0) {
           throw new Error(
@@ -159,43 +143,45 @@ function validateChildren(children, validTypes) {
   });
 }
 
-function getNodeProperties(args, getChildren) {
-  let children = argsToArray(args);
-  let name = children.shift();
-  let options = children.shift() || {};
+function getNodeProperties(args: AnyArgs, getChildren?: boolean) {
+  const [name, options, ...children] = args;
 
-  let properties = {
+  const properties = {
     name: name,
-    options: options,
+    options: withDefault(options, {}),
   };
 
   if (getChildren) {
     validateChildren(children, VALID_CHILD_NODES);
 
-    properties._requireAll = [];
-    properties._requireAny = [];
-    properties.children = [];
+    let _requireAll: (CommandNode | ArgNode | FlagNode | KWArgNode)[] = [];
+    const _requireAny: (CommandNode | ArgNode | FlagNode | KWArgNode)[][] = [];
+    let collectedChildren: (
+      | ProgramNode
+      | CommandNode
+      | ArgNode
+      | FlagNode
+      | KWArgNode
+    )[] = [];
 
-    each(children, function (child) {
+    children.forEach((child) => {
       switch (child._type) {
         case 'required':
         case 'require-all':
-          properties._requireAll = properties._requireAll.concat(
-            child.children
-          );
-          properties.children = properties.children.concat(child.children);
+          _requireAll = _requireAll.concat(child.children);
+          collectedChildren = collectedChildren.concat(child.children);
           break;
         case 'require-any':
-          properties._requireAny.push(child.children);
-          properties.children = properties.children.concat(child.children);
+          _requireAny.push(child.children);
+          collectedChildren = collectedChildren.concat(child.children);
           break;
         default:
-          properties.children = properties.children.concat(child);
+          collectedChildren = collectedChildren.concat(child);
           break;
       }
     });
 
-    let moreThanOneCommand = several(properties._requireAll, function (child) {
+    const moreThanOneCommand = several(_requireAll, function (child) {
       return child._type === 'command';
     });
 
@@ -204,6 +190,13 @@ function getNodeProperties(args, getChildren) {
         'More than one required Command at the same level. Use RequireAny'
       );
     }
+
+    return {
+      ...properties,
+      _requireAll,
+      _requireAny,
+      children: collectedChildren,
+    };
   } else if (children.length) {
     throw new Error('Only commands can have children');
   }
@@ -211,7 +204,7 @@ function getNodeProperties(args, getChildren) {
   return properties;
 }
 
-function validateName(name) {
+function validateName(name: unknown): asserts name is string {
   if (typeof name !== 'string') {
     throw new Error('Names and aliases must be a string');
   }
@@ -231,7 +224,7 @@ function validateName(name) {
   }
 }
 
-function serializeOptions(options, validOptions) {
+function serializeOptions(options: AnyOptions, validOptions: ValidOptions) {
   if (
     !(typeof options === 'undefined' || typeof options === 'object') ||
     Array.isArray(options)
@@ -245,9 +238,7 @@ function serializeOptions(options, validOptions) {
     );
   }
 
-  for (let key in options) {
-    let option = options[key];
-
+  Object.entries(options).forEach(([key, option]) => {
     if (!(key in validOptions)) {
       throw new Error("Invalid option '" + key + "'");
     }
@@ -256,7 +247,7 @@ function serializeOptions(options, validOptions) {
       validateName(option);
     }
 
-    let valid = validOptions[key];
+    const valid = validOptions[key];
 
     if (
       (valid.type === 'string' && typeof option !== 'string') ||
@@ -270,18 +261,17 @@ function serializeOptions(options, validOptions) {
       throw new Error('Option ' + key + ' must be of type ' + valid.type);
     }
 
-    if (valid.length && option.length !== valid.length) {
+    if ('length' in valid && valid.length && option.length !== valid.length) {
       throw new Error('Option ' + key + ' must be of length ' + valid.length);
     }
-  }
+  });
 
-  for (let validKey in validOptions) {
-    let validOption = validOptions[validKey];
-
+  Object.entries(validOptions).forEach(([validKey, validOption]) => {
     if ('default' in validOption && !(validKey in options)) {
-      options[validKey] = validOption.default;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (options as any)[validKey] = validOption.default;
     }
-  }
+  });
 }
 
 /*
@@ -300,15 +290,13 @@ function serializeOptions(options, validOptions) {
     Unknown argument: unknown
   */
 
-function getMaxTableWidths(table) {
-  let maxWidths = [];
+function getMaxTableWidths(table: readonly (readonly string[])[]) {
+  const maxWidths: number[] = [];
 
-  each(table, function (row) {
-    each(row, function (cell, index) {
-      if (
-        typeof maxWidths[index] === 'undefined' ||
-        cell.length > maxWidths[index]
-      ) {
+  table.forEach((row) => {
+    row.forEach((cell, index) => {
+      const maxWidth = maxWidths[index];
+      if (typeof maxWidth === 'undefined' || cell.length > maxWidth) {
         maxWidths[index] = cell.length;
       }
     });
@@ -317,10 +305,13 @@ function getMaxTableWidths(table) {
   return maxWidths;
 }
 
-function getRemainingSpace(maxWidths, options) {
+function getRemainingSpace(
+  maxWidths: readonly number[],
+  options: TableFormatOptions
+) {
   let remainingSpace = TABLE_OPTIONS.width - TABLE_OPTIONS.indentation.length;
 
-  each(maxWidths, function (value, index) {
+  maxWidths.forEach((value, index) => {
     if (options.wrap.indexOf(index) < 0) {
       remainingSpace -= value;
     }
@@ -333,7 +324,7 @@ function getRemainingSpace(maxWidths, options) {
   return remainingSpace;
 }
 
-function createSpaces(length) {
+function createSpaces(length: number) {
   let spaces = '';
 
   for (let i = 0; i < length; i += 1) {
@@ -343,7 +334,7 @@ function createSpaces(length) {
   return spaces;
 }
 
-function pad(str, length, right) {
+function pad(str: string, length: number, right: boolean) {
   if (!right) {
     return (str + createSpaces(length)).substring(0, length);
   }
@@ -355,16 +346,16 @@ function pad(str, length, right) {
 }
 
 function wrapText(
-  text,
-  availableSpace,
-  currentConcat,
-  nextConcats,
-  alignRight
+  text: string,
+  availableSpace: number,
+  currentConcat: string,
+  nextConcats: string[],
+  alignRight: boolean
 ) {
-  let wrappedWords = text.split(MATCHES_SPACE);
+  const wrappedWords = text.split(MATCHES_SPACE);
   let wrappedLineIndex = 0;
 
-  function indentLine(lineIndex) {
+  function indentLine(lineIndex: number) {
     if (typeof nextConcats[lineIndex] === 'undefined') {
       nextConcats[lineIndex] = createSpaces(currentConcat.length);
     } else {
@@ -374,12 +365,12 @@ function wrapText(
 
   indentLine(wrappedLineIndex);
 
-  each(wrappedWords, function (word, wordIndex) {
+  wrappedWords.forEach((word, wordIndex) => {
     if (word.length > availableSpace) {
       let hyphenatedWord = word;
 
       while (hyphenatedWord.length) {
-        let withHyphen =
+        const withHyphen =
           availableSpace > 1 &&
           hyphenatedWord.charAt(availableSpace) !== '-' &&
           hyphenatedWord.length > availableSpace;
@@ -418,7 +409,7 @@ function wrapText(
     }
   });
 
-  each(nextConcats, function (nextConcat, index) {
+  nextConcats.forEach((nextConcat, index) => {
     nextConcats[index] =
       nextConcat.substring(0, currentConcat.length) +
       pad(
@@ -431,11 +422,18 @@ function wrapText(
   });
 }
 
-function mapCells(table, options, maxWidths, remainingSpace, row, rowIndex) {
+function mapCells(
+  table: readonly (readonly string[])[],
+  options: TableFormatOptions,
+  maxWidths: readonly number[],
+  remainingSpace: number,
+  row: readonly string[],
+  rowIndex: number
+) {
   let currentConcat = TABLE_OPTIONS.indentation;
-  let nextConcats = [];
+  const nextConcats: string[] = [];
 
-  each(row, function (cell, index) {
+  row.forEach((cell, index) => {
     if (options.wrap.indexOf(index) < 0) {
       currentConcat += pad(
         cell,
@@ -443,16 +441,16 @@ function mapCells(table, options, maxWidths, remainingSpace, row, rowIndex) {
         options.alignRight.indexOf(index) >= 0
       );
     } else {
-      let totalWrappedMaxWidth = sum(
-        maxWidths.filter(function (width, maxWidthIndex) {
+      const totalWrappedMaxWidth = sum(
+        maxWidths.filter(function (_width, maxWidthIndex) {
           return options.wrap.indexOf(maxWidthIndex) >= 0;
         })
       );
-      let availableSpace = Math.max(
+      const availableSpace = Math.max(
         1,
         Math.round((maxWidths[index] / totalWrappedMaxWidth) * remainingSpace)
       );
-      let alignRight = options.alignRight.indexOf(index) >= 0;
+      const alignRight = options.alignRight.indexOf(index) >= 0;
 
       wrapText(cell, availableSpace, currentConcat, nextConcats, alignRight);
 
@@ -471,7 +469,7 @@ function mapCells(table, options, maxWidths, remainingSpace, row, rowIndex) {
     }
   });
 
-  each(nextConcats, function (nextConcat, nextConcatIndex) {
+  nextConcats.forEach((nextConcat, nextConcatIndex) => {
     if (nextConcatIndex > 0) {
       currentConcat += '\n' + nextConcat;
     }
@@ -484,10 +482,15 @@ function mapCells(table, options, maxWidths, remainingSpace, row, rowIndex) {
   return currentConcat;
 }
 
-function mapRows(table, options, maxWidths, remainingSpace) {
+function mapRows(
+  table: readonly (readonly string[])[],
+  options: TableFormatOptions,
+  maxWidths: readonly number[],
+  remainingSpace: number
+) {
   let concat = '';
 
-  each(table, function (row, rowIndex) {
+  table.forEach((row, rowIndex) => {
     concat += mapCells(
       table,
       options,
@@ -501,7 +504,12 @@ function mapRows(table, options, maxWidths, remainingSpace) {
   return concat;
 }
 
-function createTable(table, options, maxWidths, remainingSpace) {
+function createTable(
+  table: readonly (readonly string[])[],
+  options: TableFormatOptions,
+  maxWidths: readonly number[],
+  remainingSpace: number
+) {
   return mapRows(table, options, maxWidths, remainingSpace)
     .split('\n')
     .map(function (line) {
@@ -510,19 +518,25 @@ function createTable(table, options, maxWidths, remainingSpace) {
     .join('\n');
 }
 
-function formatTable(table, options) {
-  let maxWidths = getMaxTableWidths(table);
-  let remainingSpace = getRemainingSpace(maxWidths, options);
+function formatTable(
+  table: readonly (readonly string[])[],
+  options: TableFormatOptions
+) {
+  const maxWidths = getMaxTableWidths(table);
+  const remainingSpace = getRemainingSpace(maxWidths, options);
   return createTable(table, options, maxWidths, remainingSpace);
 }
 
-function createCommandsText(commands) {
+function createCommandsText(commands: readonly CommandNode[]) {
   return (
     (commands.length ? '  Commands:\n' : '') +
     formatTable(
-      commands.map(function (command) {
-        let alias = command.options.alias ? ', ' + command.options.alias : '';
-        return [command.name + alias, command.options.description];
+      commands.map((command): [string, string] => {
+        const alias = command.options.alias ? ', ' + command.options.alias : '';
+        return [
+          command.name + alias,
+          withDefault(command.options.description, ''),
+        ];
       }),
       { wrap: [1], alignRight: [2] }
     ) +
@@ -530,23 +544,25 @@ function createCommandsText(commands) {
   );
 }
 
-function createOptionsText(options) {
+function createOptionsText(
+  options: readonly (FlagNode | KWArgNode | ArgNode)[]
+) {
   return (
     (options.length ? '  Options:\n' : '') +
     formatTable(
-      options.map(function (option) {
-        let namePrefix = option._type === 'arg' ? '<' : '--';
-        let nameSuffix = option._type === 'arg' ? '>' : '';
-        let aliasPrefix = namePrefix.substring(0, 1);
-        let alias = option.options.alias
+      options.map((option) => {
+        const namePrefix = option._type === 'arg' ? '<' : '--';
+        const nameSuffix = option._type === 'arg' ? '>' : '';
+        const aliasPrefix = namePrefix.substring(0, 1);
+        const alias = option.options.alias
           ? ', ' + aliasPrefix + option.options.alias
           : '';
-        let type = option.options.type
+        const type = option.options.type
           ? '   [' + option.options.type + ']'
           : '';
         return [
           namePrefix + option.name + nameSuffix + alias,
-          option.options.description,
+          withDefault(option.options.description, ''),
           type,
         ];
       }),
@@ -556,19 +572,23 @@ function createOptionsText(options) {
   );
 }
 
-function createExamplesText(examples) {
+function createExamplesText(examples: readonly string[] | undefined) {
+  if (!examples?.length) {
+    return '';
+  }
+
   return (
-    (examples.length ? '  Examples:\n' : '') +
+    '  Examples:\n' +
     examples
       .map(function (example) {
         return '    ' + example;
       })
       .join('\n') +
-    (examples.length ? '\n\n' : '')
+    '\n\n'
   );
 }
 
-function sortByName(a, b) {
+function sortByName(a: { name: string }, b: { name: string }) {
   if (a.name < b.name) {
     return -1;
   }
@@ -580,14 +600,18 @@ function sortByName(a, b) {
   return 0;
 }
 
-function createHelp(schema, globals, error) {
-  let commands = [];
-  let flags = [];
-  let kwargs = [];
-  let args = [];
-  let flagAndKwargNames = [];
+function createHelp(
+  schema: ProgramNode | CommandNode,
+  globals: GlobalsInjected,
+  error?: string
+) {
+  const commands: CommandNode[] = [];
+  const flags: FlagNode[] = [];
+  const kwargs: KWArgNode[] = [];
+  const args: ArgNode[] = [];
+  const flagAndKwargNames: string[] = [];
 
-  each(schema.children, function (node) {
+  schema.children.forEach((node) => {
     if (node._type === 'command') {
       commands.push(node);
     } else if (node._type === 'flag') {
@@ -610,7 +634,7 @@ function createHelp(schema, globals, error) {
   kwargs.sort(sortByName);
   args.sort(sortByName);
 
-  let options = flags.concat(kwargs).concat(args);
+  const options = [...flags, ...kwargs, ...args];
 
   return (
     '\n' +
@@ -623,27 +647,39 @@ function createHelp(schema, globals, error) {
 }
 
 /* istanbul ignore next */
-function exitWithHelp(help) {
+function exitWithHelp(help: string) {
   process.stderr.write(help);
   process.exit(1);
 }
 
-function formatNodeName(node) {
-  let prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
+function formatNodeName(node: { name: string; _type: string }) {
+  const prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
   return prefix + node.name;
 }
 
-function formatRequiredList(nodes) {
+function formatRequiredList(nodes: readonly { name: string; _type: string }[]) {
   return nodes.map(formatNodeName).join(', ');
 }
 
+function extractErrorMessage(error: unknown) {
+  if (typeof error === 'string' || typeof error === 'number') {
+    return error.toString();
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'An unknown error occurred';
+}
+
+function pluralize<T extends string>(text: T) {
+  return `${text}s` as `${T}s`;
+}
+
 export {
-  find,
-  each,
-  any,
   several,
   sum,
-  argsToArray,
   validateChildren,
   getNodeProperties,
   validateName,
@@ -654,4 +690,7 @@ export {
   exitWithHelp,
   formatNodeName,
   formatRequiredList,
+  extractErrorMessage,
+  pluralize,
+  withDefault,
 };

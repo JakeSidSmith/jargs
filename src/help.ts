@@ -1,13 +1,15 @@
+import { HelpArgs, ProgramNode } from './types';
+import { ValidOptions } from './types-internal';
 import {
-  argsToArray,
   serializeOptions,
   validateChildren,
   validateName,
+  withDefault,
 } from './utils';
 
-let VALID_CHILD_NODES = ['program'];
+const VALID_CHILD_NODES = ['program'];
 
-let validOptions = {
+const validOptions = {
   alias: {
     type: 'string',
     length: 1,
@@ -16,13 +18,11 @@ let validOptions = {
     type: 'string',
     default: '',
   },
-};
+} satisfies ValidOptions;
 
-export function Help() {
-  let children = argsToArray(arguments);
-  let name = children.shift();
-  let options = children.shift() || {};
-  serializeOptions(options, validOptions);
+export function Help(...args: HelpArgs) {
+  const [name, options, ...children] = args;
+  serializeOptions(withDefault(options, {}), validOptions);
 
   if (!children.length) {
     throw new Error('No child nodes supplied to Help node');
@@ -38,8 +38,8 @@ export function Help() {
   children[0]._globals.help = {
     _type: 'flag',
     name: name,
-    options: options,
+    options: withDefault(options, {}),
   };
 
-  return children[0];
+  return children[0] as ProgramNode;
 }
