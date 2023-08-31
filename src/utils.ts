@@ -49,6 +49,11 @@ const several = <T>(
 const sum = (arr: readonly number[]) =>
   arr.reduce((count, item) => count + item, 0);
 
+function withDefault<T>(value: T, defaultValue: Exclude<T, null | undefined>) {
+  /* istanbul ignore next */
+  return (value ?? defaultValue) as Exclude<T, null | undefined>;
+}
+
 function validateChildren(
   children: readonly AnyNode[],
   validTypes: readonly string[]
@@ -143,7 +148,7 @@ function getNodeProperties(args: AnyArgs, getChildren?: boolean) {
 
   const properties = {
     name: name,
-    options: options ?? {},
+    options: withDefault(options, {}),
   };
 
   if (getChildren) {
@@ -528,7 +533,10 @@ function createCommandsText(commands: readonly CommandNode[]) {
     formatTable(
       commands.map((command): [string, string] => {
         const alias = command.options.alias ? ', ' + command.options.alias : '';
-        return [command.name + alias, command.options.description ?? ''];
+        return [
+          command.name + alias,
+          withDefault(command.options.description, ''),
+        ];
       }),
       { wrap: [1], alignRight: [2] }
     ) +
@@ -554,7 +562,7 @@ function createOptionsText(
           : '';
         return [
           namePrefix + option.name + nameSuffix + alias,
-          option.options.description ?? '',
+          withDefault(option.options.description, ''),
           type,
         ];
       }),
@@ -684,4 +692,5 @@ export {
   formatRequiredList,
   extractErrorMessage,
   pluralize,
+  withDefault,
 };

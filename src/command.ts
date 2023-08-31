@@ -1,6 +1,11 @@
 import { CommandArgs } from './types';
 import { ValidOptions } from './types-internal';
-import { getNodeProperties, serializeOptions, validateName } from './utils';
+import {
+  getNodeProperties,
+  serializeOptions,
+  validateName,
+  withDefault,
+} from './utils';
 
 const validOptions = {
   alias: {
@@ -26,7 +31,7 @@ const validOptions = {
 export function Command(...args: CommandArgs) {
   const properties = getNodeProperties(args, true);
   validateName(properties.name);
-  serializeOptions(properties.options ?? {}, validOptions);
+  serializeOptions(withDefault(properties.options, {}), validOptions);
 
   return {
     ...properties,
