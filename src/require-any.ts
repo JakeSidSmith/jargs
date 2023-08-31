@@ -1,10 +1,14 @@
-import { argsToArray, validateChildren } from './utils';
+import { ArgNode, CommandNode, FlagNode, KWArgNode } from './types';
+import { validateChildren } from './utils';
 
-let VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
+const VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
 
-export function RequireAny() {
-  let children = argsToArray(arguments);
-
+export function RequireAny(
+  ...children: [
+    first: ArgNode | FlagNode | KWArgNode | CommandNode,
+    ...rest: readonly (ArgNode | FlagNode | KWArgNode | CommandNode)[],
+  ]
+) {
   if (!children.length) {
     throw new Error('No child nodes supplied to RequireAny node');
   }

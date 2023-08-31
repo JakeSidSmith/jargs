@@ -1,6 +1,8 @@
+import { FlagArgs } from './types';
+import { ValidOptions } from './types-internal';
 import { getNodeProperties, serializeOptions, validateName } from './utils';
 
-let validOptions = {
+const validOptions = {
   alias: {
     type: 'string',
     length: 1,
@@ -9,14 +11,15 @@ let validOptions = {
     type: 'string',
     default: '',
   },
-};
+} satisfies ValidOptions;
 
-export function Flag() {
-  let properties = getNodeProperties(arguments);
+export function Flag(...args: FlagArgs) {
+  const properties = getNodeProperties(args);
   validateName(properties.name);
   serializeOptions(properties.options, validOptions);
 
-  properties._type = 'flag';
-
-  return properties;
+  return {
+    ...properties,
+    _type: 'flag',
+  };
 }

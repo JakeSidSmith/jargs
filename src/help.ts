@@ -1,13 +1,10 @@
-import {
-  argsToArray,
-  serializeOptions,
-  validateChildren,
-  validateName,
-} from './utils';
+import { HelpArgs } from './types';
+import { ValidOptions } from './types-internal';
+import { serializeOptions, validateChildren, validateName } from './utils';
 
-let VALID_CHILD_NODES = ['program'];
+const VALID_CHILD_NODES = ['program'];
 
-let validOptions = {
+const validOptions = {
   alias: {
     type: 'string',
     length: 1,
@@ -16,12 +13,10 @@ let validOptions = {
     type: 'string',
     default: '',
   },
-};
+} satisfies ValidOptions;
 
-export function Help() {
-  let children = argsToArray(arguments);
-  let name = children.shift();
-  let options = children.shift() || {};
+export function Help(...args: HelpArgs) {
+  const [name, options = {}, ...children] = args;
   serializeOptions(options, validOptions);
 
   if (!children.length) {

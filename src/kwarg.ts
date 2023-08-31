@@ -1,6 +1,8 @@
+import { KWArgArgs } from './types';
+import { ValidOptions } from './types-internal';
 import { getNodeProperties, serializeOptions, validateName } from './utils';
 
-let validOptions = {
+const validOptions = {
   alias: {
     type: 'string',
     length: 1,
@@ -19,14 +21,15 @@ let validOptions = {
     type: 'boolean',
     default: false,
   },
-};
+} satisfies ValidOptions;
 
-export function KWArg() {
-  let properties = getNodeProperties(arguments);
+export function KWArg(...args: KWArgArgs) {
+  const properties = getNodeProperties(args);
   validateName(properties.name);
   serializeOptions(properties.options, validOptions);
 
-  properties._type = 'kwarg';
-
-  return properties;
+  return {
+    ...properties,
+    _type: 'kwarg',
+  };
 }

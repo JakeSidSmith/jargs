@@ -1,6 +1,8 @@
+import { ProgramArgs } from './types';
+import { ValidOptions } from './types-internal';
 import { getNodeProperties, serializeOptions, validateName } from './utils';
 
-let validOptions = {
+const validOptions = {
   description: {
     type: 'string',
     default: '',
@@ -16,15 +18,16 @@ let validOptions = {
     type: 'array',
     default: [],
   },
-};
+} satisfies ValidOptions;
 
-export function Program() {
-  let properties = getNodeProperties(arguments, true);
+export function Program(...args: ProgramArgs) {
+  const properties = getNodeProperties(args, true);
   validateName(properties.name);
   serializeOptions(properties.options, validOptions);
 
-  properties._type = 'program';
-  properties._globals = {};
-
-  return properties;
+  return {
+    ...properties,
+    _type: 'program',
+    _globals: {},
+  };
 }

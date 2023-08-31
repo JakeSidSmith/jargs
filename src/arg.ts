@@ -1,6 +1,8 @@
+import { ArgArgs } from './types';
+import { ValidOptions } from './types-internal';
 import { getNodeProperties, serializeOptions, validateName } from './utils';
 
-let validOptions = {
+const validOptions = {
   description: {
     type: 'string',
     default: '',
@@ -15,14 +17,15 @@ let validOptions = {
     type: 'boolean',
     default: false,
   },
-};
+} satisfies ValidOptions;
 
-export function Arg() {
-  let properties = getNodeProperties(arguments);
+export function Arg(...args: ArgArgs) {
+  const properties = getNodeProperties(args);
   validateName(properties.name);
   serializeOptions(properties.options, validOptions);
 
-  properties._type = 'arg';
-
-  return properties;
+  return {
+    ...properties,
+    _type: 'arg',
+  };
 }

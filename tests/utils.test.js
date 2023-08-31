@@ -14,19 +14,6 @@ describe('utils.js', () => {
     expect(utils).toBeTruthy();
   });
 
-  describe('argsToArray', () => {
-    it('should convert arguments to an array', () => {
-      function fn() {
-        let args = utils.argsToArray(arguments);
-
-        expect(Array.isArray(args)).toBe(true);
-        expect(args).not.toBe(arguments);
-      }
-
-      fn('foo', 'bar');
-    });
-  });
-
   describe('getNodeProperties', () => {
     it('should throw an error for invalid children', () => {
       let anError = /invalid/i;
