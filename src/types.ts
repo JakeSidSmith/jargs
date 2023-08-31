@@ -109,10 +109,7 @@ export type ArgArgs = [name: string, options?: ArgOptions | null];
 export type KWArgArgs = [name: string, options?: KWArgOptions | null];
 export type FlagArgs = [name: string, options?: FlagOptions | null];
 
-export type CollectArgs = [
-  rootNode: HelpNode | ProgramNode,
-  argv: readonly string[],
-];
+export type CollectArgs = [rootNode: ProgramNode, argv: readonly string[]];
 
 export type AnyArgs =
   | HelpArgs
