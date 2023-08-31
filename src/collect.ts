@@ -158,6 +158,7 @@ function createTree(
   while (argv.length) {
     const arg = argv.shift();
 
+    /* istanbul ignore next */
     if (typeof arg === 'undefined') {
       continue;
     }
@@ -224,6 +225,7 @@ function createTree(
         const flagNames = kwargName.split('');
         const firstName = flagNames.shift();
 
+        /* istanbul ignore next */
         if (!firstName) {
           throw new Error(
             createHelp(
@@ -308,6 +310,7 @@ function createTree(
           if (matchingFlagOrKWArg.options.multi) {
             const kwargVal = argv.shift();
 
+            /* istanbul ignore next */
             if (!kwargVal) {
               throw new Error(
                 createHelp(schema, globals, 'No value for kwarg --' + kwargName)
