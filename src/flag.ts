@@ -16,7 +16,7 @@ const validOptions = {
 export function Flag(...args: FlagArgs) {
   const properties = getNodeProperties(args);
   validateName(properties.name);
-  serializeOptions(properties.options, validOptions);
+  serializeOptions(properties.options ?? {}, validOptions);
 
   return {
     ...properties,

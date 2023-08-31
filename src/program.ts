@@ -23,7 +23,7 @@ const validOptions = {
 export function Program(...args: ProgramArgs) {
   const properties = getNodeProperties(args, true);
   validateName(properties.name);
-  serializeOptions(properties.options, validOptions);
+  serializeOptions(properties.options ?? {}, validOptions);
 
   return {
     ...properties,

@@ -78,11 +78,11 @@ export type AnyOptions =
   | ArgOptions;
 
 export type HelpArgs =
-  | [name: string, options?: HelpOptions]
-  | [name: string, options: HelpOptions, program: ProgramNode];
+  | [name: string, options?: HelpOptions | null]
+  | [name: string, options: HelpOptions | null, program: ProgramNode];
 export type ProgramArgs = [
   name: string,
-  options?: ProgramOptions,
+  options?: ProgramOptions | null,
   ...children: readonly (
     | CommandNode
     | ArgNode
@@ -95,7 +95,7 @@ export type ProgramArgs = [
 ];
 export type CommandArgs = [
   name: string,
-  options?: CommandOptions,
+  options?: CommandOptions | null,
   ...children: readonly (
     | ArgNode
     | FlagNode
@@ -105,9 +105,9 @@ export type CommandArgs = [
     | RequiredNode
   )[],
 ];
-export type ArgArgs = [name: string, options?: ArgOptions];
-export type KWArgArgs = [name: string, options?: KWArgOptions];
-export type FlagArgs = [name: string, options?: FlagOptions];
+export type ArgArgs = [name: string, options?: ArgOptions | null];
+export type KWArgArgs = [name: string, options?: KWArgOptions | null];
+export type FlagArgs = [name: string, options?: FlagOptions | null];
 
 export type CollectArgs = [
   rootNode: HelpNode | ProgramNode,

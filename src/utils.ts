@@ -139,11 +139,11 @@ function validateChildren(
 }
 
 function getNodeProperties(args: AnyArgs, getChildren?: boolean) {
-  const [name, options = {}, ...children] = args;
+  const [name, options, ...children] = args;
 
   const properties = {
     name: name,
-    options: options,
+    options: options ?? {},
   };
 
   if (getChildren) {

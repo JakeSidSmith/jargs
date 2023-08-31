@@ -16,8 +16,8 @@ const validOptions = {
 } satisfies ValidOptions;
 
 export function Help(...args: HelpArgs) {
-  const [name, options = {}, ...children] = args;
-  serializeOptions(options, validOptions);
+  const [name, options, ...children] = args;
+  serializeOptions(options ?? {}, validOptions);
 
   if (!children.length) {
     throw new Error('No child nodes supplied to Help node');
@@ -33,7 +33,7 @@ export function Help(...args: HelpArgs) {
   children[0]._globals.help = {
     _type: 'flag',
     name: name,
-    options: options,
+    options: options ?? {},
   };
 
   return children[0];

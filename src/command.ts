@@ -26,7 +26,7 @@ const validOptions = {
 export function Command(...args: CommandArgs) {
   const properties = getNodeProperties(args, true);
   validateName(properties.name);
-  serializeOptions(properties.options, validOptions);
+  serializeOptions(properties.options ?? {}, validOptions);
 
   return {
     ...properties,
