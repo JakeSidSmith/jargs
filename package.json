@@ -1,6 +1,6 @@
 {
   "name": "jargs",
-  "version": "0.4.7",
+  "version": "1.0.0-alpha.0",
   "description": "Simple node arg parser with explicit tree structure schema",
   "main": "commonjs/index.js",
   "module": "esm/index.js",
