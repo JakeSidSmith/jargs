@@ -17,5 +17,5 @@
     "target": "ESNext",
     "module": "ESNext"
   },
-  "include": ["./index.d.ts"]
+  "include": ["src/**/*", "test/**/*"]
 }
