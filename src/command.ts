@@ -1,4 +1,4 @@
-import { CommandArgs } from './types';
+import { CommandArgs, CommandNode } from './types';
 import { ValidOptions } from './types-internal';
 import {
   getNodeProperties,
@@ -36,5 +36,5 @@ export function Command(...args: CommandArgs) {
   return {
     ...properties,
     _type: 'command',
-  };
+  } as CommandNode;
 }

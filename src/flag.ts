@@ -1,4 +1,4 @@
-import { FlagArgs } from './types';
+import { FlagArgs, FlagNode } from './types';
 import { ValidOptions } from './types-internal';
 import {
   getNodeProperties,
@@ -26,5 +26,5 @@ export function Flag(...args: FlagArgs) {
   return {
     ...properties,
     _type: 'flag',
-  };
+  } as FlagNode;
 }

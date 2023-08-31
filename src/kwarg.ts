@@ -1,4 +1,4 @@
-import { KWArgArgs } from './types';
+import { KWArgArgs, KWArgNode } from './types';
 import { ValidOptions } from './types-internal';
 import {
   getNodeProperties,
@@ -36,5 +36,5 @@ export function KWArg(...args: KWArgArgs) {
   return {
     ...properties,
     _type: 'kwarg',
-  };
+  } as KWArgNode;
 }

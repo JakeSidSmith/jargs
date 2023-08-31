@@ -1,4 +1,10 @@
-import { ArgNode, CommandNode, FlagNode, KWArgNode } from './types';
+import {
+  ArgNode,
+  CommandNode,
+  FlagNode,
+  KWArgNode,
+  RequiredNode,
+} from './types';
 import { validateChildren } from './utils';
 
 const VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
@@ -21,5 +27,5 @@ export function Required(
   return {
     _type: 'required',
     children: children,
-  };
+  } as RequiredNode;
 }

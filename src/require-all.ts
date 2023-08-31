@@ -1,4 +1,10 @@
-import { ArgNode, CommandNode, FlagNode, KWArgNode } from './types';
+import {
+  ArgNode,
+  CommandNode,
+  FlagNode,
+  KWArgNode,
+  RequireAllNode,
+} from './types';
 import { validateChildren } from './utils';
 
 const VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
@@ -24,5 +30,5 @@ export function RequireAll(
   return {
     _type: 'require-all',
     children: children,
-  };
+  } as RequireAllNode;
 }

@@ -1,4 +1,4 @@
-import { ArgArgs } from './types';
+import { ArgArgs, ArgNode } from './types';
 import { ValidOptions } from './types-internal';
 import {
   getNodeProperties,
@@ -32,5 +32,5 @@ export function Arg(...args: ArgArgs) {
   return {
     ...properties,
     _type: 'arg',
-  };
+  } as ArgNode;
 }

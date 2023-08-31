@@ -1,4 +1,4 @@
-import { HelpArgs } from './types';
+import { HelpArgs, ProgramNode } from './types';
 import { ValidOptions } from './types-internal';
 import {
   serializeOptions,
@@ -41,5 +41,5 @@ export function Help(...args: HelpArgs) {
     options: withDefault(options, {}),
   };
 
-  return children[0];
+  return children[0] as ProgramNode;
 }

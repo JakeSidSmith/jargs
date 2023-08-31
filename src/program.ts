@@ -1,4 +1,4 @@
-import { ProgramArgs } from './types';
+import { ProgramArgs, ProgramNode } from './types';
 import { ValidOptions } from './types-internal';
 import {
   getNodeProperties,
@@ -34,5 +34,5 @@ export function Program(...args: ProgramArgs) {
     ...properties,
     _type: 'program',
     _globals: {},
-  };
+  } as ProgramNode;
 }
