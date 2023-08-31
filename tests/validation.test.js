@@ -11,7 +11,7 @@ describe('validation', () => {
     it('should error if node names are not strings', () => {
       let anError = /string/i;
 
-      utils.each(nodes, function (node) {
+      nodes.forEach(function (node) {
         expect(node.bind(null, undefined)).toThrow(anError);
         expect(node.bind(null, null)).toThrow(anError);
         expect(node.bind(null, {})).toThrow(anError);
@@ -23,7 +23,7 @@ describe('validation', () => {
     it('should error if node names are empty', () => {
       let anError = /empty/i;
 
-      utils.each(nodes, function (node) {
+      nodes.forEach(function (node) {
         expect(node.bind(null, '')).toThrow(anError);
       });
     });
@@ -31,7 +31,7 @@ describe('validation', () => {
     it('should error if node names contain anything but letters, numbers & hyphens', () => {
       let anError = /letters.+numbers.+hyphens/i;
 
-      utils.each(nodes, function (node) {
+      nodes.forEach(function (node) {
         expect(node.bind(null, ' test')).toThrow(anError);
         expect(node.bind(null, 'test ')).toThrow(anError);
         expect(node.bind(null, ' te st ')).toThrow(anError);
@@ -49,7 +49,7 @@ describe('validation', () => {
     it('should error if node names begin with -', () => {
       let anError = /begin\swith/i;
 
-      utils.each(nodes, function (node) {
+      nodes.forEach(function (node) {
         expect(node.bind(null, '-test')).toThrow(anError);
         expect(node.bind(null, 'word-word')).not.toThrow(anError);
       });
@@ -77,7 +77,7 @@ describe('validation', () => {
     it('should error if node aliases are not strings', () => {
       let anError = /string/i;
 
-      utils.each(nodesWithAliases, function (node) {
+      nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, 'name', { alias: undefined })).toThrow(anError);
         expect(node.bind(null, 'name', { alias: null })).toThrow(anError);
         expect(node.bind(null, 'name', { alias: {} })).toThrow(anError);
@@ -89,7 +89,7 @@ describe('validation', () => {
     it('should error if node aliases are empty', () => {
       let anError = /empty/i;
 
-      utils.each(nodesWithAliases, function (node) {
+      nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, 'name', { alias: '' })).toThrow(anError);
       });
     });
@@ -97,7 +97,7 @@ describe('validation', () => {
     it('should error if node aliases contain anything but letters, numbers, and hyphens', () => {
       let anError = /letters.+numbers.+hyphens/i;
 
-      utils.each(nodesWithAliases, function (node) {
+      nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, ' test')).toThrow(anError);
         expect(node.bind(null, 'test ')).toThrow(anError);
         expect(node.bind(null, ' te st ')).toThrow(anError);
@@ -115,7 +115,7 @@ describe('validation', () => {
     it('should error if node aliases begin with -', () => {
       let anError = /begin\swith/i;
 
-      utils.each(nodesWithAliases, function (node) {
+      nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, 'name', { alias: '-test' })).toThrow(anError);
         expect(node.bind(null, 'name', { alias: 'word-word' })).not.toThrow(
           anError
