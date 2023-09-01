@@ -1,3 +1,4 @@
+import { RequireAll, Required } from '../src';
 import { Arg } from '../src/arg';
 import { Command } from '../src/command';
 import { Flag } from '../src/flag';
@@ -35,6 +36,23 @@ describe('utils.js', () => {
       expect(utils.sum([1, 2, 3, 4])).toBe(10);
       expect(utils.sum([1, 2, 3, 4, 5])).toBe(15);
       expect(utils.sum([3, 4, 2])).toBe(9);
+    });
+  });
+
+  describe('getNodeChildren', () => {
+    it('should should throw an error if more than one command is required', () => {
+      const anError = /more\sthan\sone/i;
+      const child1 = Command('child1');
+      const child2 = Command('child2');
+
+      function fn(...children: ProgramOrCommandChildren) {
+        utils.getNodeChildren(children);
+      }
+
+      expect(fn.bind(null, Required(child1), Required(child2))).toThrow(
+        anError
+      );
+      expect(fn.bind(null, RequireAll(child1, child2))).toThrow(anError);
     });
   });
 
