@@ -65,7 +65,8 @@ function findFlagOrKWarg(
     }
   } else if (
     matchingFlagOrKWArg.name in tree[pluralize(matchingFlagOrKWArg._type)] &&
-    !matchingFlagOrKWArg.options.multi
+    (!('multi' in matchingFlagOrKWArg.options) ||
+      !matchingFlagOrKWArg.options.multi)
   ) {
     throw new Error(
       createHelp(
@@ -190,7 +191,10 @@ function createTree(
             createHelp(schema, globals, 'Unknown argument: ' + arg)
           );
           // Known command
-        } else if (matchingArg.options.multi) {
+        } else if (
+          'multi' in matchingArg.options &&
+          matchingArg.options.multi
+        ) {
           tree.args[matchingArg.name] = (
             tree.args[matchingArg.name] || []
           ).concat(arg);

@@ -43,7 +43,6 @@ export interface CommandOptions<
   usage?: string;
   examples?: ReadonlyArray<string>;
   callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
-  multi?: never;
 }
 
 export interface KWArgOptions {
@@ -57,13 +56,10 @@ export interface KWArgOptions {
 export interface FlagOptions {
   description?: string;
   alias?: string;
-  type?: never;
-  multi?: never;
 }
 
 export interface ArgOptions {
   description?: string;
-  alias?: never;
   options?: ReadonlyArray<string>;
   type?: string;
   multi?: boolean;

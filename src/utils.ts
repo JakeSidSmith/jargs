@@ -554,12 +554,14 @@ function createOptionsText(
         const namePrefix = option._type === 'arg' ? '<' : '--';
         const nameSuffix = option._type === 'arg' ? '>' : '';
         const aliasPrefix = namePrefix.substring(0, 1);
-        const alias = option.options.alias
-          ? ', ' + aliasPrefix + option.options.alias
-          : '';
-        const type = option.options.type
-          ? '   [' + option.options.type + ']'
-          : '';
+        const alias =
+          'alias' in option.options && option.options.alias
+            ? ', ' + aliasPrefix + option.options.alias
+            : '';
+        const type =
+          'type' in option.options && option.options.type
+            ? '   [' + option.options.type + ']'
+            : '';
         return [
           namePrefix + option.name + nameSuffix + alias,
           withDefault(option.options.description, ''),
