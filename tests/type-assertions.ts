@@ -19,6 +19,12 @@ import {
   RequiredNode,
 } from '../src';
 
+describe('type assertions', () => {
+  it('does nothing', () => {
+    expect(true).toBe(true);
+  });
+});
+
 Arg('arg') satisfies ArgNode<'arg'>;
 
 KWArg('kwarg', {
