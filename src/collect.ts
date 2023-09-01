@@ -9,14 +9,15 @@
   */
 
 import {
+  AnyTree,
   CommandNode,
   FlagNode,
   GlobalsInjected,
+  InferTree,
   KWArgNode,
   NodeType,
   ProgramNode,
   ProgramOrCommandChildren,
-  Tree,
 } from './types';
 import {
   createHelp,
@@ -37,7 +38,7 @@ function findFlagOrKWarg(
     | ProgramNode<string, ProgramOrCommandChildren>
     | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
-  tree: Tree,
+  tree: AnyTree,
   isAlias: boolean,
   kwargName: string
 ): FlagNode<string> | KWArgNode<string> {
@@ -88,7 +89,7 @@ function checkRequiredArgs(
     | ProgramNode<string, ProgramOrCommandChildren>
     | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
-  tree: Tree
+  tree: AnyTree
 ) {
   if (schema._requireAll && schema._requireAll.length) {
     schema._requireAll.forEach((node) => {
@@ -143,9 +144,9 @@ function createTree<N extends string, C extends ProgramOrCommandChildren>(
   globals: GlobalsInjected,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   commands: ((parentReturnValue: any) => void)[],
-  parentTree?: Tree
+  parentTree?: AnyTree
 ) {
-  const tree: Tree = {
+  const tree: AnyTree = {
     name: schema.name,
     kwargs: {},
     flags: {},
@@ -362,7 +363,7 @@ function createTree<N extends string, C extends ProgramOrCommandChildren>(
     returned = commands.shift()?.(returned);
   }
 
-  return tree;
+  return tree as InferTree<N, C>;
 }
 
 export function collect<N extends string, C extends ProgramOrCommandChildren>(
@@ -404,6 +405,9 @@ export function collect<N extends string, C extends ProgramOrCommandChildren>(
   try {
     return createTree(rest, rootNode, rootNode._globals, commands);
   } catch (error) {
-    return exitWithHelp(extractErrorMessage(error)) as unknown as Tree;
+    return exitWithHelp(extractErrorMessage(error)) as unknown as InferTree<
+      N,
+      C
+    >;
   }
 }

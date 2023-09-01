@@ -1,6 +1,7 @@
 import {
   Arg,
   ArgNode,
+  collect,
   Command,
   CommandNode,
   Flag,
@@ -109,3 +110,47 @@ commandTree.children satisfies readonly (
   | ArgNode<'all-arg'>
   | KWArgNode<'all-kwarg'>
 )[];
+
+collect(
+  Help(
+    'help',
+    { alias: 'h' },
+    Program(
+      'program',
+      null,
+      commandTree,
+      Command('basic-command'),
+      Flag('program-flag'),
+      Arg('program-arg')
+    )
+  ),
+  ['node', 'nope']
+) satisfies {
+  name: 'program';
+  kwargs: Partial<Record<never, string | readonly string[]>>;
+  flags: Partial<Record<'program-flag', true>>;
+  args: Partial<Record<'program-arg', string | readonly string[]>>;
+  command?:
+    | {
+        name: 'command';
+        kwargs: Partial<
+          Record<
+            'any-kwarg' | 'any-kwarg2' | 'all-kwarg',
+            string | readonly string[]
+          >
+        >;
+        flags: Partial<Record<never, true>>;
+        args: Partial<
+          Record<
+            'arg' | 'any-arg' | 'any-arg2' | 'required-arg' | 'all-arg',
+            string | readonly string[]
+          >
+        >;
+      }
+    | {
+        name: 'basic-command';
+        kwargs: Partial<Record<never, string | readonly string[]>>;
+        flags: Partial<Record<never, true>>;
+        args: Partial<Record<never, string | readonly string[]>>;
+      };
+};

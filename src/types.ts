@@ -10,21 +10,21 @@ export enum NodeType {
   REQUIRE_ANY = 'require-any',
 }
 
-export interface ArgsOrKWArgs {
-  [index: string]: string | undefined | ReadonlyArray<string>;
+export interface AnyArgsOrKWArgs {
+  [index: string]: string | undefined | readonly string[];
 }
 
-export interface Flags {
+export interface AnyFlags {
   [index: string]: true | undefined;
 }
 
-export interface Tree {
+export interface AnyTree {
   name: string;
-  command?: Tree;
-  kwargs: ArgsOrKWArgs;
-  flags: Flags;
-  args: ArgsOrKWArgs;
-  rest?: ReadonlyArray<string>;
+  command?: AnyTree;
+  kwargs: AnyArgsOrKWArgs;
+  flags: AnyFlags;
+  args: AnyArgsOrKWArgs;
+  rest?: readonly string[];
 }
 
 export interface HelpOptions {
@@ -33,8 +33,8 @@ export interface HelpOptions {
 }
 
 export interface ProgramOptions<
-  T extends Tree = Tree,
-  P extends Tree | undefined = undefined,
+  T extends AnyTree = AnyTree,
+  P extends AnyTree | undefined = undefined,
   R = void,
 > {
   description?: string;
@@ -44,8 +44,8 @@ export interface ProgramOptions<
 }
 
 export interface CommandOptions<
-  T extends Tree = Tree,
-  P extends Tree | undefined = undefined,
+  T extends AnyTree = AnyTree,
+  P extends AnyTree | undefined = undefined,
   R = void,
 > {
   description?: string;
@@ -253,3 +253,44 @@ export type AnyNode =
   | RequiredNode<RequiredChildren>
   | RequireAllNode<RequireAllChildren>
   | RequireAnyNode<RequireAnyChildren>;
+
+export type InferKWArgNames<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends KWArgNode<infer N>
+      ? N
+      : never
+    : never;
+
+export type InferFlagNames<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends FlagNode<infer N>
+      ? N
+      : never
+    : never;
+
+export type InferArgNames<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends ArgNode<infer N>
+      ? N
+      : never
+    : never;
+
+export type InferCommands<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends CommandNode<infer CN, infer CC>
+      ? CommandNode<CN, CC>
+      : never
+    : never;
+
+export type InferTree<N extends string, C extends ProgramOrCommandChildren> = {
+  name: N;
+  kwargs: Partial<Record<InferKWArgNames<C>, string | readonly string[]>>;
+  flags: Partial<Record<InferFlagNames<C>, true>>;
+  args: Partial<Record<InferArgNames<C>, string | readonly string[]>>;
+  rest?: readonly string[];
+  command?: InferCommands<C> extends CommandNode<infer CN, infer CC>
+    ? {
+        [P in CN]: InferTree<P, CC>;
+      }[CN]
+    : never;
+};
