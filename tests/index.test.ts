@@ -13,6 +13,7 @@ describe('index.js', () => {
       Required: 'function',
       RequireAll: 'function',
       RequireAny: 'function',
+      NodeType: 'object',
     };
 
     expect(index).toBeTruthy();
