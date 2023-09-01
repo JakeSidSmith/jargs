@@ -393,6 +393,6 @@ export function collect(...args: CollectArgs) {
   try {
     return createTree(rest, rootNode, rootNode._globals, commands);
   } catch (error) {
-    exitWithHelp(extractErrorMessage(error));
+    return exitWithHelp(extractErrorMessage(error)) as unknown as Tree;
   }
 }
