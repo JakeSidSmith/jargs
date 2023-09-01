@@ -111,7 +111,7 @@ commandTree.children satisfies readonly (
   | KWArgNode<'all-kwarg'>
 )[];
 
-collect(
+const tree = collect(
   Help(
     'help',
     { alias: 'h' },
@@ -154,3 +154,58 @@ collect(
         args: Partial<Record<never, string | readonly string[]>>;
       };
 };
+
+tree.flags['program-flag'] satisfies true | undefined;
+tree.args['program-arg'] satisfies string | readonly string[] | undefined;
+
+tree.command satisfies
+  | undefined
+  | {
+      name: 'command';
+      kwargs: Partial<
+        Record<
+          'any-kwarg' | 'any-kwarg2' | 'all-kwarg',
+          string | readonly string[]
+        >
+      >;
+      flags: Partial<Record<never, true>>;
+      args: Partial<
+        Record<
+          'arg' | 'any-arg' | 'any-arg2' | 'required-arg' | 'all-arg',
+          string | readonly string[]
+        >
+      >;
+    }
+  | {
+      name: 'basic-command';
+      kwargs: Partial<Record<never, string | readonly string[]>>;
+      flags: Partial<Record<never, true>>;
+      args: Partial<Record<never, string | readonly string[]>>;
+    };
+
+if (tree.command?.name === 'basic-command') {
+  tree.command.kwargs satisfies Partial<
+    Record<never, string | readonly string[]>
+  >;
+  tree.command.flags satisfies Partial<Record<never, true>>;
+  tree.command.args satisfies Partial<
+    Record<never, string | readonly string[]>
+  >;
+} else if (tree.command?.name === 'command') {
+  tree.command.kwargs satisfies Partial<
+    Record<'any-kwarg' | 'any-kwarg2' | 'all-kwarg', string | readonly string[]>
+  >;
+  tree.command.flags satisfies Partial<Record<never, true>>;
+  tree.command.args satisfies Partial<
+    Record<
+      'arg' | 'any-arg' | 'any-arg2' | 'required-arg' | 'all-arg',
+      string | readonly string[]
+    >
+  >;
+
+  tree.command.kwargs['all-kwarg'] satisfies
+    | string
+    | readonly string[]
+    | undefined;
+  tree.command.args['all-arg'] satisfies string | readonly string[] | undefined;
+}
