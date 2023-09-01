@@ -3,7 +3,8 @@ import { Arg } from '../src/arg';
 import { Command } from '../src/command';
 import { Flag } from '../src/flag';
 import { KWArg } from '../src/kwarg';
-import { AnyOptions } from '../src/types';
+import { NodeType } from '../src/types';
+import { AnyOptions } from '../src/types-internal';
 import * as utils from '../src/utils';
 
 describe('validation', () => {
@@ -245,13 +246,13 @@ describe('validateChildren', () => {
   });
 
   it('should throw an error if children are not the correct type', () => {
-    const validTypes = ['arg', 'kwarg'];
+    const validTypes = [NodeType.ARG, NodeType.KW_ARG];
     const anError = /invalid/i;
 
     expect(
       utils.validateChildren.bind(
         null,
-        [{ _type: 'foo' as 'arg', name: 'foo', options: {} }],
+        [{ _type: 'foo' as NodeType.ARG, name: 'foo', options: {} }],
         validTypes
       )
     ).toThrow(anError);
@@ -259,8 +260,8 @@ describe('validateChildren', () => {
       utils.validateChildren.bind(
         null,
         [
-          { _type: 'arg', name: 'foo', options: {} },
-          { _type: 'bar' as 'arg', name: 'bar', options: {} },
+          { _type: NodeType.ARG, name: 'foo', options: {} },
+          { _type: 'bar' as NodeType.ARG, name: 'bar', options: {} },
         ],
         validTypes
       )
@@ -269,8 +270,8 @@ describe('validateChildren', () => {
       utils.validateChildren.bind(
         null,
         [
-          { _type: 'arg', name: 'foo', options: {} },
-          { _type: 'kwarg', name: 'bar', options: {} },
+          { _type: NodeType.ARG, name: 'foo', options: {} },
+          { _type: NodeType.KW_ARG, name: 'bar', options: {} },
         ],
         validTypes
       )
@@ -278,7 +279,12 @@ describe('validateChildren', () => {
   });
 
   it('should throw an error for duplicate node names', () => {
-    const validTypes = ['command', 'arg', 'flag', 'kwarg'];
+    const validTypes = [
+      NodeType.COMMAND,
+      NodeType.ARG,
+      NodeType.FLAG,
+      NodeType.KW_ARG,
+    ];
     const anError = /name\s"foo"/i;
 
     const goodChildren = [
@@ -309,7 +315,12 @@ describe('validateChildren', () => {
   });
 
   it('should throw an error for duplicate node aliases', () => {
-    const validTypes = ['command', 'arg', 'flag', 'kwarg'];
+    const validTypes = [
+      NodeType.COMMAND,
+      NodeType.ARG,
+      NodeType.FLAG,
+      NodeType.KW_ARG,
+    ];
     const anError = /alias\s"f"/i;
 
     const goodChildren = [
