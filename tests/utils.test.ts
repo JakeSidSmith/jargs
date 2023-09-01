@@ -4,171 +4,12 @@ import { Flag } from '../src/flag';
 import { Help } from '../src/help';
 import { KWArg } from '../src/kwarg';
 import { Program } from '../src/program';
-import { RequireAll } from '../src/require-all';
-import { RequireAny } from '../src/require-any';
-import { Required } from '../src/required';
-import { ArgNode, CommandArgs, CommandNode } from '../src/types';
+import { CommandNode, ProgramOrCommandChildren } from '../src/types';
 import * as utils from '../src/utils';
 
 describe('utils.js', () => {
   it('should exist', () => {
     expect(utils).toBeTruthy();
-  });
-
-  describe('getNodeProperties', () => {
-    it('should throw an error for invalid children', () => {
-      const anError = /invalid/i;
-      const child1 = Command('child1');
-      const child2 = 'invalid';
-
-      function fn(...args: CommandArgs) {
-        utils.getNodeProperties(args, true);
-      }
-
-      expect(
-        fn.bind(
-          null,
-          'foo',
-          { alias: 'bar' },
-          child1,
-          child2 as unknown as ArgNode
-        )
-      ).toThrow(anError);
-    });
-
-    it('should throw an error for invalid types of children', () => {
-      const anError = /invalid/i;
-      const child1 = Command('child1');
-      const child2 = Program('invalid');
-
-      function fn(...args: CommandArgs) {
-        utils.getNodeProperties(args, true);
-      }
-
-      expect(
-        fn.bind(
-          null,
-          'foo',
-          { alias: 'bar' },
-          child1,
-          child2 as unknown as ArgNode
-        )
-      ).toThrow(anError);
-    });
-
-    it("should get a node's properties from the supplied arguments (with children)", () => {
-      const child1 = Command('child1');
-      const child2 = Command('child2');
-      const child3 = Command('child3');
-
-      function fn(...args: CommandArgs) {
-        const properties = utils.getNodeProperties(args, true);
-
-        expect(properties).toBeTruthy();
-        expect(properties).toEqual({
-          name: 'foo',
-          options: {
-            alias: 'bar',
-          },
-          children: [child1, child2, child3],
-          _requireAll: [],
-          _requireAny: [],
-        });
-      }
-
-      fn('foo', { alias: 'bar' }, child1, child2, child3);
-    });
-
-    it("should get a node's properties from the supplied arguments (with required children)", () => {
-      const child1 = Arg('child1');
-      const child2 = Arg('child2');
-      const child3 = Arg('child3');
-      const child4 = Arg('child4');
-      const child5 = Arg('child5');
-      const child6 = Arg('child6');
-      const child7 = Arg('child7');
-
-      function fn(...args: CommandArgs) {
-        const properties = utils.getNodeProperties(args, true) as CommandNode;
-
-        expect(properties).toBeTruthy();
-        expect(properties).toEqual({
-          name: 'foo',
-          options: {
-            alias: 'bar',
-          },
-          children: [child1, child2, child3, child4, child5, child6, child7],
-          _requireAll: [child2, child3, child4],
-          _requireAny: [[child5, child6]],
-        });
-
-        expect(properties.children[0]).toBe(child1);
-        expect(properties.children[3]).toBe(child4);
-
-        expect(properties._requireAll[1]).toBe(child3);
-        expect(properties._requireAny[0][0]).toBe(child5);
-      }
-
-      fn(
-        'foo',
-        { alias: 'bar' },
-        child1,
-        Required(child2),
-        RequireAll(child3, child4),
-        RequireAny(child5, child6),
-        child7
-      );
-    });
-
-    it("should get a node's properties from the supplied arguments (without children)", () => {
-      function fn(...args: CommandArgs) {
-        const properties = utils.getNodeProperties(args);
-
-        expect(properties).toBeTruthy();
-        expect(properties).toEqual({
-          name: 'foo',
-          options: {
-            alias: 'bar',
-          },
-        });
-      }
-
-      fn('foo', { alias: 'bar' });
-    });
-
-    it('should should throw an error if children are provided, but not welcome', () => {
-      const anError = /children/i;
-      const child = Command('child');
-
-      function fn(...args: CommandArgs) {
-        utils.getNodeProperties(args);
-      }
-
-      expect(fn.bind(null, 'foo', { alias: 'bar' }, child)).toThrow(anError);
-    });
-
-    it('should should throw an error if more than one command is required', () => {
-      const anError = /more\sthan\sone/i;
-      const child1 = Command('child1');
-      const child2 = Command('child2');
-
-      function fn(...args: CommandArgs) {
-        utils.getNodeProperties(args, true);
-      }
-
-      expect(
-        fn.bind(
-          null,
-          'foo',
-          { alias: 'bar' },
-          Required(child1),
-          Required(child2)
-        )
-      ).toThrow(anError);
-      expect(
-        fn.bind(null, 'foo', { alias: 'bar' }, RequireAll(child1, child2))
-      ).toThrow(anError);
-    });
   });
 
   describe('several', () => {
@@ -325,7 +166,7 @@ describe('utils.js', () => {
 
       expect(
         utils.createHelp(
-          schema.children[0] as CommandNode,
+          schema.children[0] as CommandNode<string, ProgramOrCommandChildren>,
           schema._globals,
           error
         )
@@ -370,7 +211,7 @@ describe('utils.js', () => {
 
       expect(
         utils.createHelp(
-          schema.children[0] as CommandNode,
+          schema.children[0] as CommandNode<string, ProgramOrCommandChildren>,
           schema._globals,
           error
         )
