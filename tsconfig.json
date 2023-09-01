@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
-    "allowJs": true,
+    "allowJs": false,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -17,5 +17,5 @@
     "target": "ESNext",
     "module": "ESNext"
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*", "tests/**/*"]
 }
