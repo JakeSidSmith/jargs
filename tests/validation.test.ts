@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Arg } from '../src/arg';
 import { Command } from '../src/command';
 import { Flag } from '../src/flag';
 import { KWArg } from '../src/kwarg';
+import { AnyOptions } from '../src/types';
 import * as utils from '../src/utils';
 
 describe('validation', () => {
@@ -12,11 +14,11 @@ describe('validation', () => {
       const anError = /string/i;
 
       nodes.forEach(function (node) {
-        expect(node.bind(null, undefined)).toThrow(anError);
-        expect(node.bind(null, null)).toThrow(anError);
-        expect(node.bind(null, {})).toThrow(anError);
-        expect(node.bind(null, [])).toThrow(anError);
-        expect(node.bind(null, 1)).toThrow(anError);
+        expect((node as any).bind(null, undefined)).toThrow(anError);
+        expect((node as any).bind(null, null)).toThrow(anError);
+        expect((node as any).bind(null, {})).toThrow(anError);
+        expect((node as any).bind(null, [])).toThrow(anError);
+        expect((node as any).bind(null, 1)).toThrow(anError);
       });
     });
 
@@ -24,7 +26,7 @@ describe('validation', () => {
       const anError = /empty/i;
 
       nodes.forEach(function (node) {
-        expect(node.bind(null, '')).toThrow(anError);
+        expect((node as any).bind(null, '')).toThrow(anError);
       });
     });
 
@@ -32,17 +34,17 @@ describe('validation', () => {
       const anError = /letters.+numbers.+hyphens/i;
 
       nodes.forEach(function (node) {
-        expect(node.bind(null, ' test')).toThrow(anError);
-        expect(node.bind(null, 'test ')).toThrow(anError);
-        expect(node.bind(null, ' te st ')).toThrow(anError);
+        expect((node as any).bind(null, ' test')).toThrow(anError);
+        expect((node as any).bind(null, 'test ')).toThrow(anError);
+        expect((node as any).bind(null, ' te st ')).toThrow(anError);
 
-        expect(node.bind(null, '_test')).toThrow(anError);
-        expect(node.bind(null, 'test_')).toThrow(anError);
-        expect(node.bind(null, '_te_st_')).toThrow(anError);
+        expect((node as any).bind(null, '_test')).toThrow(anError);
+        expect((node as any).bind(null, 'test_')).toThrow(anError);
+        expect((node as any).bind(null, '_te_st_')).toThrow(anError);
 
-        expect(node.bind(null, '+test')).toThrow(anError);
-        expect(node.bind(null, 'test=')).toThrow(anError);
-        expect(node.bind(null, 'te:st')).toThrow(anError);
+        expect((node as any).bind(null, '+test')).toThrow(anError);
+        expect((node as any).bind(null, 'test=')).toThrow(anError);
+        expect((node as any).bind(null, 'te:st')).toThrow(anError);
       });
     });
 
@@ -50,8 +52,8 @@ describe('validation', () => {
       const anError = /begin\swith/i;
 
       nodes.forEach(function (node) {
-        expect(node.bind(null, '-test')).toThrow(anError);
-        expect(node.bind(null, 'word-word')).not.toThrow(anError);
+        expect((node as any).bind(null, '-test')).toThrow(anError);
+        expect((node as any).bind(null, 'word-word')).not.toThrow(anError);
       });
     });
   });
@@ -62,27 +64,35 @@ describe('validation', () => {
     it('should should throw an error if options is not an object', () => {
       const anError = /object/i;
 
-      expect(Arg.bind(null, 'foo', 'test')).toThrow(anError);
-      expect(Arg.bind(null, 'foo', [])).toThrow(anError);
-      expect(Arg.bind(null, 'foo', 7)).toThrow(anError);
+      expect((Arg as any).bind(null, 'foo', 'test')).toThrow(anError);
+      expect((Arg as any).bind(null, 'foo', [])).toThrow(anError);
+      expect((Arg as any).bind(null, 'foo', 7)).toThrow(anError);
       expect(Arg.bind(null, 'foo', undefined)).not.toThrow(anError);
     });
 
     it('should should throw an error if a node is passed as options', () => {
       const anError = /node/i;
 
-      expect(Arg.bind(null, 'foo', Arg('test'))).toThrow(anError);
+      expect((Arg as any).bind(null, 'foo', Arg('test'))).toThrow(anError);
     });
 
     it('should error if node aliases are not strings', () => {
       const anError = /string/i;
 
       nodesWithAliases.forEach(function (node) {
-        expect(node.bind(null, 'name', { alias: undefined })).toThrow(anError);
-        expect(node.bind(null, 'name', { alias: null })).toThrow(anError);
-        expect(node.bind(null, 'name', { alias: {} })).toThrow(anError);
-        expect(node.bind(null, 'name', { alias: [] })).toThrow(anError);
-        expect(node.bind(null, 'name', { alias: 1 })).toThrow(anError);
+        expect((node as any).bind(null, 'name', { alias: undefined })).toThrow(
+          anError
+        );
+        expect((node as any).bind(null, 'name', { alias: null })).toThrow(
+          anError
+        );
+        expect((node as any).bind(null, 'name', { alias: {} })).toThrow(
+          anError
+        );
+        expect((node as any).bind(null, 'name', { alias: [] })).toThrow(
+          anError
+        );
+        expect((node as any).bind(null, 'name', { alias: 1 })).toThrow(anError);
       });
     });
 
@@ -90,7 +100,9 @@ describe('validation', () => {
       const anError = /empty/i;
 
       nodesWithAliases.forEach(function (node) {
-        expect(node.bind(null, 'name', { alias: '' })).toThrow(anError);
+        expect((node as any).bind(null, 'name', { alias: '' })).toThrow(
+          anError
+        );
       });
     });
 
@@ -98,17 +110,17 @@ describe('validation', () => {
       const anError = /letters.+numbers.+hyphens/i;
 
       nodesWithAliases.forEach(function (node) {
-        expect(node.bind(null, ' test')).toThrow(anError);
-        expect(node.bind(null, 'test ')).toThrow(anError);
-        expect(node.bind(null, ' te st ')).toThrow(anError);
+        expect((node as any).bind(null, ' test')).toThrow(anError);
+        expect((node as any).bind(null, 'test ')).toThrow(anError);
+        expect((node as any).bind(null, ' te st ')).toThrow(anError);
 
-        expect(node.bind(null, '_test')).toThrow(anError);
-        expect(node.bind(null, 'test_')).toThrow(anError);
-        expect(node.bind(null, '_te_st_')).toThrow(anError);
+        expect((node as any).bind(null, '_test')).toThrow(anError);
+        expect((node as any).bind(null, 'test_')).toThrow(anError);
+        expect((node as any).bind(null, '_te_st_')).toThrow(anError);
 
-        expect(node.bind(null, '+test')).toThrow(anError);
-        expect(node.bind(null, 'test=')).toThrow(anError);
-        expect(node.bind(null, 'te:st')).toThrow(anError);
+        expect((node as any).bind(null, '+test')).toThrow(anError);
+        expect((node as any).bind(null, 'test=')).toThrow(anError);
+        expect((node as any).bind(null, 'te:st')).toThrow(anError);
       });
     });
 
@@ -116,10 +128,12 @@ describe('validation', () => {
       const anError = /begin\swith/i;
 
       nodesWithAliases.forEach(function (node) {
-        expect(node.bind(null, 'name', { alias: '-test' })).toThrow(anError);
-        expect(node.bind(null, 'name', { alias: 'word-word' })).not.toThrow(
+        expect((node as any).bind(null, 'name', { alias: '-test' })).toThrow(
           anError
         );
+        expect(
+          (node as any).bind(null, 'name', { alias: 'word-word' })
+        ).not.toThrow(anError);
       });
     });
 
@@ -127,7 +141,13 @@ describe('validation', () => {
       const anError = /invalid/i;
 
       expect(
-        utils.serializeOptions.bind(null, { foo: 'bar' }, { bar: 'foo' })
+        utils.serializeOptions.bind(
+          null,
+          { foo: 'bar' } as AnyOptions,
+          {
+            bar: 'foo',
+          } as any
+        )
       ).toThrow(anError);
     });
 
@@ -151,7 +171,7 @@ describe('validation', () => {
         func: {
           type: 'function',
         },
-      };
+      } as const;
 
       const aStringError = /type\sstring/i;
       const aNumberError = /type\snumber/i;
@@ -161,22 +181,46 @@ describe('validation', () => {
       const aFuncError = /type\sfunction/i;
 
       expect(
-        utils.serializeOptions.bind(null, { string: null }, validOptions)
+        utils.serializeOptions.bind(
+          null,
+          { string: null } as AnyOptions,
+          validOptions
+        )
       ).toThrow(aStringError);
       expect(
-        utils.serializeOptions.bind(null, { number: null }, validOptions)
+        utils.serializeOptions.bind(
+          null,
+          { number: null } as AnyOptions,
+          validOptions
+        )
       ).toThrow(aNumberError);
       expect(
-        utils.serializeOptions.bind(null, { object: null }, validOptions)
+        utils.serializeOptions.bind(
+          null,
+          { object: null } as AnyOptions,
+          validOptions
+        )
       ).toThrow(anObjectError);
       expect(
-        utils.serializeOptions.bind(null, { array: null }, validOptions)
+        utils.serializeOptions.bind(
+          null,
+          { array: null } as AnyOptions,
+          validOptions
+        )
       ).toThrow(anArrayError);
       expect(
-        utils.serializeOptions.bind(null, { boolean: null }, validOptions)
+        utils.serializeOptions.bind(
+          null,
+          { boolean: null } as AnyOptions,
+          validOptions
+        )
       ).toThrow(aBooleanError);
       expect(
-        utils.serializeOptions.bind(null, { func: null }, validOptions)
+        utils.serializeOptions.bind(
+          null,
+          { func: null } as AnyOptions,
+          validOptions
+        )
       ).toThrow(aFuncError);
     });
   });
@@ -186,10 +230,18 @@ describe('validateChildren', () => {
   it('should throw an error if children are not nodes', () => {
     const anError = /invalid/i;
 
-    expect(utils.validateChildren.bind(null, [1])).toThrow(anError);
-    expect(utils.validateChildren.bind(null, ['a'])).toThrow(anError);
-    expect(utils.validateChildren.bind(null, [undefined])).toThrow(anError);
-    expect(utils.validateChildren.bind(null, [{}])).not.toThrow(anError);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((utils.validateChildren as any).bind(null, [1])).toThrow(anError);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((utils.validateChildren as any).bind(null, ['a'])).toThrow(anError);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((utils.validateChildren as any).bind(null, [undefined])).toThrow(
+      anError
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((utils.validateChildren as any).bind(null, [{}])).not.toThrow(
+      anError
+    );
   });
 
   it('should throw an error if children are not the correct type', () => {
@@ -197,19 +249,29 @@ describe('validateChildren', () => {
     const anError = /invalid/i;
 
     expect(
-      utils.validateChildren.bind(null, [{ _type: 'foo' }], validTypes)
-    ).toThrow(anError);
-    expect(
       utils.validateChildren.bind(
         null,
-        [{ _type: 'arg' }, { _type: 'bar' }],
+        [{ _type: 'foo' as 'arg', name: 'foo', options: {} }],
         validTypes
       )
     ).toThrow(anError);
     expect(
       utils.validateChildren.bind(
         null,
-        [{ _type: 'arg' }, { _type: 'kwarg' }],
+        [
+          { _type: 'arg', name: 'foo', options: {} },
+          { _type: 'bar' as 'arg', name: 'bar', options: {} },
+        ],
+        validTypes
+      )
+    ).toThrow(anError);
+    expect(
+      utils.validateChildren.bind(
+        null,
+        [
+          { _type: 'arg', name: 'foo', options: {} },
+          { _type: 'kwarg', name: 'bar', options: {} },
+        ],
         validTypes
       )
     ).not.toThrow(anError);

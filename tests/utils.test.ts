@@ -7,7 +7,7 @@ import { Program } from '../src/program';
 import { RequireAll } from '../src/require-all';
 import { RequireAny } from '../src/require-any';
 import { Required } from '../src/required';
-import { CommandArgs } from '../src/types';
+import { ArgNode, CommandArgs, CommandNode } from '../src/types';
 import * as utils from '../src/utils';
 
 describe('utils.js', () => {
@@ -25,9 +25,15 @@ describe('utils.js', () => {
         utils.getNodeProperties(args, true);
       }
 
-      expect(fn.bind(null, 'foo', { alias: 'bar' }, child1, child2)).toThrow(
-        anError
-      );
+      expect(
+        fn.bind(
+          null,
+          'foo',
+          { alias: 'bar' },
+          child1,
+          child2 as unknown as ArgNode
+        )
+      ).toThrow(anError);
     });
 
     it('should throw an error for invalid types of children', () => {
@@ -39,9 +45,15 @@ describe('utils.js', () => {
         utils.getNodeProperties(args, true);
       }
 
-      expect(fn.bind(null, 'foo', { alias: 'bar' }, child1, child2)).toThrow(
-        anError
-      );
+      expect(
+        fn.bind(
+          null,
+          'foo',
+          { alias: 'bar' },
+          child1,
+          child2 as unknown as ArgNode
+        )
+      ).toThrow(anError);
     });
 
     it("should get a node's properties from the supplied arguments (with children)", () => {
@@ -77,7 +89,7 @@ describe('utils.js', () => {
       const child7 = Arg('child7');
 
       function fn(...args: CommandArgs) {
-        const properties = utils.getNodeProperties(args, true);
+        const properties = utils.getNodeProperties(args, true) as CommandNode;
 
         expect(properties).toBeTruthy();
         expect(properties).toEqual({
@@ -311,9 +323,13 @@ describe('utils.js', () => {
         '',
       ].join('\n');
 
-      expect(utils.createHelp(schema.children[0], schema._globals, error)).toBe(
-        expected
-      );
+      expect(
+        utils.createHelp(
+          schema.children[0] as CommandNode,
+          schema._globals,
+          error
+        )
+      ).toBe(expected);
     });
 
     it('should create help with global help option (overridden)', () => {
@@ -352,9 +368,13 @@ describe('utils.js', () => {
         '',
       ].join('\n');
 
-      expect(utils.createHelp(schema.children[0], schema._globals, error)).toBe(
-        expected
-      );
+      expect(
+        utils.createHelp(
+          schema.children[0] as CommandNode,
+          schema._globals,
+          error
+        )
+      ).toBe(expected);
     });
 
     it('should create help with options text with types', () => {

@@ -48,7 +48,14 @@ describe('help.js', () => {
     const anError = /child/i;
     const child1 = Arg('foo');
     const child2 = Arg('bar');
-    const boundRequired = Help.bind(null, 'help', null, child1, child2);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundRequired = (Help as any).bind(
+      null,
+      'help',
+      null,
+      child1,
+      child2
+    );
 
     expect(boundRequired).toThrow(anError);
   });
@@ -56,7 +63,8 @@ describe('help.js', () => {
   it('should throw an error if child is not a Program', () => {
     const anError = /be\sprogram/i;
     const child = Arg('foo');
-    const boundRequired = Help.bind(null, 'help', null, child);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundRequired = (Help as any).bind(null, 'help', null, child);
 
     expect(boundRequired).toThrow(anError);
   });

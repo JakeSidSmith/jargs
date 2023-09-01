@@ -25,7 +25,8 @@ describe('required.js', () => {
     const anError = /child/i;
     const child1 = Arg('foo');
     const child2 = Arg('bar');
-    const boundRequired = Required.bind(null, child1, child2);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundRequired = (Required as any).bind(null, child1, child2);
 
     expect(boundRequired).toThrow(anError);
   });

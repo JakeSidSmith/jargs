@@ -11,7 +11,7 @@ import { Required } from '../src/required';
 import * as utils from '../src/utils';
 
 describe('collect.js', () => {
-  function throwError(error) {
+  function throwError(error: string) {
     throw new Error(error);
   }
 
@@ -38,7 +38,8 @@ describe('collect.js', () => {
   it('should throw an error if root node is not a Program', () => {
     const anError = /program/i;
 
-    const boundCollect = collect.bind(null, Arg('test'));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundCollect = (collect as any).bind(null, Arg('test'));
 
     // Without tree
     expect(boundCollect).toThrow(anError);
@@ -47,7 +48,13 @@ describe('collect.js', () => {
   it('should throw an error if there are too many arguments', () => {
     const anError = /too many arguments/i;
 
-    const boundCollect = collect.bind(null, Program('test'), [], 'too many');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundCollect = (collect as any).bind(
+      null,
+      Program('test'),
+      [],
+      'too many'
+    );
 
     // Without tree
     expect(boundCollect).toThrow(anError);
@@ -64,7 +71,8 @@ describe('collect.js', () => {
   it('should throw an error if the second argument is not an argv', () => {
     const anError = /argv must be an array of strings/i;
 
-    const boundCollect = collect.bind(null, Program('test'), 'nope');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundCollect = (collect as any).bind(null, Program('test'), 'nope');
 
     expect(boundCollect).toThrow(anError);
   });
@@ -278,11 +286,11 @@ describe('collect.js', () => {
     expect(command2Spy).toHaveBeenCalledTimes(1);
     expect(command2Spy.mock.calls[0][0]).toEqual(result.command);
     expect(command3Spy).toHaveBeenCalledTimes(1);
-    expect(command3Spy.mock.calls[0][0]).toEqual(result.command.command);
+    expect(command3Spy.mock.calls[0][0]).toEqual(result.command?.command);
     expect(command1Spy).not.toHaveBeenCalled();
 
     expect(result.args.arg1).toBe('argy');
-    expect(result.command.args.arg2).toBe('argygain');
+    expect(result.command?.args.arg2).toBe('argygain');
   });
 
   it('should call program and commands with tree, parentTree, and returned value', () => {
@@ -364,7 +372,7 @@ describe('collect.js', () => {
     expect(command2Spy).toHaveBeenCalledWith(result.command, result, 1);
     expect(command3Spy).toHaveBeenCalledTimes(1);
     expect(command3Spy).toHaveBeenCalledWith(
-      result.command.command,
+      result.command?.command,
       result.command,
       3
     );

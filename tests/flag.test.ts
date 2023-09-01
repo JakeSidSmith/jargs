@@ -21,6 +21,7 @@ describe('flag.js', () => {
   it('should throw an error if has children', () => {
     const anError = /children/i;
 
-    expect(Flag.bind(null, 'foo', null, 'child')).toThrow(anError);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((Flag as any).bind(null, 'foo', null, 'child')).toThrow(anError);
   });
 });

@@ -2,7 +2,7 @@ import * as index from '../src/index';
 
 describe('index.js', () => {
   it('should export some stuff', () => {
-    const keyTypeMap = {
+    const keyTypeMap: Record<string, string> = {
       collect: 'function',
       Help: 'function',
       Program: 'function',
@@ -17,9 +17,9 @@ describe('index.js', () => {
 
     expect(index).toBeTruthy();
 
-    for (const key in index) {
+    Object.entries(index).forEach(([key, value]) => {
       expect(key in keyTypeMap).toBe(true);
-      expect(typeof index[key]).toBe(keyTypeMap[key]);
-    }
+      expect(typeof value).toBe(keyTypeMap[key]);
+    });
   });
 });
