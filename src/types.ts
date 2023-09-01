@@ -10,13 +10,11 @@ export enum NodeType {
   REQUIRE_ANY = 'require-any',
 }
 
-export interface AnyArgsOrKWArgs {
-  [index: string]: string | undefined | readonly string[];
-}
+export type AnyArgsOrKWArgs = Partial<
+  Record<string, string | readonly string[]>
+>;
 
-export interface AnyFlags {
-  [index: string]: true | undefined;
-}
+export type AnyFlags = Partial<Record<string, true>>;
 
 export interface AnyTree {
   name: string;
