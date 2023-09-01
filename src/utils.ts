@@ -233,7 +233,7 @@ function serializeOptions(options: AnyOptions, validOptions: ValidOptions) {
     );
   }
 
-  Object.entries(options).forEach(([key, option]) => {
+  Object.entries(options).forEach(([key, option]: [string, unknown]) => {
     if (!(key in validOptions)) {
       throw new Error("Invalid option '" + key + "'");
     }
