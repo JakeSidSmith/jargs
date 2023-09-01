@@ -1,8 +1,8 @@
-import { FlagArgs, FlagNode } from './types';
+import { FlagNode, FlagOptions, NodeType } from './types';
 import { ValidOptions } from './types-internal';
 import {
-  getNodeProperties,
   serializeOptions,
+  validateEmptyChildren,
   validateName,
   withDefault,
 } from './utils';
@@ -18,13 +18,18 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Flag(...args: FlagArgs) {
-  const properties = getNodeProperties(args);
-  validateName(properties.name);
-  serializeOptions(withDefault(properties.options, {}), validOptions);
+export function Flag<N extends string>(
+  name: N,
+  options?: FlagOptions | null,
+  ...children: readonly never[]
+): FlagNode<N> {
+  validateName(name);
+  validateEmptyChildren(children);
+  serializeOptions(withDefault(options, {}), validOptions);
 
   return {
-    ...properties,
-    _type: 'flag',
-  } as FlagNode;
+    _type: NodeType.FLAG,
+    name,
+    options: withDefault(options, {}),
+  };
 }

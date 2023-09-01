@@ -14,7 +14,9 @@ import {
   FlagNode,
   GlobalsInjected,
   KWArgNode,
+  NodeType,
   ProgramNode,
+  ProgramOrCommandChildren,
   Tree,
 } from './types';
 import {
@@ -32,18 +34,20 @@ const MATCHES_NAME_EQUALS = /.*?=/;
 const MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
 function findFlagOrKWarg(
-  schema: ProgramNode | CommandNode,
+  schema:
+    | ProgramNode<ProgramOrCommandChildren>
+    | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
   tree: Tree,
   isAlias: boolean,
   kwargName: string
-): FlagNode | KWArgNode {
+): FlagNode<string> | KWArgNode<string> {
   const matchingFlagOrKWArg = schema.children.find((node) => {
     return (
-      (node._type === 'flag' || node._type === 'kwarg') &&
+      (node._type === NodeType.FLAG || node._type === NodeType.KW_ARG) &&
       (isAlias ? node.options.alias === kwargName : node.name === kwargName)
     );
-  }) as FlagNode | KWArgNode | undefined;
+  }) as FlagNode<string> | KWArgNode<string> | undefined;
 
   if (!matchingFlagOrKWArg) {
     if (
@@ -81,13 +85,15 @@ function findFlagOrKWarg(
 }
 
 function checkRequiredArgs(
-  schema: ProgramNode | CommandNode,
+  schema:
+    | ProgramNode<ProgramOrCommandChildren>
+    | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
   tree: Tree
 ) {
   if (schema._requireAll && schema._requireAll.length) {
     schema._requireAll.forEach((node) => {
-      if (node._type === 'command') {
+      if (node._type === NodeType.COMMAND) {
         if (!tree.command || node.name !== tree.command.name) {
           throw new Error(
             createHelp(
@@ -112,7 +118,7 @@ function checkRequiredArgs(
   if (schema._requireAny && schema._requireAny.length) {
     schema._requireAny.forEach((anyRequired) => {
       const anyMatch = anyRequired.some((node) => {
-        if (node._type === 'command') {
+        if (node._type === NodeType.COMMAND) {
           return tree.command && node.name === tree.command.name;
         }
 
@@ -134,7 +140,9 @@ function checkRequiredArgs(
 
 function createTree(
   argv: string[],
-  schema: ProgramNode | CommandNode,
+  schema:
+    | ProgramNode<ProgramOrCommandChildren>
+    | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   commands: ((parentReturnValue: any) => void)[],
@@ -169,10 +177,10 @@ function createTree(
     if (isPositional) {
       const matchingCommand = schema.children.find((node) => {
         return (
-          node._type === 'command' &&
+          node._type === NodeType.COMMAND &&
           (node.name === arg || node.options.alias === arg)
         );
-      }) as CommandNode | undefined;
+      }) as CommandNode<string, ProgramOrCommandChildren> | undefined;
 
       // Valid command
       if (matchingCommand) {
@@ -180,7 +188,7 @@ function createTree(
       } else {
         const matchingArg = schema.children.find((node) => {
           return (
-            node._type === 'arg' &&
+            node._type === NodeType.ARG &&
             (node.options.multi || !(node.name in tree.args))
           );
         });
@@ -249,7 +257,7 @@ function createTree(
         );
 
         // Valid multiple flag alias --abc
-        if (matchingFlagOrKWArg._type === 'flag') {
+        if (matchingFlagOrKWArg._type === NodeType.FLAG) {
           tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
             true;
 
@@ -263,7 +271,7 @@ function createTree(
             );
 
             // Unknown flag alias -x
-            if (matchingFlagOrKWArg._type !== 'flag') {
+            if (matchingFlagOrKWArg._type !== NodeType.FLAG) {
               throw new Error(
                 createHelp(schema, globals, 'Invalid argument: -' + kwargName)
               );
@@ -289,7 +297,7 @@ function createTree(
         );
 
         // Flag --flag
-        if (matchingFlagOrKWArg._type === 'flag') {
+        if (matchingFlagOrKWArg._type === NodeType.FLAG) {
           tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
             true;
           // Invalid kwarg --kwarg=
@@ -373,7 +381,7 @@ export function collect(...args: CollectArgs) {
     throw new Error('No program defined');
   }
 
-  if (rootNode._type !== 'program') {
+  if (rootNode._type !== NodeType.PROGRAM) {
     throw new Error('Root node must be a Program');
   }
 

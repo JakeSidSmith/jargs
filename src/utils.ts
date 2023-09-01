@@ -1,12 +1,16 @@
 import {
-  AnyArgs,
   AnyNode,
   ArgNode,
   CommandNode,
   FlagNode,
   GlobalsInjected,
+  InferMaybeRequiredChildren,
+  InferRequiredChildren,
   KWArgNode,
+  NodeType,
   ProgramNode,
+  ProgramOrCommandChildren,
+  UnwrapRequiredChildren,
 } from './types';
 import { AnyOptions, TableFormatOptions, ValidOptions } from './types-internal';
 
@@ -19,13 +23,13 @@ const MATCHES_ARG_TYPE = /\b(?:arg)\b/i;
 const MATCHES_KWARG_TYPE = /\b(kwarg|flag)\b/i;
 
 const VALID_CHILD_NODES = [
-  'arg',
-  'flag',
-  'kwarg',
-  'command',
-  'require-any',
-  'require-all',
-  'required',
+  NodeType.ARG,
+  NodeType.FLAG,
+  NodeType.KW_ARG,
+  NodeType.COMMAND,
+  NodeType.REQUIRE_ANY,
+  NodeType.REQUIRE_ALL,
+  NodeType.REQUIRED,
 ];
 
 const TABLE_OPTIONS = {
@@ -56,7 +60,7 @@ function withDefault<T>(value: T, defaultValue: Exclude<T, null | undefined>) {
 
 function validateChildren(
   children: readonly AnyNode[],
-  validTypes: readonly string[]
+  validTypes: readonly NodeType[]
 ) {
   const argNames: string[] = [];
   const kwargNames: string[] = [];
@@ -143,65 +147,56 @@ function validateChildren(
   });
 }
 
-function getNodeProperties(args: AnyArgs, getChildren?: boolean) {
-  const [name, options, ...children] = args;
+function getNodeChildren<C extends ProgramOrCommandChildren>(children: C) {
+  validateChildren(children, VALID_CHILD_NODES);
 
-  const properties = {
-    name: name,
-    options: withDefault(options, {}),
-  };
+  let _requireAll: InferRequiredChildren<C> = [];
+  let _requireAny: InferMaybeRequiredChildren<C> = [];
+  let collectedChildren: UnwrapRequiredChildren<C> = [];
 
-  if (getChildren) {
-    validateChildren(children, VALID_CHILD_NODES);
-
-    let _requireAll: (CommandNode | ArgNode | FlagNode | KWArgNode)[] = [];
-    const _requireAny: (CommandNode | ArgNode | FlagNode | KWArgNode)[][] = [];
-    let collectedChildren: (
-      | ProgramNode
-      | CommandNode
-      | ArgNode
-      | FlagNode
-      | KWArgNode
-    )[] = [];
-
-    children.forEach((child) => {
-      switch (child._type) {
-        case 'required':
-        case 'require-all':
-          _requireAll = _requireAll.concat(child.children);
-          collectedChildren = collectedChildren.concat(child.children);
-          break;
-        case 'require-any':
-          _requireAny.push(child.children);
-          collectedChildren = collectedChildren.concat(child.children);
-          break;
-        default:
-          collectedChildren = collectedChildren.concat(child);
-          break;
-      }
-    });
-
-    const moreThanOneCommand = several(_requireAll, function (child) {
-      return child._type === 'command';
-    });
-
-    if (moreThanOneCommand) {
-      throw new Error(
-        'More than one required Command at the same level. Use RequireAny'
-      );
+  children.forEach((child) => {
+    switch (child._type) {
+      case NodeType.REQUIRED:
+      case NodeType.REQUIRE_ALL:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        _requireAll = _requireAll.concat(child.children as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        collectedChildren = collectedChildren.concat(child.children as any);
+        break;
+      case NodeType.REQUIRE_ANY:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        _requireAny = _requireAny.concat([child.children as any]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        collectedChildren = collectedChildren.concat(child.children as any);
+        break;
+      default:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        collectedChildren = collectedChildren.concat(child as any);
+        break;
     }
+  });
 
-    return {
-      ...properties,
-      _requireAll,
-      _requireAny,
-      children: collectedChildren,
-    };
-  } else if (children.length) {
-    throw new Error('Only commands can have children');
+  const moreThanOneCommand = several(_requireAll, function (child) {
+    return child._type === NodeType.COMMAND;
+  });
+
+  if (moreThanOneCommand) {
+    throw new Error(
+      'More than one required Command at the same level. Use RequireAny'
+    );
   }
 
-  return properties;
+  return {
+    _requireAll,
+    _requireAny,
+    children: collectedChildren,
+  };
+}
+
+function validateEmptyChildren(children: readonly never[]) {
+  if (children.length) {
+    throw new Error('Only commands can have children');
+  }
 }
 
 function validateName(name: unknown): asserts name is string {
@@ -527,7 +522,9 @@ function formatTable(
   return createTable(table, options, maxWidths, remainingSpace);
 }
 
-function createCommandsText(commands: readonly CommandNode[]) {
+function createCommandsText(
+  commands: readonly CommandNode<string, ProgramOrCommandChildren>[]
+) {
   return (
     (commands.length ? '  Commands:\n' : '') +
     formatTable(
@@ -545,14 +542,14 @@ function createCommandsText(commands: readonly CommandNode[]) {
 }
 
 function createOptionsText(
-  options: readonly (FlagNode | KWArgNode | ArgNode)[]
+  options: readonly (FlagNode<string> | KWArgNode<string> | ArgNode<string>)[]
 ) {
   return (
     (options.length ? '  Options:\n' : '') +
     formatTable(
       options.map((option) => {
-        const namePrefix = option._type === 'arg' ? '<' : '--';
-        const nameSuffix = option._type === 'arg' ? '>' : '';
+        const namePrefix = option._type === NodeType.ARG ? '<' : '--';
+        const nameSuffix = option._type === NodeType.ARG ? '>' : '';
         const aliasPrefix = namePrefix.substring(0, 1);
         const alias =
           'alias' in option.options && option.options.alias
@@ -603,23 +600,25 @@ function sortByName(a: { name: string }, b: { name: string }) {
 }
 
 function createHelp(
-  schema: ProgramNode | CommandNode,
+  schema:
+    | ProgramNode<ProgramOrCommandChildren>
+    | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
   error?: string
 ) {
-  const commands: CommandNode[] = [];
-  const flags: FlagNode[] = [];
-  const kwargs: KWArgNode[] = [];
-  const args: ArgNode[] = [];
+  const commands: CommandNode<string, ProgramOrCommandChildren>[] = [];
+  const flags: FlagNode<string>[] = [];
+  const kwargs: KWArgNode<string>[] = [];
+  const args: ArgNode<string>[] = [];
   const flagAndKwargNames: string[] = [];
 
   schema.children.forEach((node) => {
-    if (node._type === 'command') {
+    if (node._type === NodeType.COMMAND) {
       commands.push(node);
-    } else if (node._type === 'flag') {
+    } else if (node._type === NodeType.FLAG) {
       flags.push(node);
       flagAndKwargNames.push(node.name);
-    } else if (node._type === 'kwarg') {
+    } else if (node._type === NodeType.KW_ARG) {
       kwargs.push(node);
       flagAndKwargNames.push(node.name);
     } else {
@@ -655,7 +654,8 @@ function exitWithHelp(help: string) {
 }
 
 function formatNodeName(node: { name: string; _type: string }) {
-  const prefix = node._type === 'flag' || node._type === 'kwarg' ? '--' : '';
+  const prefix =
+    node._type === NodeType.FLAG || node._type === NodeType.KW_ARG ? '--' : '';
   return prefix + node.name;
 }
 
@@ -683,7 +683,8 @@ export {
   several,
   sum,
   validateChildren,
-  getNodeProperties,
+  validateEmptyChildren,
+  getNodeChildren,
   validateName,
   serializeOptions,
   formatTable,

@@ -1,7 +1,12 @@
-import { CommandArgs, CommandNode } from './types';
+import {
+  CommandNode,
+  CommandOptions,
+  NodeType,
+  ProgramOrCommandChildren,
+} from './types';
 import { ValidOptions } from './types-internal';
 import {
-  getNodeProperties,
+  getNodeChildren,
   serializeOptions,
   validateName,
   withDefault,
@@ -28,13 +33,18 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Command(...args: CommandArgs) {
-  const properties = getNodeProperties(args, true);
-  validateName(properties.name);
-  serializeOptions(withDefault(properties.options, {}), validOptions);
+export function Command<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options?: CommandOptions | null,
+  ...children: C
+): CommandNode<N, C> {
+  validateName(name);
+  serializeOptions(withDefault(options, {}), validOptions);
 
   return {
-    ...properties,
-    _type: 'command',
-  } as CommandNode;
+    _type: NodeType.COMMAND,
+    name,
+    options: withDefault(options, {}),
+    ...getNodeChildren(children),
+  };
 }

@@ -1,8 +1,8 @@
-import { ArgArgs, ArgNode } from './types';
+import { ArgNode, ArgOptions, NodeType } from './types';
 import { ValidOptions } from './types-internal';
 import {
-  getNodeProperties,
   serializeOptions,
+  validateEmptyChildren,
   validateName,
   withDefault,
 } from './utils';
@@ -24,13 +24,18 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Arg(...args: ArgArgs) {
-  const properties = getNodeProperties(args);
-  validateName(properties.name);
-  serializeOptions(withDefault(properties.options, {}), validOptions);
+export function Arg<N extends string>(
+  name: N,
+  options?: ArgOptions | null,
+  ...children: readonly never[]
+): ArgNode<N> {
+  validateName(name);
+  validateEmptyChildren(children);
+  serializeOptions(withDefault(options, {}), validOptions);
 
   return {
-    ...properties,
-    _type: 'arg',
-  } as ArgNode;
+    _type: NodeType.ARG,
+    name,
+    options: withDefault(options, {}),
+  };
 }

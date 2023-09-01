@@ -1,4 +1,9 @@
-import { HelpArgs, ProgramNode } from './types';
+import {
+  HelpOptions,
+  NodeType,
+  ProgramNode,
+  ProgramOrCommandChildren,
+} from './types';
 import { ValidOptions } from './types-internal';
 import {
   serializeOptions,
@@ -7,7 +12,7 @@ import {
   withDefault,
 } from './utils';
 
-const VALID_CHILD_NODES = ['program'];
+const VALID_CHILD_NODES = [NodeType.PROGRAM];
 
 const validOptions = {
   alias: {
@@ -20,8 +25,11 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Help(...args: HelpArgs) {
-  const [name, options, ...children] = args;
+export function Help<C extends ProgramOrCommandChildren>(
+  name: string,
+  options: HelpOptions | null,
+  ...children: [ProgramNode<C>]
+): ProgramNode<C> {
   serializeOptions(withDefault(options, {}), validOptions);
 
   if (!children.length) {
@@ -36,10 +44,10 @@ export function Help(...args: HelpArgs) {
   validateName(name);
 
   children[0]._globals.help = {
-    _type: 'flag',
-    name: name,
+    _type: NodeType.FLAG,
+    name,
     options: withDefault(options, {}),
   };
 
-  return children[0] as ProgramNode;
+  return children[0];
 }
