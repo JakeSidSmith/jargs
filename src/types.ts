@@ -103,6 +103,7 @@ export type CommandArgs = [
     | RequireAllNode
     | RequireAnyNode
     | RequiredNode
+    | CommandNode
   )[],
 ];
 export type ArgArgs = [name: string, options?: ArgOptions | null];
