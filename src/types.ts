@@ -75,23 +75,9 @@ export interface ArgOptions {
   multi?: boolean;
 }
 
-export type AnyOptions =
-  | HelpOptions
-  | ProgramOptions
-  | CommandOptions
-  | KWArgOptions
-  | FlagOptions
-  | ArgOptions;
-
 export type CollectArgs = [
   rootNode: ProgramNode<ProgramOrCommandChildren>,
   argv: readonly string[],
-];
-
-export type AnyArgs = [
-  name: string,
-  options: AnyOptions | null,
-  ...children: readonly AnyNode[],
 ];
 
 export interface HelpNode {

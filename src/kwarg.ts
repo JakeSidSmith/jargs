@@ -35,11 +35,11 @@ export function KWArg<N extends string>(
 ): KWArgNode<N> {
   validateName(name);
   validateEmptyChildren(children);
-  serializeOptions(withDefault(options, {}), validOptions);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   return {
     _type: NodeType.KW_ARG,
     name,
-    options: withDefault(options, {}),
+    options: finalOptions,
   };
 }

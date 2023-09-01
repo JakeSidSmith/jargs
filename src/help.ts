@@ -30,7 +30,7 @@ export function Help<C extends ProgramOrCommandChildren>(
   options: HelpOptions | null,
   ...children: [ProgramNode<C>]
 ): ProgramNode<C> {
-  serializeOptions(withDefault(options, {}), validOptions);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   if (!children.length) {
     throw new Error('No child nodes supplied to Help node');
@@ -46,7 +46,7 @@ export function Help<C extends ProgramOrCommandChildren>(
   children[0]._globals.help = {
     _type: NodeType.FLAG,
     name,
-    options: withDefault(options, {}),
+    options: finalOptions,
   };
 
   return children[0];

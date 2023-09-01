@@ -39,12 +39,12 @@ export function Command<N extends string, C extends ProgramOrCommandChildren>(
   ...children: C
 ): CommandNode<N, C> {
   validateName(name);
-  serializeOptions(withDefault(options, {}), validOptions);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   return {
     _type: NodeType.COMMAND,
     name,
-    options: withDefault(options, {}),
+    options: finalOptions,
     ...getNodeChildren(children),
   };
 }

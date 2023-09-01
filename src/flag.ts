@@ -25,11 +25,11 @@ export function Flag<N extends string>(
 ): FlagNode<N> {
   validateName(name);
   validateEmptyChildren(children);
-  serializeOptions(withDefault(options, {}), validOptions);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   return {
     _type: NodeType.FLAG,
     name,
-    options: withDefault(options, {}),
+    options: finalOptions,
   };
 }

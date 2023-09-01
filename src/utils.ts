@@ -256,17 +256,25 @@ function serializeOptions(options: AnyOptions, validOptions: ValidOptions) {
       throw new Error('Option ' + key + ' must be of type ' + valid.type);
     }
 
-    if ('length' in valid && valid.length && option.length !== valid.length) {
+    if (
+      'length' in valid &&
+      valid.length &&
+      typeof option === 'string' &&
+      option.length !== valid.length
+    ) {
       throw new Error('Option ' + key + ' must be of length ' + valid.length);
     }
   });
 
+  const optionsCopy = { ...options };
+
   Object.entries(validOptions).forEach(([validKey, validOption]) => {
     if ('default' in validOption && !(validKey in options)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (options as any)[validKey] = validOption.default;
+      (optionsCopy as Record<string, unknown>)[validKey] = validOption.default;
     }
   });
+
+  return optionsCopy;
 }
 
 /*

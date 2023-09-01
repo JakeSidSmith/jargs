@@ -36,13 +36,13 @@ export function Program<C extends ProgramOrCommandChildren>(
   ...children: C
 ): ProgramNode<C> {
   validateName(name);
-  serializeOptions(withDefault(options, {}), validOptions);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   return {
     _type: NodeType.PROGRAM,
     _globals: {},
     name,
-    options: withDefault(options, {}),
+    options: finalOptions,
     ...getNodeChildren(children),
   };
 }

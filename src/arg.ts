@@ -31,11 +31,11 @@ export function Arg<N extends string>(
 ): ArgNode<N> {
   validateName(name);
   validateEmptyChildren(children);
-  serializeOptions(withDefault(options, {}), validOptions);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   return {
     _type: NodeType.ARG,
     name,
-    options: withDefault(options, {}),
+    options: finalOptions,
   };
 }
