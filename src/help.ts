@@ -25,11 +25,11 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Help<C extends ProgramOrCommandChildren>(
+export function Help<N extends string, C extends ProgramOrCommandChildren>(
   name: string,
   options: HelpOptions | null,
-  ...children: [ProgramNode<C>]
-): ProgramNode<C> {
+  ...children: [ProgramNode<N, C>]
+): ProgramNode<N, C> {
   const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   if (!children.length) {

@@ -30,11 +30,11 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Program<C extends ProgramOrCommandChildren>(
-  name: string,
+export function Program<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
   options?: ProgramOptions | null,
   ...children: C
-): ProgramNode<C> {
+): ProgramNode<N, C> {
   validateName(name);
   const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 

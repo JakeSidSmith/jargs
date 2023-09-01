@@ -122,12 +122,15 @@ export type ProgramOrCommandChildren = readonly (
   | RequiredNode<RequiredChildren>
 )[];
 
-export interface ProgramNode<C extends ProgramOrCommandChildren> {
+export interface ProgramNode<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+> {
   _type: NodeType.PROGRAM;
   _globals: GlobalsInjected;
   _requireAll: InferRequiredChildren<C>;
   _requireAny: InferMaybeRequiredChildren<C>;
-  name: string;
+  name: N;
   options: ProgramOptions;
   children: UnwrapRequiredChildren<C>;
 }
@@ -242,7 +245,7 @@ export interface RequireAnyNode<
 
 export type AnyNode =
   | HelpNode
-  | ProgramNode<ProgramOrCommandChildren>
+  | ProgramNode<string, ProgramOrCommandChildren>
   | CommandNode<string, ProgramOrCommandChildren>
   | ArgNode<string>
   | KWArgNode<string>

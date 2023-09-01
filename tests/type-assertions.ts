@@ -34,11 +34,10 @@ KWArg('kwarg', {
 
 Flag('flag', { alias: 'f' }) satisfies FlagNode<'flag'>;
 
-Help(
-  'help',
-  { alias: 'h' },
-  Program('program')
-) satisfies ProgramNode<ProgramOrCommandChildren>;
+Help('help', { alias: 'h' }, Program('program')) satisfies ProgramNode<
+  'program',
+  ProgramOrCommandChildren
+>;
 
 Program(
   'program',
@@ -48,6 +47,7 @@ Program(
   Command('command'),
   Arg('arg')
 ) satisfies ProgramNode<
+  'program',
   readonly (CommandNode<'command', ProgramOrCommandChildren> | ArgNode<'arg'>)[]
 >;
 

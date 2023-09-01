@@ -609,7 +609,7 @@ function sortByName(a: { name: string }, b: { name: string }) {
 
 function createHelp(
   schema:
-    | ProgramNode<ProgramOrCommandChildren>
+    | ProgramNode<string, ProgramOrCommandChildren>
     | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
   error?: string

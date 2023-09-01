@@ -34,7 +34,7 @@ const MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
 function findFlagOrKWarg(
   schema:
-    | ProgramNode<ProgramOrCommandChildren>
+    | ProgramNode<string, ProgramOrCommandChildren>
     | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
   tree: Tree,
@@ -85,7 +85,7 @@ function findFlagOrKWarg(
 
 function checkRequiredArgs(
   schema:
-    | ProgramNode<ProgramOrCommandChildren>
+    | ProgramNode<string, ProgramOrCommandChildren>
     | CommandNode<string, ProgramOrCommandChildren>,
   globals: GlobalsInjected,
   tree: Tree
@@ -137,11 +137,9 @@ function checkRequiredArgs(
   }
 }
 
-function createTree(
+function createTree<N extends string, C extends ProgramOrCommandChildren>(
   argv: string[],
-  schema:
-    | ProgramNode<ProgramOrCommandChildren>
-    | CommandNode<string, ProgramOrCommandChildren>,
+  schema: ProgramNode<N, C> | CommandNode<N, C>,
   globals: GlobalsInjected,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   commands: ((parentReturnValue: any) => void)[],
@@ -367,8 +365,8 @@ function createTree(
   return tree;
 }
 
-export function collect(
-  rootNode: ProgramNode<ProgramOrCommandChildren>,
+export function collect<N extends string, C extends ProgramOrCommandChildren>(
+  rootNode: ProgramNode<N, C>,
   argv: readonly string[],
   ...args: readonly never[]
 ) {
