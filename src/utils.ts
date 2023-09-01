@@ -266,11 +266,11 @@ function serializeOptions(options: AnyOptions, validOptions: ValidOptions) {
     }
   });
 
-  const optionsCopy = { ...options };
+  const optionsCopy: Record<string, unknown> = { ...options };
 
   Object.entries(validOptions).forEach(([validKey, validOption]) => {
     if ('default' in validOption && !(validKey in options)) {
-      (optionsCopy as Record<string, unknown>)[validKey] = validOption.default;
+      optionsCopy[validKey] = validOption.default;
     }
   });
 
