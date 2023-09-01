@@ -9,7 +9,6 @@
   */
 
 import {
-  CollectArgs,
   CommandNode,
   FlagNode,
   GlobalsInjected,
@@ -368,10 +367,12 @@ function createTree(
   return tree;
 }
 
-export function collect(...args: CollectArgs) {
-  const [rootNode, argv] = args;
-
-  if (args.length > 2) {
+export function collect(
+  rootNode: ProgramNode<ProgramOrCommandChildren>,
+  argv: readonly string[],
+  ...args: readonly never[]
+) {
+  if (args.length) {
     throw new Error(
       'Too many arguments: collect takes only a single root node and argv'
     );

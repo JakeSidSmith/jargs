@@ -75,11 +75,6 @@ export interface ArgOptions {
   multi?: boolean;
 }
 
-export type CollectArgs = [
-  rootNode: ProgramNode<ProgramOrCommandChildren>,
-  argv: readonly string[],
-];
-
 export interface HelpNode {
   _type: NodeType.HELP;
   name: string;
