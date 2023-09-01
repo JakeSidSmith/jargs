@@ -6,10 +6,10 @@ import * as utils from '../src/utils';
 
 describe('validation', () => {
   describe('validateName', () => {
-    let nodes = [Command, KWArg, Flag, Arg];
+    const nodes = [Command, KWArg, Flag, Arg];
 
     it('should error if node names are not strings', () => {
-      let anError = /string/i;
+      const anError = /string/i;
 
       nodes.forEach(function (node) {
         expect(node.bind(null, undefined)).toThrow(anError);
@@ -21,7 +21,7 @@ describe('validation', () => {
     });
 
     it('should error if node names are empty', () => {
-      let anError = /empty/i;
+      const anError = /empty/i;
 
       nodes.forEach(function (node) {
         expect(node.bind(null, '')).toThrow(anError);
@@ -29,7 +29,7 @@ describe('validation', () => {
     });
 
     it('should error if node names contain anything but letters, numbers & hyphens', () => {
-      let anError = /letters.+numbers.+hyphens/i;
+      const anError = /letters.+numbers.+hyphens/i;
 
       nodes.forEach(function (node) {
         expect(node.bind(null, ' test')).toThrow(anError);
@@ -47,7 +47,7 @@ describe('validation', () => {
     });
 
     it('should error if node names begin with -', () => {
-      let anError = /begin\swith/i;
+      const anError = /begin\swith/i;
 
       nodes.forEach(function (node) {
         expect(node.bind(null, '-test')).toThrow(anError);
@@ -57,10 +57,10 @@ describe('validation', () => {
   });
 
   describe('serializeOptions', () => {
-    let nodesWithAliases = [Command, KWArg, Flag];
+    const nodesWithAliases = [Command, KWArg, Flag];
 
     it('should should throw an error if options is not an object', () => {
-      let anError = /object/i;
+      const anError = /object/i;
 
       expect(Arg.bind(null, 'foo', 'test')).toThrow(anError);
       expect(Arg.bind(null, 'foo', [])).toThrow(anError);
@@ -69,13 +69,13 @@ describe('validation', () => {
     });
 
     it('should should throw an error if a node is passed as options', () => {
-      let anError = /node/i;
+      const anError = /node/i;
 
       expect(Arg.bind(null, 'foo', Arg('test'))).toThrow(anError);
     });
 
     it('should error if node aliases are not strings', () => {
-      let anError = /string/i;
+      const anError = /string/i;
 
       nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, 'name', { alias: undefined })).toThrow(anError);
@@ -87,7 +87,7 @@ describe('validation', () => {
     });
 
     it('should error if node aliases are empty', () => {
-      let anError = /empty/i;
+      const anError = /empty/i;
 
       nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, 'name', { alias: '' })).toThrow(anError);
@@ -95,7 +95,7 @@ describe('validation', () => {
     });
 
     it('should error if node aliases contain anything but letters, numbers, and hyphens', () => {
-      let anError = /letters.+numbers.+hyphens/i;
+      const anError = /letters.+numbers.+hyphens/i;
 
       nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, ' test')).toThrow(anError);
@@ -113,7 +113,7 @@ describe('validation', () => {
     });
 
     it('should error if node aliases begin with -', () => {
-      let anError = /begin\swith/i;
+      const anError = /begin\swith/i;
 
       nodesWithAliases.forEach(function (node) {
         expect(node.bind(null, 'name', { alias: '-test' })).toThrow(anError);
@@ -124,7 +124,7 @@ describe('validation', () => {
     });
 
     it('should validate options', () => {
-      let anError = /invalid/i;
+      const anError = /invalid/i;
 
       expect(
         utils.serializeOptions.bind(null, { foo: 'bar' }, { bar: 'foo' })
@@ -132,7 +132,7 @@ describe('validation', () => {
     });
 
     it('should validate option types', () => {
-      let validOptions = {
+      const validOptions = {
         string: {
           type: 'string',
         },
@@ -153,12 +153,12 @@ describe('validation', () => {
         },
       };
 
-      let aStringError = /type\sstring/i;
-      let aNumberError = /type\snumber/i;
-      let anObjectError = /type\sobject/i;
-      let anArrayError = /type\sarray/i;
-      let aBooleanError = /type\sboolean/i;
-      let aFuncError = /type\sfunction/i;
+      const aStringError = /type\sstring/i;
+      const aNumberError = /type\snumber/i;
+      const anObjectError = /type\sobject/i;
+      const anArrayError = /type\sarray/i;
+      const aBooleanError = /type\sboolean/i;
+      const aFuncError = /type\sfunction/i;
 
       expect(
         utils.serializeOptions.bind(null, { string: null }, validOptions)
@@ -184,7 +184,7 @@ describe('validation', () => {
 
 describe('validateChildren', () => {
   it('should throw an error if children are not nodes', () => {
-    let anError = /invalid/i;
+    const anError = /invalid/i;
 
     expect(utils.validateChildren.bind(null, [1])).toThrow(anError);
     expect(utils.validateChildren.bind(null, ['a'])).toThrow(anError);
@@ -193,8 +193,8 @@ describe('validateChildren', () => {
   });
 
   it('should throw an error if children are not the correct type', () => {
-    let validTypes = ['arg', 'kwarg'];
-    let anError = /invalid/i;
+    const validTypes = ['arg', 'kwarg'];
+    const anError = /invalid/i;
 
     expect(
       utils.validateChildren.bind(null, [{ _type: 'foo' }], validTypes)
@@ -216,16 +216,21 @@ describe('validateChildren', () => {
   });
 
   it('should throw an error for duplicate node names', () => {
-    let validTypes = ['command', 'arg', 'flag', 'kwarg'];
-    let anError = /name\s"foo"/i;
+    const validTypes = ['command', 'arg', 'flag', 'kwarg'];
+    const anError = /name\s"foo"/i;
 
-    let goodChildren = [Arg('foo'), KWArg('foo'), Command('bar'), Flag('bar')];
+    const goodChildren = [
+      Arg('foo'),
+      KWArg('foo'),
+      Command('bar'),
+      Flag('bar'),
+    ];
 
-    let badArgChildren = [Arg('foo'), Arg('foo')];
+    const badArgChildren = [Arg('foo'), Arg('foo')];
 
-    let badKWArgChildren = [KWArg('foo'), Flag('foo')];
+    const badKWArgChildren = [KWArg('foo'), Flag('foo')];
 
-    let badOtherChildren = [Command('foo'), Command('foo')];
+    const badOtherChildren = [Command('foo'), Command('foo')];
 
     expect(
       utils.validateChildren.bind(null, goodChildren, validTypes)
@@ -242,22 +247,22 @@ describe('validateChildren', () => {
   });
 
   it('should throw an error for duplicate node aliases', () => {
-    let validTypes = ['command', 'arg', 'flag', 'kwarg'];
-    let anError = /alias\s"f"/i;
+    const validTypes = ['command', 'arg', 'flag', 'kwarg'];
+    const anError = /alias\s"f"/i;
 
-    let goodChildren = [
+    const goodChildren = [
       Arg('foo'),
       KWArg('foo', { alias: 'f' }),
       Command('bar', { alias: 'b' }),
       Flag('bar', { alias: 'b' }),
     ];
 
-    let badKWArgChildren = [
+    const badKWArgChildren = [
       KWArg('foo', { alias: 'f' }),
       Flag('bar', { alias: 'f' }),
     ];
 
-    let badOtherChildren = [
+    const badOtherChildren = [
       Command('foo', { alias: 'f' }),
       Command('bar', { alias: 'f' }),
     ];

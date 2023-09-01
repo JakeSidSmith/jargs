@@ -2,7 +2,7 @@ import * as index from '../src/index';
 
 describe('index.js', () => {
   it('should export some stuff', () => {
-    let keyTypeMap = {
+    const keyTypeMap = {
       collect: 'function',
       Help: 'function',
       Program: 'function',
@@ -17,7 +17,7 @@ describe('index.js', () => {
 
     expect(index).toBeTruthy();
 
-    for (let key in index) {
+    for (const key in index) {
       expect(key in keyTypeMap).toBe(true);
       expect(typeof index[key]).toBe(keyTypeMap[key]);
     }

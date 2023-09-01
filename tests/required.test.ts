@@ -3,8 +3,8 @@ import { Required } from '../src/required';
 
 describe('required.js', () => {
   it('should construct an Required', () => {
-    let child = Arg('foo');
-    let node = Required(child);
+    const child = Arg('foo');
+    const node = Required(child);
 
     expect(node).toBeTruthy();
     expect(node).toEqual({
@@ -16,16 +16,16 @@ describe('required.js', () => {
   });
 
   it('should throw an error if no children are supplied', () => {
-    let anError = /child/i;
+    const anError = /child/i;
 
     expect(Required).toThrow(anError);
   });
 
   it('should throw an error if more than one children are supplied', () => {
-    let anError = /child/i;
-    let child1 = Arg('foo');
-    let child2 = Arg('bar');
-    let boundRequired = Required.bind(null, child1, child2);
+    const anError = /child/i;
+    const child1 = Arg('foo');
+    const child2 = Arg('bar');
+    const boundRequired = Required.bind(null, child1, child2);
 
     expect(boundRequired).toThrow(anError);
   });

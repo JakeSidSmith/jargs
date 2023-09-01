@@ -3,9 +3,9 @@ import { Program } from '../src/program';
 
 describe('program.js', () => {
   it('should construct a Program', () => {
-    let child1 = Command('child1');
-    let child2 = Command('child2');
-    let node = Program('foo', null, child1, child2);
+    const child1 = Command('child1');
+    const child2 = Command('child2');
+    const node = Program('foo', null, child1, child2);
 
     expect(node).toBeTruthy();
     expect(node).toEqual({

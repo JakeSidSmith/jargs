@@ -3,9 +3,9 @@ import { RequireAny } from '../src/require-any';
 
 describe('require-any.js', () => {
   it('should construct an RequireAll', () => {
-    let child1 = Arg('foo');
-    let child2 = Arg('bar');
-    let node = RequireAny(child1, child2);
+    const child1 = Arg('foo');
+    const child2 = Arg('bar');
+    const node = RequireAny(child1, child2);
 
     expect(node).toBeTruthy();
     expect(node).toEqual({
@@ -18,15 +18,15 @@ describe('require-any.js', () => {
   });
 
   it('should throw an error if no children are supplied', () => {
-    let anError = /child/i;
+    const anError = /child/i;
 
     expect(RequireAny).toThrow(anError);
   });
 
   it('should throw an error if less than 2 children are supplied', () => {
-    let anError = /child/i;
-    let child = Arg('foo');
-    let boundRequired = RequireAny.bind(null, child);
+    const anError = /child/i;
+    const child = Arg('foo');
+    const boundRequired = RequireAny.bind(null, child);
 
     expect(boundRequired).toThrow(anError);
   });

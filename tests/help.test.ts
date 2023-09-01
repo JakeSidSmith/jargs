@@ -4,7 +4,7 @@ import { Program } from '../src/program';
 
 describe('help.js', () => {
   it('should construct a Help', () => {
-    let node = Help('help', { alias: 'h' }, Program('foo'));
+    const node = Help('help', { alias: 'h' }, Program('foo'));
 
     expect(node).toBeTruthy();
     expect(node).toEqual({
@@ -32,31 +32,31 @@ describe('help.js', () => {
   });
 
   it('should throw an error if alias is more than 1 char', () => {
-    let anError = /length/;
-    let node = Help.bind(null, 'foo', { alias: 'fo' });
+    const anError = /length/;
+    const node = Help.bind(null, 'foo', { alias: 'fo' });
 
     expect(node).toThrow(anError);
   });
 
   it('should throw an error if no children are supplied', () => {
-    let anError = /child/i;
+    const anError = /child/i;
 
     expect(Help).toThrow(anError);
   });
 
   it('should throw an error if more than one children are supplied', () => {
-    let anError = /child/i;
-    let child1 = Arg('foo');
-    let child2 = Arg('bar');
-    let boundRequired = Help.bind(null, 'help', null, child1, child2);
+    const anError = /child/i;
+    const child1 = Arg('foo');
+    const child2 = Arg('bar');
+    const boundRequired = Help.bind(null, 'help', null, child1, child2);
 
     expect(boundRequired).toThrow(anError);
   });
 
   it('should throw an error if child is not a Program', () => {
-    let anError = /be\sprogram/i;
-    let child = Arg('foo');
-    let boundRequired = Help.bind(null, 'help', null, child);
+    const anError = /be\sprogram/i;
+    const child = Arg('foo');
+    const boundRequired = Help.bind(null, 'help', null, child);
 
     expect(boundRequired).toThrow(anError);
   });
