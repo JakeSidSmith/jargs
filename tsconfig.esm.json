@@ -6,7 +6,7 @@
     "sourceMap": true,
     "outDir": "esm",
     "target": "ES6",
-    "module": "ESNext"
+    "module": "NodeNext"
   },
   "include": ["src"]
 }

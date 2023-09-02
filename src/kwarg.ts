@@ -1,8 +1,8 @@
-import { KWArgArgs, KWArgNode } from './types';
+import { KWArgNode, KWArgOptions, NodeType } from './types';
 import { ValidOptions } from './types-internal';
 import {
-  getNodeProperties,
   serializeOptions,
+  validateEmptyChildren,
   validateName,
   withDefault,
 } from './utils';
@@ -28,13 +28,18 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function KWArg(...args: KWArgArgs) {
-  const properties = getNodeProperties(args);
-  validateName(properties.name);
-  serializeOptions(withDefault(properties.options, {}), validOptions);
+export function KWArg<N extends string>(
+  name: N,
+  options?: KWArgOptions | null,
+  ...children: readonly never[]
+): KWArgNode<N> {
+  validateName(name);
+  validateEmptyChildren(children);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   return {
-    ...properties,
-    _type: 'kwarg',
-  } as KWArgNode;
+    _type: NodeType.KW_ARG,
+    name,
+    options: finalOptions,
+  };
 }

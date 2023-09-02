@@ -1,20 +1,26 @@
-export type EmptyObject = Record<never, never>;
-
-export interface ArgsOrKWArgs {
-  [index: string]: string | undefined | ReadonlyArray<string>;
+export enum NodeType {
+  HELP = 'help',
+  PROGRAM = 'program',
+  COMMAND = 'command',
+  ARG = 'arg',
+  KW_ARG = 'kwarg',
+  FLAG = 'flag',
+  REQUIRED = 'required',
+  REQUIRE_ALL = 'require-all',
+  REQUIRE_ANY = 'require-any',
 }
 
-export interface Flags {
-  [index: string]: true | undefined;
-}
+export type AnyKWArgs = Partial<Record<string, string | readonly string[]>>;
+export type AnyFlags = Partial<Record<string, true>>;
+export type AnyArgs = Partial<Record<string, string | readonly string[]>>;
 
-export interface Tree {
+export interface AnyTree {
   name: string;
-  command?: Tree;
-  kwargs: ArgsOrKWArgs;
-  flags: Flags;
-  args: ArgsOrKWArgs;
-  rest?: ReadonlyArray<string>;
+  command?: AnyTree;
+  kwargs: AnyKWArgs;
+  flags: AnyFlags;
+  args: AnyArgs;
+  rest?: readonly string[];
 }
 
 export interface HelpOptions {
@@ -22,28 +28,57 @@ export interface HelpOptions {
   alias?: string;
 }
 
-export interface ProgramOptions<
-  T extends Tree = Tree,
-  P extends Tree | undefined = undefined,
-  R = void,
-> {
+export interface ProgramOptions {
   description?: string;
   usage?: string;
   examples?: ReadonlyArray<string>;
-  callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
+  callback?: (
+    tree: AnyTree,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
 }
 
-export interface CommandOptions<
-  T extends Tree = Tree,
-  P extends Tree | undefined = undefined,
-  R = void,
-> {
+export interface ProgramOptionsWithCallback<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+> extends Omit<ProgramOptions, 'callback'> {
+  callback: (
+    tree: InferTree<N, C>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
+}
+
+export interface CommandOptions {
   description?: string;
   alias?: string;
   usage?: string;
   examples?: ReadonlyArray<string>;
-  callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
-  multi?: never;
+  callback?: (
+    tree: AnyTree,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
+}
+
+export interface CommandOptionsWithCallback<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+> extends Omit<CommandOptions, 'callback'> {
+  callback: (
+    tree: InferTree<N, C>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
 }
 
 export interface KWArgOptions {
@@ -57,155 +92,231 @@ export interface KWArgOptions {
 export interface FlagOptions {
   description?: string;
   alias?: string;
-  type?: never;
-  multi?: never;
 }
 
 export interface ArgOptions {
   description?: string;
-  alias?: never;
   options?: ReadonlyArray<string>;
   type?: string;
   multi?: boolean;
 }
 
-export type AnyOptions =
-  | HelpOptions
-  | ProgramOptions
-  | CommandOptions
-  | KWArgOptions
-  | FlagOptions
-  | ArgOptions;
-
-export type HelpArgs =
-  | [name: string, options?: HelpOptions | null]
-  | [name: string, options: HelpOptions | null, program: ProgramNode];
-export type ProgramArgs = [
-  name: string,
-  options?: ProgramOptions | null,
-  ...children: readonly (
-    | CommandNode
-    | ArgNode
-    | FlagNode
-    | KWArgNode
-    | RequireAllNode
-    | RequireAnyNode
-    | RequiredNode
-  )[],
-];
-export type CommandArgs = [
-  name: string,
-  options?: CommandOptions | null,
-  ...children: readonly (
-    | ArgNode
-    | FlagNode
-    | KWArgNode
-    | RequireAllNode
-    | RequireAnyNode
-    | RequiredNode
-  )[],
-];
-export type ArgArgs = [name: string, options?: ArgOptions | null];
-export type KWArgArgs = [name: string, options?: KWArgOptions | null];
-export type FlagArgs = [name: string, options?: FlagOptions | null];
-
-export type CollectArgs = [rootNode: ProgramNode, argv: readonly string[]];
-
-export type AnyArgs =
-  | HelpArgs
-  | ProgramArgs
-  | CommandArgs
-  | ArgArgs
-  | KWArgArgs
-  | FlagArgs;
-
 export interface HelpNode {
-  _type: 'help';
+  _type: NodeType.HELP;
   name: string;
   options: HelpOptions;
 }
 
 export interface GlobalsInjected {
   help?: Omit<HelpNode, '_type'> & {
-    _type: 'flag';
+    _type: NodeType.FLAG;
   };
 }
 
-export interface ProgramNode {
-  _type: 'program';
+export type AnyRequiredChild =
+  | ArgNode<string>
+  | FlagNode<string>
+  | KWArgNode<string>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | CommandNode<string, readonly any[]>;
+
+export type RequiredChildren = readonly [AnyRequiredChild];
+
+export type RequireAllChildren = readonly [
+  AnyRequiredChild,
+  ...(readonly AnyRequiredChild[]),
+];
+
+export type RequireAnyChildren = readonly [
+  AnyRequiredChild,
+  ...(readonly AnyRequiredChild[]),
+];
+
+export type AnyRequiredChildren =
+  | RequiredChildren
+  | RequireAllChildren
+  | RequireAnyChildren;
+
+export type ProgramOrCommandChildren = readonly (
+  | ArgNode<string>
+  | FlagNode<string>
+  | KWArgNode<string>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | CommandNode<string, readonly any[]>
+  | RequireAllNode<RequireAllChildren>
+  | RequireAnyNode<RequireAnyChildren>
+  | RequiredNode<RequiredChildren>
+)[];
+
+export interface ProgramNode<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+> {
+  _type: NodeType.PROGRAM;
   _globals: GlobalsInjected;
-  _requireAll: readonly (ArgNode | FlagNode | KWArgNode | CommandNode)[];
-  _requireAny: readonly (readonly (
-    | ArgNode
-    | FlagNode
-    | KWArgNode
-    | CommandNode
-  )[])[];
-  name: string;
+  _requireAll: InferRequiredChildren<C>;
+  _requireAny: InferMaybeRequiredChildren<C>;
+  name: N;
   options: ProgramOptions;
-  children: readonly (ArgNode | KWArgNode | FlagNode | CommandNode)[];
+  children: UnwrapRequiredChildren<C>;
 }
 
-export interface CommandNode {
-  _type: 'command';
-  _requireAll: readonly (ArgNode | FlagNode | KWArgNode | CommandNode)[];
-  _requireAny: readonly (readonly (
-    | ArgNode
-    | FlagNode
-    | KWArgNode
-    | CommandNode
-  )[])[];
-  name: string;
+export type InferRequiredChildren<C extends ProgramOrCommandChildren> =
+  readonly (C extends readonly (infer V)[]
+    ? V extends RequiredNode<infer R>
+      ? R extends readonly (infer I)[]
+        ? I
+        : never
+      : V extends RequireAllNode<infer R>
+      ? R extends readonly (infer I)[]
+        ? I
+        : never
+      : never
+    : never)[];
+
+export type InferMaybeRequiredChildren<C extends ProgramOrCommandChildren> =
+  readonly (readonly (C extends readonly (infer V)[]
+    ? V extends RequireAnyNode<infer R>
+      ? R extends readonly (infer I)[]
+        ? I
+        : never
+      : never
+    : never)[])[];
+
+export type UnwrapRequiredChildren<C extends ProgramOrCommandChildren> =
+  readonly (C extends readonly (infer V)[]
+    ? V extends RequiredNode<infer R>
+      ? R extends readonly (infer I)[]
+        ? I
+        : never
+      : V extends RequireAllNode<infer R>
+      ? R extends readonly (infer I)[]
+        ? I
+        : never
+      : V extends RequireAnyNode<infer R>
+      ? R extends readonly (infer I)[]
+        ? I
+        : never
+      : V
+    : never)[];
+
+export interface CommandNode<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+> {
+  _type: NodeType.COMMAND;
+  _requireAll: InferRequiredChildren<C>;
+  _requireAny: InferMaybeRequiredChildren<C>;
+  name: N;
   options: CommandOptions;
-  children: readonly (ArgNode | KWArgNode | FlagNode | CommandNode)[];
+  children: UnwrapRequiredChildren<C>;
 }
 
-export interface ArgNode {
-  _type: 'arg';
-  name: string;
+export interface ArgNode<N extends string> {
+  _type: NodeType.ARG;
+  name: N;
   options: ArgOptions;
 }
 
-export interface KWArgNode {
-  _type: 'kwarg';
-  name: string;
+export interface KWArgNode<N extends string> {
+  _type: NodeType.KW_ARG;
+  name: N;
   options: KWArgOptions;
 }
 
-export interface FlagNode {
-  _type: 'flag';
-  name: string;
+export interface FlagNode<N extends string> {
+  _type: NodeType.FLAG;
+  name: N;
   options: FlagOptions;
 }
 
-export interface RequiredNode {
-  _type: 'required';
-  children: [ArgNode | FlagNode | KWArgNode | CommandNode];
+export interface RequiredNode<
+  C extends readonly [
+    | ArgNode<string>
+    | FlagNode<string>
+    | KWArgNode<string>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | CommandNode<string, readonly any[]>,
+  ],
+> {
+  _type: NodeType.REQUIRED;
+  children: C;
 }
 
-export interface RequireAllNode {
-  _type: 'require-all';
-  children: [
-    first: ArgNode | FlagNode | KWArgNode | CommandNode,
-    ...rest: readonly (ArgNode | FlagNode | KWArgNode | CommandNode)[],
-  ];
+export interface RequireAllNode<
+  C extends readonly (
+    | ArgNode<string>
+    | FlagNode<string>
+    | KWArgNode<string>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | CommandNode<string, readonly any[]>
+  )[],
+> {
+  _type: NodeType.REQUIRE_ALL;
+  children: C;
 }
 
-export interface RequireAnyNode {
-  _type: 'require-any';
-  children: [
-    first: ArgNode | FlagNode | KWArgNode | CommandNode,
-    ...rest: readonly (ArgNode | FlagNode | KWArgNode | CommandNode)[],
-  ];
+export interface RequireAnyNode<
+  C extends readonly (
+    | ArgNode<string>
+    | FlagNode<string>
+    | KWArgNode<string>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | CommandNode<string, readonly any[]>
+  )[],
+> {
+  _type: NodeType.REQUIRE_ANY;
+  children: C;
 }
 
 export type AnyNode =
   | HelpNode
-  | ProgramNode
-  | CommandNode
-  | ArgNode
-  | KWArgNode
-  | FlagNode
-  | RequiredNode
-  | RequireAllNode
-  | RequireAnyNode;
+  | ProgramNode<string, ProgramOrCommandChildren>
+  | CommandNode<string, ProgramOrCommandChildren>
+  | KWArgNode<string>
+  | FlagNode<string>
+  | ArgNode<string>
+  | RequiredNode<RequiredChildren>
+  | RequireAllNode<RequireAllChildren>
+  | RequireAnyNode<RequireAnyChildren>;
+
+export type InferKWArgNames<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends KWArgNode<infer N>
+      ? N
+      : never
+    : never;
+
+export type InferFlagNames<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends FlagNode<infer N>
+      ? N
+      : never
+    : never;
+
+export type InferArgNames<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends ArgNode<infer N>
+      ? N
+      : never
+    : never;
+
+export type InferCommands<C extends ProgramOrCommandChildren> =
+  UnwrapRequiredChildren<C> extends readonly (infer V)[]
+    ? V extends CommandNode<infer CN, infer CC>
+      ? CommandNode<CN, CC>
+      : never
+    : never;
+
+export type InferTree<N extends string, C extends ProgramOrCommandChildren> = {
+  name: N;
+  kwargs: Partial<Record<InferKWArgNames<C>, string | readonly string[]>>;
+  flags: Partial<Record<InferFlagNames<C>, true>>;
+  args: Partial<Record<InferArgNames<C>, string | readonly string[]>>;
+  rest?: readonly string[];
+  command?: InferCommands<C> extends CommandNode<infer CN, infer CC>
+    ? {
+        [P in CN]: InferTree<P, CC>;
+      }[CN]
+    : never;
+};

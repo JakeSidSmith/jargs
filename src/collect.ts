@@ -9,13 +9,15 @@
   */
 
 import {
-  CollectArgs,
+  AnyTree,
   CommandNode,
   FlagNode,
   GlobalsInjected,
+  InferTree,
   KWArgNode,
+  NodeType,
   ProgramNode,
-  Tree,
+  ProgramOrCommandChildren,
 } from './types';
 import {
   createHelp,
@@ -31,19 +33,19 @@ const MATCHES_EQUALS_VALUE = /=.*/;
 const MATCHES_NAME_EQUALS = /.*?=/;
 const MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-function findFlagOrKWarg(
-  schema: ProgramNode | CommandNode,
+function findFlagOrKWarg<N extends string, C extends ProgramOrCommandChildren>(
+  schema: ProgramNode<N, C> | CommandNode<N, C>,
   globals: GlobalsInjected,
-  tree: Tree,
+  tree: AnyTree,
   isAlias: boolean,
   kwargName: string
-): FlagNode | KWArgNode {
+): FlagNode<string> | KWArgNode<string> {
   const matchingFlagOrKWArg = schema.children.find((node) => {
     return (
-      (node._type === 'flag' || node._type === 'kwarg') &&
+      (node._type === NodeType.FLAG || node._type === NodeType.KW_ARG) &&
       (isAlias ? node.options.alias === kwargName : node.name === kwargName)
     );
-  }) as FlagNode | KWArgNode | undefined;
+  }) as FlagNode<string> | KWArgNode<string> | undefined;
 
   if (!matchingFlagOrKWArg) {
     if (
@@ -65,7 +67,8 @@ function findFlagOrKWarg(
     }
   } else if (
     matchingFlagOrKWArg.name in tree[pluralize(matchingFlagOrKWArg._type)] &&
-    !matchingFlagOrKWArg.options.multi
+    (!('multi' in matchingFlagOrKWArg.options) ||
+      !matchingFlagOrKWArg.options.multi)
   ) {
     throw new Error(
       createHelp(
@@ -79,14 +82,17 @@ function findFlagOrKWarg(
   return matchingFlagOrKWArg;
 }
 
-function checkRequiredArgs(
-  schema: ProgramNode | CommandNode,
+function checkRequiredArgs<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+>(
+  schema: ProgramNode<N, C> | CommandNode<N, C>,
   globals: GlobalsInjected,
-  tree: Tree
+  tree: AnyTree
 ) {
   if (schema._requireAll && schema._requireAll.length) {
     schema._requireAll.forEach((node) => {
-      if (node._type === 'command') {
+      if (node._type === NodeType.COMMAND) {
         if (!tree.command || node.name !== tree.command.name) {
           throw new Error(
             createHelp(
@@ -111,7 +117,7 @@ function checkRequiredArgs(
   if (schema._requireAny && schema._requireAny.length) {
     schema._requireAny.forEach((anyRequired) => {
       const anyMatch = anyRequired.some((node) => {
-        if (node._type === 'command') {
+        if (node._type === NodeType.COMMAND) {
           return tree.command && node.name === tree.command.name;
         }
 
@@ -131,15 +137,15 @@ function checkRequiredArgs(
   }
 }
 
-function createTree(
+function createTree<N extends string, C extends ProgramOrCommandChildren>(
   argv: string[],
-  schema: ProgramNode | CommandNode,
+  schema: ProgramNode<N, C> | CommandNode<N, C>,
   globals: GlobalsInjected,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   commands: ((parentReturnValue: any) => void)[],
-  parentTree?: Tree
+  parentTree?: AnyTree
 ) {
-  const tree: Tree = {
+  const tree: AnyTree = {
     name: schema.name,
     kwargs: {},
     flags: {},
@@ -151,8 +157,14 @@ function createTree(
   }
 
   if (typeof schema.options.callback === 'function') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    commands.push(schema.options.callback.bind(null, tree, parentTree as any));
+    commands.push(
+      schema.options.callback.bind(
+        null,
+        tree as InferTree<N, C>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        parentTree as any
+      )
+    );
   }
 
   while (argv.length) {
@@ -168,10 +180,10 @@ function createTree(
     if (isPositional) {
       const matchingCommand = schema.children.find((node) => {
         return (
-          node._type === 'command' &&
+          node._type === NodeType.COMMAND &&
           (node.name === arg || node.options.alias === arg)
         );
-      }) as CommandNode | undefined;
+      }) as CommandNode<string, ProgramOrCommandChildren> | undefined;
 
       // Valid command
       if (matchingCommand) {
@@ -179,7 +191,7 @@ function createTree(
       } else {
         const matchingArg = schema.children.find((node) => {
           return (
-            node._type === 'arg' &&
+            node._type === NodeType.ARG &&
             (node.options.multi || !(node.name in tree.args))
           );
         });
@@ -190,7 +202,10 @@ function createTree(
             createHelp(schema, globals, 'Unknown argument: ' + arg)
           );
           // Known command
-        } else if (matchingArg.options.multi) {
+        } else if (
+          'multi' in matchingArg.options &&
+          matchingArg.options.multi
+        ) {
           tree.args[matchingArg.name] = (
             tree.args[matchingArg.name] || []
           ).concat(arg);
@@ -245,7 +260,7 @@ function createTree(
         );
 
         // Valid multiple flag alias --abc
-        if (matchingFlagOrKWArg._type === 'flag') {
+        if (matchingFlagOrKWArg._type === NodeType.FLAG) {
           tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
             true;
 
@@ -259,7 +274,7 @@ function createTree(
             );
 
             // Unknown flag alias -x
-            if (matchingFlagOrKWArg._type !== 'flag') {
+            if (matchingFlagOrKWArg._type !== NodeType.FLAG) {
               throw new Error(
                 createHelp(schema, globals, 'Invalid argument: -' + kwargName)
               );
@@ -285,7 +300,7 @@ function createTree(
         );
 
         // Flag --flag
-        if (matchingFlagOrKWArg._type === 'flag') {
+        if (matchingFlagOrKWArg._type === NodeType.FLAG) {
           tree[pluralize(matchingFlagOrKWArg._type)][matchingFlagOrKWArg.name] =
             true;
           // Invalid kwarg --kwarg=
@@ -353,13 +368,15 @@ function createTree(
     returned = commands.shift()?.(returned);
   }
 
-  return tree;
+  return tree as InferTree<N, C>;
 }
 
-export function collect(...args: CollectArgs) {
-  const [rootNode, argv] = args;
-
-  if (args.length > 2) {
+export function collect<N extends string, C extends ProgramOrCommandChildren>(
+  rootNode: ProgramNode<N, C>,
+  argv: readonly string[],
+  ...args: readonly never[]
+) {
+  if (args.length) {
     throw new Error(
       'Too many arguments: collect takes only a single root node and argv'
     );
@@ -369,7 +386,7 @@ export function collect(...args: CollectArgs) {
     throw new Error('No program defined');
   }
 
-  if (rootNode._type !== 'program') {
+  if (rootNode._type !== NodeType.PROGRAM) {
     throw new Error('Root node must be a Program');
   }
 
@@ -393,6 +410,9 @@ export function collect(...args: CollectArgs) {
   try {
     return createTree(rest, rootNode, rootNode._globals, commands);
   } catch (error) {
-    exitWithHelp(extractErrorMessage(error));
+    return exitWithHelp(extractErrorMessage(error)) as unknown as InferTree<
+      N,
+      C
+    >;
   }
 }

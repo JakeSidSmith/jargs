@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
-    "allowJs": true,
+    "allowJs": false,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -13,9 +13,8 @@
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "noEmit": true,
-    "moduleResolution": "Node",
-    "target": "ESNext",
-    "module": "ESNext"
+    "module": "NodeNext",
+    "target": "ESNext"
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*", "tests/**/*"]
 }

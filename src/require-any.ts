@@ -1,20 +1,16 @@
-import {
-  ArgNode,
-  CommandNode,
-  FlagNode,
-  KWArgNode,
-  RequireAnyNode,
-} from './types';
+import { NodeType, RequireAnyChildren, RequireAnyNode } from './types';
 import { validateChildren } from './utils';
 
-const VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
+const VALID_CHILD_NODES = [
+  NodeType.ARG,
+  NodeType.FLAG,
+  NodeType.KW_ARG,
+  NodeType.COMMAND,
+];
 
-export function RequireAny(
-  ...children: [
-    first: ArgNode | FlagNode | KWArgNode | CommandNode,
-    ...rest: readonly (ArgNode | FlagNode | KWArgNode | CommandNode)[],
-  ]
-) {
+export function RequireAny<C extends RequireAnyChildren>(
+  ...children: C
+): RequireAnyNode<C> {
   if (!children.length) {
     throw new Error('No child nodes supplied to RequireAny node');
   }
@@ -28,7 +24,7 @@ export function RequireAny(
   validateChildren(children, VALID_CHILD_NODES);
 
   return {
-    _type: 'require-any',
-    children: children,
-  } as RequireAnyNode;
+    _type: NodeType.REQUIRE_ANY,
+    children,
+  };
 }

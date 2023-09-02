@@ -1,15 +1,15 @@
 import { Arg } from '../src/arg';
-import { RequireAll } from '../src/require-all';
+import { RequireAny } from '../src/require-any';
 
-describe('require-all.js', () => {
+describe('require-any.js', () => {
   it('should construct an RequireAll', () => {
-    let child1 = Arg('foo');
-    let child2 = Arg('bar');
-    let node = RequireAll(child1, child2);
+    const child1 = Arg('foo');
+    const child2 = Arg('bar');
+    const node = RequireAny(child1, child2);
 
     expect(node).toBeTruthy();
     expect(node).toEqual({
-      _type: 'require-all',
+      _type: 'require-any',
       children: [child1, child2],
     });
 
@@ -18,15 +18,15 @@ describe('require-all.js', () => {
   });
 
   it('should throw an error if no children are supplied', () => {
-    let anError = /child/i;
+    const anError = /child/i;
 
-    expect(RequireAll).toThrow(anError);
+    expect(RequireAny).toThrow(anError);
   });
 
   it('should throw an error if less than 2 children are supplied', () => {
-    let anError = /child/i;
-    let child = Arg('foo');
-    let boundRequired = RequireAll.bind(null, child);
+    const anError = /child/i;
+    const child = Arg('foo');
+    const boundRequired = RequireAny.bind(null, child);
 
     expect(boundRequired).toThrow(anError);
   });

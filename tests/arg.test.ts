@@ -2,18 +2,19 @@ import { Arg } from '../src/arg';
 
 describe('arg.js', () => {
   it('should construct an Arg', () => {
-    let node = Arg('foo', null);
+    const node = Arg('foo', null);
 
     expect(node).toBeTruthy();
     expect(node.name).toBe('foo');
     expect(node.options).toEqual({ description: '', multi: false });
-    expect(node.children).toBeUndefined();
+    expect('children' in node).toBe(false);
     expect(node._type).toBe('arg');
   });
 
   it('should throw an error if has children', () => {
-    let anError = /children/i;
+    const anError = /children/i;
 
-    expect(Arg.bind(null, 'foo', null, 'child')).toThrow(anError);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((Arg as any).bind(null, 'foo', null, 'child')).toThrow(anError);
   });
 });

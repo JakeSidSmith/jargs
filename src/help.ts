@@ -1,4 +1,9 @@
-import { HelpArgs, ProgramNode } from './types';
+import {
+  HelpOptions,
+  NodeType,
+  ProgramNode,
+  ProgramOrCommandChildren,
+} from './types';
 import { ValidOptions } from './types-internal';
 import {
   serializeOptions,
@@ -7,7 +12,7 @@ import {
   withDefault,
 } from './utils';
 
-const VALID_CHILD_NODES = ['program'];
+const VALID_CHILD_NODES = [NodeType.PROGRAM];
 
 const validOptions = {
   alias: {
@@ -20,9 +25,12 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Help(...args: HelpArgs) {
-  const [name, options, ...children] = args;
-  serializeOptions(withDefault(options, {}), validOptions);
+export function Help<N extends string, C extends ProgramOrCommandChildren>(
+  name: string,
+  options: HelpOptions | null,
+  ...children: [ProgramNode<N, C>]
+): ProgramNode<N, C> {
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   if (!children.length) {
     throw new Error('No child nodes supplied to Help node');
@@ -32,14 +40,17 @@ export function Help(...args: HelpArgs) {
     throw new Error('More than one child node supplied to Help node');
   }
 
-  validateChildren(children, VALID_CHILD_NODES);
+  validateChildren(
+    children as [ProgramNode<string, ProgramOrCommandChildren>],
+    VALID_CHILD_NODES
+  );
   validateName(name);
 
   children[0]._globals.help = {
-    _type: 'flag',
-    name: name,
-    options: withDefault(options, {}),
+    _type: NodeType.FLAG,
+    name,
+    options: finalOptions,
   };
 
-  return children[0] as ProgramNode;
+  return children[0];
 }

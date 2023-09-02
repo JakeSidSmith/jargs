@@ -1,17 +1,16 @@
-import {
-  ArgNode,
-  CommandNode,
-  FlagNode,
-  KWArgNode,
-  RequiredNode,
-} from './types';
+import { NodeType, RequiredChildren, RequiredNode } from './types';
 import { validateChildren } from './utils';
 
-const VALID_CHILD_NODES = ['arg', 'flag', 'kwarg', 'command'];
+const VALID_CHILD_NODES = [
+  NodeType.ARG,
+  NodeType.FLAG,
+  NodeType.KW_ARG,
+  NodeType.COMMAND,
+];
 
-export function Required(
-  ...children: [ArgNode | FlagNode | KWArgNode | CommandNode]
-) {
+export function Required<C extends RequiredChildren>(
+  ...children: C
+): RequiredNode<C> {
   if (!children.length) {
     throw new Error('No child nodes supplied to Required node');
   }
@@ -25,7 +24,7 @@ export function Required(
   validateChildren(children, VALID_CHILD_NODES);
 
   return {
-    _type: 'required',
-    children: children,
-  } as RequiredNode;
+    _type: NodeType.REQUIRED,
+    children,
+  };
 }

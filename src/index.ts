@@ -10,3 +10,4 @@ export { Arg } from './arg';
 export { Required } from './required';
 export { RequireAll } from './require-all';
 export { RequireAny } from './require-any';
+export * from './types';

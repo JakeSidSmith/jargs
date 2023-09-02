@@ -11,7 +11,7 @@ import { Required } from '../src/required';
 import * as utils from '../src/utils';
 
 describe('collect.js', () => {
-  function throwError(error) {
+  function throwError(error: string) {
     throw new Error(error);
   }
 
@@ -29,57 +29,65 @@ describe('collect.js', () => {
   });
 
   it('should throw an error if no Program provided', () => {
-    let anError = /program/i;
+    const anError = /program/i;
 
     // Without tree
     expect(collect).toThrow(anError);
   });
 
   it('should throw an error if root node is not a Program', () => {
-    let anError = /program/i;
+    const anError = /program/i;
 
-    let boundCollect = collect.bind(null, Arg('test'));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundCollect = (collect as any).bind(null, Arg('test'));
 
     // Without tree
     expect(boundCollect).toThrow(anError);
   });
 
   it('should throw an error if there are too many arguments', () => {
-    let anError = /too many arguments/i;
+    const anError = /too many arguments/i;
 
-    let boundCollect = collect.bind(null, Program('test'), [], 'too many');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundCollect = (collect as any).bind(
+      null,
+      Program('test'),
+      [],
+      'too many'
+    );
 
     // Without tree
     expect(boundCollect).toThrow(anError);
   });
 
   it('should throw an error if the argv is undefined', () => {
-    let anError = /no argv supplied/i;
+    const anError = /no argv supplied/i;
 
-    let boundCollect = collect.bind(null, Program('test'));
+    const boundCollect = collect.bind(null, Program('test'));
 
     expect(boundCollect).toThrow(anError);
   });
 
   it('should throw an error if the second argument is not an argv', () => {
-    let anError = /argv must be an array of strings/i;
+    const anError = /argv must be an array of strings/i;
 
-    let boundCollect = collect.bind(null, Program('test'), 'nope');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const boundCollect = (collect as any).bind(null, Program('test'), 'nope');
 
     expect(boundCollect).toThrow(anError);
   });
 
   it('should throw an error if the argv has been modified', () => {
-    let anError = /argv has been tampered with/i;
+    const anError = /argv has been tampered with/i;
 
-    let boundCollect = collect.bind(null, Program('test'), ['invalid']);
+    const boundCollect = collect.bind(null, Program('test'), ['invalid']);
 
     expect(boundCollect).toThrow(anError);
   });
 
   it('should return an arg tree when no args provided', () => {
     // With tree
-    let result = collect(Program('program', null, Command('install')), [
+    const result = collect(Program('program', null, Command('install')), [
       'node',
       'program',
     ]);
@@ -94,7 +102,7 @@ describe('collect.js', () => {
 
   it('should return an arg tree for single command schema', () => {
     // With single node
-    let result = collect(Program('program', null, Command('install')), [
+    const result = collect(Program('program', null, Command('install')), [
       'node',
       'program',
       'install',
@@ -116,7 +124,7 @@ describe('collect.js', () => {
 
   it('should return an arg tree with nested schema', () => {
     // With nested nodes
-    let result = collect(
+    const result = collect(
       Program('program', null, Command('install', null, Arg('lib'))),
       ['node', 'program', 'install', 'jargs']
     );
@@ -139,7 +147,7 @@ describe('collect.js', () => {
 
   it('should return an arg tree with nested schema and flags', () => {
     // With nested nodes
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         null,
@@ -168,7 +176,7 @@ describe('collect.js', () => {
 
   it('should return an arg tree with kwargs, flags, and args', () => {
     // With nested nodes
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         null,
@@ -204,7 +212,7 @@ describe('collect.js', () => {
   });
 
   it('should prioritize commands and traverse their children (test 1)', () => {
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         null,
@@ -231,7 +239,7 @@ describe('collect.js', () => {
   });
 
   it('should prioritize commands and traverse their children (test 2)', () => {
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         null,
@@ -252,12 +260,12 @@ describe('collect.js', () => {
   });
 
   it('should call program and command callbacks if matched', () => {
-    let programSpy = jest.fn();
-    let command1Spy = jest.fn();
-    let command2Spy = jest.fn();
-    let command3Spy = jest.fn();
+    const programSpy = jest.fn();
+    const command1Spy = jest.fn();
+    const command2Spy = jest.fn();
+    const command3Spy = jest.fn();
 
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         { callback: programSpy },
@@ -278,19 +286,19 @@ describe('collect.js', () => {
     expect(command2Spy).toHaveBeenCalledTimes(1);
     expect(command2Spy.mock.calls[0][0]).toEqual(result.command);
     expect(command3Spy).toHaveBeenCalledTimes(1);
-    expect(command3Spy.mock.calls[0][0]).toEqual(result.command.command);
+    expect(command3Spy.mock.calls[0][0]).toEqual(result.command?.command);
     expect(command1Spy).not.toHaveBeenCalled();
 
     expect(result.args.arg1).toBe('argy');
-    expect(result.command.args.arg2).toBe('argygain');
+    expect(result.command?.args.arg2).toBe('argygain');
   });
 
   it('should call program and commands with tree, parentTree, and returned value', () => {
-    let programSpy = jest.fn().mockReturnValue(1);
-    let command1Spy = jest.fn().mockReturnValue(2);
-    let command2Spy = jest.fn().mockReturnValue(3);
+    const programSpy = jest.fn().mockReturnValue(1);
+    const command1Spy = jest.fn().mockReturnValue(2);
+    const command2Spy = jest.fn().mockReturnValue(3);
 
-    let expected = {
+    const expected = {
       name: 'program',
       kwargs: {},
       flags: {},
@@ -309,7 +317,7 @@ describe('collect.js', () => {
       },
     };
 
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         { callback: programSpy },
@@ -337,12 +345,12 @@ describe('collect.js', () => {
   });
 
   it('should pass parent tree & returned value to subsequent callbacks', () => {
-    let programSpy = jest.fn().mockReturnValue(1);
-    let command1Spy = jest.fn().mockReturnValue(2);
-    let command2Spy = jest.fn().mockReturnValue(3);
-    let command3Spy = jest.fn().mockReturnValue(4);
+    const programSpy = jest.fn().mockReturnValue(1);
+    const command1Spy = jest.fn().mockReturnValue(2);
+    const command2Spy = jest.fn().mockReturnValue(3);
+    const command3Spy = jest.fn().mockReturnValue(4);
 
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         { callback: programSpy },
@@ -364,7 +372,7 @@ describe('collect.js', () => {
     expect(command2Spy).toHaveBeenCalledWith(result.command, result, 1);
     expect(command3Spy).toHaveBeenCalledTimes(1);
     expect(command3Spy).toHaveBeenCalledWith(
-      result.command.command,
+      result.command?.command,
       result.command,
       3
     );
@@ -373,7 +381,7 @@ describe('collect.js', () => {
 
   it('should return an arg tree from aliases', () => {
     // With nested nodes
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         null,
@@ -421,9 +429,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for no kwarg value (equals)', () => {
-    let anError = /value.*\n\n/i;
+    const anError = /value.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Arg('arg'), KWArg('kwarg')),
       ['node', 'program', '--kwarg=', 'invalid']
@@ -434,9 +442,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for no kwarg value (not equals)', () => {
-    let anError = /value.*\n\n/i;
+    const anError = /value.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Arg('arg'), KWArg('kwarg')),
       ['node', 'program', '--kwarg']
@@ -447,9 +455,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for invalid alias syntax', () => {
-    let anError = /syntax.*\n\n/i;
+    const anError = /syntax.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -466,9 +474,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for duplicate kwargs', () => {
-    let anError = /duplicate.*\n\n/i;
+    const anError = /duplicate.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Arg('arg'), KWArg('kwarg')),
       ['node', 'program', '--kwarg=correct', '--kwarg=incorrect']
@@ -478,9 +486,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for duplicate flags', () => {
-    let anError = /duplicate.*\n\n/i;
+    const anError = /duplicate.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Arg('arg'), Flag('flag')),
       ['node', 'program', '--flag', '--flag']
@@ -490,9 +498,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for duplicate flag aliases', () => {
-    let anError = /duplicate.*\n\n/i;
+    const anError = /duplicate.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -509,9 +517,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for unknown flags / kwargs', () => {
-    let anError = /unknown.*\n\n/i;
+    const anError = /unknown.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Arg('arg'), Flag('flag'), KWArg('kwarg')),
       ['node', 'program', '--version']
@@ -521,9 +529,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for unknown flag / kwarg aliases', () => {
-    let anError = /unknown.*\n\n/i;
+    const anError = /unknown.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Arg('arg'), Flag('flag'), KWArg('kwarg')),
       ['node', 'program', '-v']
@@ -533,9 +541,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for unknown commands / args', () => {
-    let anError = /unknown.*\n\n/i;
+    const anError = /unknown.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -651,9 +659,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for invalid chained flag aliases', () => {
-    let anError = /invalid.*\n\n/i;
+    const anError = /invalid.*\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -672,9 +680,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for missing required Commands', () => {
-    let anError = /command\swas\snot\ssupplied\n\n/i;
+    const anError = /command\swas\snot\ssupplied\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Required(Command('command'))),
       ['node', 'program']
@@ -684,9 +692,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for missing required Commands when other Command found', () => {
-    let anError = /required\swas\snot\ssupplied\n\n/i;
+    const anError = /required\swas\snot\ssupplied\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -701,9 +709,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for missing required Args', () => {
-    let anError = /arg\swas\snot\ssupplied\n\n/i;
+    const anError = /arg\swas\snot\ssupplied\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program('program', null, Command('command', null, Required(Arg('arg')))),
       ['node', 'program', 'command']
@@ -713,9 +721,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for missing require any Commands', () => {
-    let anError = /command1,\scommand2\n\n/i;
+    const anError = /command1,\scommand2\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -729,9 +737,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for missing require any Commands when other Command found', () => {
-    let anError = /required1,\srequired2\n\n/i;
+    const anError = /required1,\srequired2\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -746,9 +754,9 @@ describe('collect.js', () => {
   });
 
   it('should exit with help for missing require any Args', () => {
-    let anError = /arg1,\sarg2\n\n/i;
+    const anError = /arg1,\sarg2\n\n/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -762,9 +770,9 @@ describe('collect.js', () => {
   });
 
   it('should not error when all required arguments are met', () => {
-    let anError = /required/i;
+    const anError = /required/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',
@@ -785,9 +793,9 @@ describe('collect.js', () => {
   });
 
   it('should display help info if a global help node is present (root)', () => {
-    let anError = /Usage:\sprogram(.|\n)*description\n\n/;
+    const anError = /Usage:\sprogram(.|\n)*description\n\n/;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Help(
         'help',
@@ -814,9 +822,9 @@ describe('collect.js', () => {
   });
 
   it('should display help info if a global help node is present (nested)', () => {
-    let anError = /Usage:\scommand(.|\n)*description\n\n/;
+    const anError = /Usage:\scommand(.|\n)*description\n\n/;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Help(
         'help',
@@ -843,9 +851,9 @@ describe('collect.js', () => {
   });
 
   it('should display help info if a global help node is present (alias)', () => {
-    let anError = /description\n\n$/i;
+    const anError = /description\n\n$/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Help(
         'help',
@@ -862,9 +870,9 @@ describe('collect.js', () => {
   });
 
   it('should not display help info if a global help node is present but another node is matched', () => {
-    let anError = /description\n\n$/i;
+    const anError = /description\n\n$/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Help(
         'help',
@@ -893,9 +901,9 @@ describe('collect.js', () => {
   });
 
   it('should not display help info if a global help node is present but another node is matched (alias', () => {
-    let anError = /description\n\n$/i;
+    const anError = /description\n\n$/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Help(
         'help',
@@ -925,7 +933,7 @@ describe('collect.js', () => {
 
   it('should collect multiple Arg values', () => {
     // With nested nodes
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         null,
@@ -1022,7 +1030,7 @@ describe('collect.js', () => {
   });
 
   it('should collect rest arguments', () => {
-    let result = collect(
+    const result = collect(
       Program(
         'program',
         null,
@@ -1067,9 +1075,9 @@ describe('collect.js', () => {
   });
 
   it('should error if required args are interrupted by --', () => {
-    let anError = /required/i;
+    const anError = /required/i;
 
-    let boundCollect = collect.bind(
+    const boundCollect = collect.bind(
       null,
       Program(
         'program',

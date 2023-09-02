@@ -1,5 +1,7 @@
-module.exports = {
-  preset: 'ts-jest/presets/js-with-babel-esm',
+import { Config } from 'jest';
+
+const config = {
+  preset: 'ts-jest',
   collectCoverageFrom: ['src/**/*.(js|jsx|ts|tsx)'],
   coverageThreshold: {
     global: {
@@ -18,4 +20,6 @@ module.exports = {
     '<rootDir>/node_modules/',
     '<rootDir>/tests/helpers/',
   ],
-};
+} satisfies Config;
+
+export default config;

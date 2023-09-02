@@ -1,7 +1,13 @@
-import { ProgramArgs, ProgramNode } from './types';
+import {
+  NodeType,
+  ProgramNode,
+  ProgramOptions,
+  ProgramOptionsWithCallback,
+  ProgramOrCommandChildren,
+} from './types';
 import { ValidOptions } from './types-internal';
 import {
-  getNodeProperties,
+  getNodeChildren,
   serializeOptions,
   validateName,
   withDefault,
@@ -25,14 +31,29 @@ const validOptions = {
   },
 } satisfies ValidOptions;
 
-export function Program(...args: ProgramArgs) {
-  const properties = getNodeProperties(args, true);
-  validateName(properties.name);
-  serializeOptions(withDefault(properties.options, {}), validOptions);
+export function Program<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options: ProgramOptionsWithCallback<N, C>,
+  ...children: C
+): ProgramNode<N, C>;
+export function Program<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options?: ProgramOptions | ProgramOptionsWithCallback<N, C> | null,
+  ...children: C
+): ProgramNode<N, C>;
+export function Program<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options?: ProgramOptions | ProgramOptionsWithCallback<N, C> | null,
+  ...children: C
+): ProgramNode<N, C> {
+  validateName(name);
+  const finalOptions = serializeOptions(withDefault(options, {}), validOptions);
 
   return {
-    ...properties,
-    _type: 'program',
+    _type: NodeType.PROGRAM,
     _globals: {},
-  } as ProgramNode;
+    name,
+    options: finalOptions,
+    ...getNodeChildren(children),
+  };
 }
