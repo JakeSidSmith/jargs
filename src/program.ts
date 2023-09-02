@@ -2,6 +2,7 @@ import {
   NodeType,
   ProgramNode,
   ProgramOptions,
+  ProgramOptionsWithCallback,
   ProgramOrCommandChildren,
 } from './types';
 import { ValidOptions } from './types-internal';
@@ -32,7 +33,17 @@ const validOptions = {
 
 export function Program<N extends string, C extends ProgramOrCommandChildren>(
   name: N,
-  options?: ProgramOptions<N, C> | null,
+  options: ProgramOptionsWithCallback<N, C>,
+  ...children: C
+): ProgramNode<N, C>;
+export function Program<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options?: ProgramOptions | ProgramOptionsWithCallback<N, C> | null,
+  ...children: C
+): ProgramNode<N, C>;
+export function Program<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options?: ProgramOptions | ProgramOptionsWithCallback<N, C> | null,
   ...children: C
 ): ProgramNode<N, C> {
   validateName(name);

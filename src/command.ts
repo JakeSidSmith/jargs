@@ -1,6 +1,7 @@
 import {
   CommandNode,
   CommandOptions,
+  CommandOptionsWithCallback,
   NodeType,
   ProgramOrCommandChildren,
 } from './types';
@@ -35,7 +36,17 @@ const validOptions = {
 
 export function Command<N extends string, C extends ProgramOrCommandChildren>(
   name: N,
-  options?: CommandOptions<N, C> | null,
+  options: CommandOptionsWithCallback<N, C>,
+  ...children: C
+): CommandNode<N, C>;
+export function Command<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options?: CommandOptions | CommandOptionsWithCallback<N, C> | null,
+  ...children: C
+): CommandNode<N, C>;
+export function Command<N extends string, C extends ProgramOrCommandChildren>(
+  name: N,
+  options?: CommandOptions | CommandOptionsWithCallback<N, C> | null,
   ...children: C
 ): CommandNode<N, C> {
   validateName(name);

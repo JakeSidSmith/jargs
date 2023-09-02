@@ -28,14 +28,24 @@ export interface HelpOptions {
   alias?: string;
 }
 
-export interface ProgramOptions<
-  N extends string,
-  C extends ProgramOrCommandChildren,
-> {
+export interface ProgramOptions {
   description?: string;
   usage?: string;
   examples?: ReadonlyArray<string>;
   callback?: (
+    tree: AnyTree,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
+}
+
+export interface ProgramOptionsWithCallback<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+> extends Omit<ProgramOptions, 'callback'> {
+  callback: (
     tree: InferTree<N, C>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parentTree?: any,
@@ -44,15 +54,25 @@ export interface ProgramOptions<
   ) => void;
 }
 
-export interface CommandOptions<
-  N extends string,
-  C extends ProgramOrCommandChildren,
-> {
+export interface CommandOptions {
   description?: string;
   alias?: string;
   usage?: string;
   examples?: ReadonlyArray<string>;
   callback?: (
+    tree: AnyTree,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
+}
+
+export interface CommandOptionsWithCallback<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+> extends Omit<CommandOptions, 'callback'> {
+  callback: (
     tree: InferTree<N, C>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parentTree?: any,
@@ -137,7 +157,7 @@ export interface ProgramNode<
   _requireAll: InferRequiredChildren<C>;
   _requireAny: InferMaybeRequiredChildren<C>;
   name: N;
-  options: ProgramOptions<N, C>;
+  options: ProgramOptions;
   children: UnwrapRequiredChildren<C>;
 }
 
@@ -188,7 +208,7 @@ export interface CommandNode<
   _requireAll: InferRequiredChildren<C>;
   _requireAny: InferMaybeRequiredChildren<C>;
   name: N;
-  options: CommandOptions<N, C>;
+  options: CommandOptions;
   children: UnwrapRequiredChildren<C>;
 }
 
