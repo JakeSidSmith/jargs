@@ -10,18 +10,16 @@ export enum NodeType {
   REQUIRE_ANY = 'require-any',
 }
 
-export type AnyArgsOrKWArgs = Partial<
-  Record<string, string | readonly string[]>
->;
-
+export type AnyKWArgs = Partial<Record<string, string | readonly string[]>>;
 export type AnyFlags = Partial<Record<string, true>>;
+export type AnyArgs = Partial<Record<string, string | readonly string[]>>;
 
 export interface AnyTree {
   name: string;
   command?: AnyTree;
-  kwargs: AnyArgsOrKWArgs;
+  kwargs: AnyKWArgs;
   flags: AnyFlags;
-  args: AnyArgsOrKWArgs;
+  args: AnyArgs;
   rest?: readonly string[];
 }
 
@@ -255,9 +253,9 @@ export type AnyNode =
   | HelpNode
   | ProgramNode<string, ProgramOrCommandChildren>
   | CommandNode<string, ProgramOrCommandChildren>
-  | ArgNode<string>
   | KWArgNode<string>
   | FlagNode<string>
+  | ArgNode<string>
   | RequiredNode<RequiredChildren>
   | RequireAllNode<RequireAllChildren>
   | RequireAnyNode<RequireAnyChildren>;
