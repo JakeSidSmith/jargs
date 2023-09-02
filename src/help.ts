@@ -40,7 +40,10 @@ export function Help<N extends string, C extends ProgramOrCommandChildren>(
     throw new Error('More than one child node supplied to Help node');
   }
 
-  validateChildren(children, VALID_CHILD_NODES);
+  validateChildren(
+    children as [ProgramNode<string, ProgramOrCommandChildren>],
+    VALID_CHILD_NODES
+  );
   validateName(name);
 
   children[0]._globals.help = {

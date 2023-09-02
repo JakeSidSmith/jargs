@@ -5,12 +5,13 @@ import {
   HelpOptions,
   KWArgOptions,
   ProgramOptions,
+  ProgramOrCommandChildren,
 } from './types';
 
 export type AnyOptions =
   | HelpOptions
-  | ProgramOptions
-  | CommandOptions
+  | ProgramOptions<string, ProgramOrCommandChildren>
+  | CommandOptions<string, ProgramOrCommandChildren>
   | KWArgOptions
   | FlagOptions
   | ArgOptions;

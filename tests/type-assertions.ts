@@ -64,7 +64,27 @@ RequireAny(Arg('arg'), Flag('flag')) satisfies RequireAnyNode<
 
 const commandTree = Command(
   'command',
-  { alias: 'c' },
+  {
+    alias: 'c',
+    callback: (tree) => {
+      tree satisfies {
+        name: 'command';
+        kwargs: Partial<
+          Record<
+            'any-kwarg' | 'any-kwarg2' | 'all-kwarg',
+            string | readonly string[]
+          >
+        >;
+        flags: Partial<Record<never, true>>;
+        args: Partial<
+          Record<
+            'arg' | 'any-arg' | 'any-arg2' | 'required-arg' | 'all-arg',
+            string | readonly string[]
+          >
+        >;
+      };
+    },
+  },
   Arg('arg'),
   RequireAny(Arg('any-arg'), KWArg('any-kwarg')),
   RequireAny(Arg('any-arg2'), KWArg('any-kwarg2')),

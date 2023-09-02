@@ -35,7 +35,7 @@ const validOptions = {
 
 export function Command<N extends string, C extends ProgramOrCommandChildren>(
   name: N,
-  options?: CommandOptions | null,
+  options?: CommandOptions<N, C> | null,
   ...children: C
 ): CommandNode<N, C> {
   validateName(name);

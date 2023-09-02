@@ -32,7 +32,7 @@ const validOptions = {
 
 export function Program<N extends string, C extends ProgramOrCommandChildren>(
   name: N,
-  options?: ProgramOptions | null,
+  options?: ProgramOptions<N, C> | null,
   ...children: C
 ): ProgramNode<N, C> {
   validateName(name);

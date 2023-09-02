@@ -33,10 +33,8 @@ const MATCHES_EQUALS_VALUE = /=.*/;
 const MATCHES_NAME_EQUALS = /.*?=/;
 const MATCHES_SINGLE_HYPHEN = /^-[^-]/;
 
-function findFlagOrKWarg(
-  schema:
-    | ProgramNode<string, ProgramOrCommandChildren>
-    | CommandNode<string, ProgramOrCommandChildren>,
+function findFlagOrKWarg<N extends string, C extends ProgramOrCommandChildren>(
+  schema: ProgramNode<N, C> | CommandNode<N, C>,
   globals: GlobalsInjected,
   tree: AnyTree,
   isAlias: boolean,
@@ -84,10 +82,11 @@ function findFlagOrKWarg(
   return matchingFlagOrKWArg;
 }
 
-function checkRequiredArgs(
-  schema:
-    | ProgramNode<string, ProgramOrCommandChildren>
-    | CommandNode<string, ProgramOrCommandChildren>,
+function checkRequiredArgs<
+  N extends string,
+  C extends ProgramOrCommandChildren,
+>(
+  schema: ProgramNode<N, C> | CommandNode<N, C>,
   globals: GlobalsInjected,
   tree: AnyTree
 ) {
@@ -158,8 +157,14 @@ function createTree<N extends string, C extends ProgramOrCommandChildren>(
   }
 
   if (typeof schema.options.callback === 'function') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    commands.push(schema.options.callback.bind(null, tree, parentTree as any));
+    commands.push(
+      schema.options.callback.bind(
+        null,
+        tree as InferTree<N, C>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        parentTree as any
+      )
+    );
   }
 
   while (argv.length) {

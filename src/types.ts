@@ -31,26 +31,36 @@ export interface HelpOptions {
 }
 
 export interface ProgramOptions<
-  T extends AnyTree = AnyTree,
-  P extends AnyTree | undefined = undefined,
-  R = void,
+  N extends string,
+  C extends ProgramOrCommandChildren,
 > {
   description?: string;
   usage?: string;
   examples?: ReadonlyArray<string>;
-  callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
+  callback?: (
+    tree: InferTree<N, C>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
 }
 
 export interface CommandOptions<
-  T extends AnyTree = AnyTree,
-  P extends AnyTree | undefined = undefined,
-  R = void,
+  N extends string,
+  C extends ProgramOrCommandChildren,
 > {
   description?: string;
   alias?: string;
   usage?: string;
   examples?: ReadonlyArray<string>;
-  callback?: (tree: T, parentTree?: P, parentReturned?: R) => void;
+  callback?: (
+    tree: InferTree<N, C>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentTree?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentReturned?: any
+  ) => void;
 }
 
 export interface KWArgOptions {
@@ -129,7 +139,7 @@ export interface ProgramNode<
   _requireAll: InferRequiredChildren<C>;
   _requireAny: InferMaybeRequiredChildren<C>;
   name: N;
-  options: ProgramOptions;
+  options: ProgramOptions<N, C>;
   children: UnwrapRequiredChildren<C>;
 }
 
@@ -180,7 +190,7 @@ export interface CommandNode<
   _requireAll: InferRequiredChildren<C>;
   _requireAny: InferMaybeRequiredChildren<C>;
   name: N;
-  options: CommandOptions;
+  options: CommandOptions<N, C>;
   children: UnwrapRequiredChildren<C>;
 }
 
